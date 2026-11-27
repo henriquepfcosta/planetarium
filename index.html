@@ -32,6 +32,7 @@ html,body{margin:0;height:100%;background:#03070f;color:var(--ink);font:15px/1.4
 .brand{display:flex;gap:10px;align-items:center}#mIcon{width:54px;height:54px;flex:none;pointer-events:auto;cursor:pointer;border-radius:50%;filter:drop-shadow(0 0 10px rgba(225,233,250,.35))}.brand .ph{color:#e6ebf5;font-size:12px;font-weight:500;letter-spacing:.01em;margin-top:1px;pointer-events:auto;cursor:pointer}
 .brand span{display:block;font-size:13px;line-height:1.35;color:var(--ink);text-shadow:0 1px 3px #000;font-weight:500}
 .brand .t{color:var(--mute);font-weight:400;font-size:12px;font-variant-numeric:tabular-nums}
+.mcol{display:grid;justify-items:center;gap:6px;pointer-events:none}.mtog{pointer-events:auto;display:flex;background:rgba(4,10,16,.66);border:1px solid var(--line);border-radius:999px;padding:2px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}.mtog button{border:0;background:transparent;color:var(--mute);font:600 11.5px Inter,sans-serif;padding:5px 10px;border-radius:999px;cursor:pointer}.mtog button[aria-pressed=true]{background:var(--ink);color:#08121a}
 #mini{width:72px;height:72px;flex:none;border-radius:50%;background:rgba(4,10,16,.5);border:1px solid var(--line);pointer-events:auto;cursor:pointer}
 .reticle{position:absolute;left:50%;top:78%;transform:translate(-50%,-10px);pointer-events:none;text-align:center}
 .reticle i{display:block;width:20px;height:20px;margin:0 auto;border:1px solid rgba(255,255,255,.45);border-radius:50%}
@@ -150,7 +151,7 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
   <div id="calDot" hidden></div>
   <div class="top">
     <div class="brand"><canvas id="mIcon" width="132" height="132" role="button" aria-label="Fase da Lua"></canvas><div><span id="place">—</span><span class="t" id="clock">—</span><span class="ph" id="mPh"></span><span class="ph" id="mWx" role="button" title="Toque para ver a previsão" style="white-space:nowrap"></span></div></div>
-    <canvas id="mini" width="160" height="160" role="button" aria-label="Abrir o Disco 3D"></canvas>
+    <div class="mcol"><canvas id="mini" width="160" height="160" role="button" aria-label="Trocar de vista"></canvas><div class="mtog" id="mTog" role="group" aria-label="Modelo"><button data-mm="lens" aria-pressed="true">Disco</button><button data-mm="globe" aria-pressed="false">Globo</button></div></div>
   </div>
   <div class="reticle" id="ret"><i></i><span id="aim">—</span></div>
   <div class="toast" id="toast"></div>
@@ -207,7 +208,6 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
       <button class="tile s" id="bCal"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/><circle cx="12" cy="12" r="1.5"/></svg><span>Calibrar pelo céu</span></button>
       <button class="tile s" id="lZod" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="12" rx="10" ry="4.5" transform="rotate(-18 12 12)"/><circle cx="7" cy="14" r="1.3"/><circle cx="17" cy="10" r="1.3"/></svg><span>Zodíaco e eclíptica</span></button>
       <button class="tile s" id="lPath" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 19c3-9 7-13 10-13s7 4 10 13" stroke-dasharray="2 2.4"/><circle cx="12" cy="6" r="2.2"/></svg><span>Caminho do Sol e da Lua</span></button>
-      <button class="tile s" id="lWx" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18h10a4 4 0 0 0 .5-8 6 6 0 0 0-11.4 1.6A3.3 3.3 0 0 0 7 18Z"/></svg><span>Nuvens do tempo real</span></button>
       <div class="mh d" hidden>Disco 3D</div>
       <button class="tile d" id="dDive" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v13M7 11l5 5 5-5"/><ellipse cx="12" cy="20" rx="8" ry="2"/></svg><span>Descer até meu local</span></button>
       <button class="tile d" id="dCurve" aria-pressed="false" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="13" rx="9" ry="3.5"/><path d="M3 13v2c0 2 4 3.5 9 3.5s9-1.5 9-3.5v-2"/><path d="M8 9.8c1-2.4 2.4-3.6 4-3.6s3 1.2 4 3.6"/></svg><span>Disco em 3D (forma e muralha)</span></button>
@@ -222,6 +222,7 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
       <button class="tile d" id="dIncl" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="15" rx="9" ry="3.5"/><path d="M4 13a8 6 0 0 1 16 0"/></svg><span>Vista inclinada</span></button>
       <button class="tile d" id="dReset" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4h4"/></svg><span>Centralizar</span></button>
       <div class="mh">Nos dois modos</div>
+      <button class="tile" id="lWx" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18h10a4 4 0 0 0 .5-8 6 6 0 0 0-11.4 1.6A3.3 3.3 0 0 0 7 18Z"/></svg><span>Nuvens do tempo real</span></button>
       <button class="tile" id="lPolar" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 1.6 4.4 4.6.2-3.6 2.9 1.3 4.5L12 12.4 8.1 15l1.3-4.5L5.8 7.6l4.6-.2Z"/><path d="M12 15v6"/></svg><span>Estrela Polar</span></button>
       <button class="tile" id="bEclT"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="12" r="6"/><path d="M14 6.6a6 6 0 1 1 0 10.8"/></svg><span>Eclipses</span></button>
       <button class="tile" id="lTide" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 15c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2"/><path d="M2 19c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2"/><path d="M12 3v7M9 7l3 3 3-3"/></svg><span>Marés</span></button>
@@ -316,7 +317,7 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
       <p class="small" id="airMsg"></p>
     </details>
     <button class="btn" id="sheetClose">Fechar</button>
-    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-27</p>
+    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-28</p>
   </div>
   <div class="welcome" id="welcome">
     <div>
@@ -608,7 +609,13 @@ function drawMiniSky(o){const c=mctx,S=160,R=72;c.setTransform(1,0,0,1,0,0);c.cl
  for(const[x,h,w]of[[14,22,12],[30,14,9],[50,9,8],[86,6,7],[112,18,11],[128,26,13],[148,16,10]]){c.lineTo(x-w,118);c.quadraticCurveTo(x-w,118-h,x,118-h);c.quadraticCurveTo(x+w,118-h,x+w,118)}
  c.lineTo(160,118);c.lineTo(160,160);c.lineTo(0,160);c.fill();c.fillStyle=rgb(lerp([16,26,18],[66,104,52],dT));c.fillRect(0,118,S,42);
  c.restore();c.strokeStyle="rgba(238,240,234,.75)";c.lineWidth=2;c.beginPath();c.arc(S/2,S/2,R,0,7);c.stroke()}
-function drawMini(o){const c=mctx,S=160,R=72;c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,S,S);c.translate(S/2,S/2);
+function drawMiniGlobe(o){const c=mctx,S=160;c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,S,S);c.fillStyle="#040a14";c.beginPath();c.arc(80,80,78,0,7);c.fill();
+ for(let i=0;i<40;i++){const a=i*2.4,r=20+((i*37)%55);c.fillStyle="rgba(255,255,255,.5)";c.fillRect(80+Math.cos(a)*r,80+Math.sin(a)*r,1.4,1.4)}
+ const ph=((o.sp.lon%360)+360)%360,g=c.createRadialGradient(62,64,6,80,80,44);g.addColorStop(0,"#9fd6ff");g.addColorStop(.55,"#2f7fd0");g.addColorStop(1,"#0b2a55");c.fillStyle=g;c.beginPath();c.arc(80,80,42,0,7);c.fill();
+ c.fillStyle="rgba(120,170,90,.75)";c.beginPath();c.ellipse(72,74,12,18,0.5,0,7);c.fill();c.beginPath();c.ellipse(96,90,9,13,-0.3,0,7);c.fill();
+ c.fillStyle="rgba(2,6,16,.55)";c.beginPath();c.arc(80,80,42,-Math.PI/2,Math.PI/2);c.fill();c.strokeStyle="rgba(150,210,255,.6)";c.lineWidth=2;c.beginPath();c.arc(80,80,44,0,7);c.stroke();
+ c.fillStyle="#ffd27a";c.beginPath();c.arc(26,40,7,0,7);c.fill()}
+function drawMini(o){if(MODEL()==="globe"&&!st.split){drawMiniGlobe(o);return}const c=mctx,S=160,R=72;c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,S,S);c.translate(S/2,S/2);
  c.strokeStyle="rgba(238,240,234,.75)";c.lineWidth=2;c.beginPath();c.arc(0,0,R,0,7);c.stroke();
  for(const[lat,col]of[[23.44,"rgba(108,195,182,.6)"],[0,"rgba(238,240,234,.5)"],[-23.44,"rgba(108,195,182,.6)"]]){c.strokeStyle=col;c.lineWidth=1.5;c.beginPath();c.arc(0,0,R*(90-lat)/180,0,7);c.stroke()}
  const P=(la,lo)=>{const d=toDisc(la,lo);return[d[0]*R,d[1]*R]},ob=P(st.obs.lat,st.obs.lon),s=P(o.sp.lat,o.sp.lon),m=P(o.mo.lat,o.mo.lon);
@@ -921,7 +928,7 @@ function info(o){const s=st.sel;if(!s){$("info").hidden=true;return}$("info").hi
  $("infoBody").innerHTML=`<h3>${h}</h3><dl>${rows.map(([a,b])=>`<dt>${a}</dt><dd>${b}</dd>`).join("")}</dl>${note?`<p class="note">${note}</p>`:""}${acts.length?`<div class="acts">${acts.map(([k,t,pr])=>`<button class="btn${pr?" p":""}" data-act="${k}">${t}</button>`).join("")}</div>`:""}`}
 const fmtD=new Intl.DateTimeFormat("pt-BR",{day:"2-digit",month:"short",year:"numeric"}),SPN={60:"1 min/s",600:"10 min/s",1800:"30 min/s",3600:"1 h/s",86400:"1 dia/s"};
 const toLocalInput=d=>{const z=n=>String(n).padStart(2,"0");return`${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}T${z(d.getHours())}:${z(d.getMinutes())}`};
-function hud(){{const b=document.querySelector(".brand");if(b)HDRB=Math.round(b.getBoundingClientRect().bottom+8)}if(CAL.open)calTick(compute());if(st.L.wx){wxFetch();if(st.mode==="disc")wgFetch()}{const on=CAMON&&st.mode==="sky"&&!st.split;$("camV").hidden=!on;cv.style.mixBlendMode=on?"screen":""}const d=new Date(st.t),live=st.speed===1&&st.play&&Math.abs(st.t-Date.now())<9e4;
+function hud(){mTogSync();{const b=document.querySelector(".brand");if(b)HDRB=Math.round(b.getBoundingClientRect().bottom+8)}if(CAL.open)calTick(compute());if(st.L.wx){wxFetch();if(st.mode==="disc")wgFetch()}{const on=CAMON&&st.mode==="sky"&&!st.split;$("camV").hidden=!on;cv.style.mixBlendMode=on?"screen":""}const d=new Date(st.t),live=st.speed===1&&st.play&&Math.abs(st.t-Date.now())<9e4;
  $("place").textContent=st.obs.name;$("clock").textContent=`${latT(st.obs.lat)} ${lonT(st.obs.lon)} · ${fmtD.format(d)}`;
  $("tNow").textContent=fmtH.format(d);$("tState").textContent=live?"ao vivo":!st.play?"pausado":st.year?"15 dias/s":st.speed===1?"simulado":SPN[st.speed];
  $("mpPlay").innerHTML=st.play?'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7Z"/></svg>';{const live=st.play&&st.speed===1&&!st.year,t=st.year?"1 ano":live?"1×":(SPN[st.speed]||"1×");const b=$("mpSpd");if(b.textContent!==t)b.textContent=t;b.classList.toggle("live",live);b.hidden=live;$("mp").classList.toggle("sim-on",!live)}
@@ -1238,7 +1245,10 @@ function cvRender(){const S=shapeT(),dist=CV.dist;cvSliders();$("cvVal").textCon
   x.strokeStyle=c2.me?"#ffb39b":"rgba(255,210,122,.8)";x.lineWidth=1.4;x.beginPath();x.moveTo(q[0],q[1]);x.lineTo(q[0]+d[0]*L,q[1]-d[1]*L);x.stroke();x.fillStyle=c2.me?"#ff8f6b":"#ffd27a";x.beginPath();x.arc(q[0],q[1],3,0,7);x.fill()}
  x.fillStyle="rgba(169,180,182,.9)";x.font="500 9.5px Inter,sans-serif";x.fillText("seta: direção do polo norte celeste em cada cidade",8,12);x.fillText("o horizonte de cada uma é a reta que toca a curva",8,24)}
 function cvSave(){try{localStorage.setItem("planetarium-curva",JSON.stringify({mode:CV.mode,k:CV.k,hc:CV.hc,dist:CV.dist}))}catch(e){}}
-function cvSetMode(m){if(m===CV.mode)return;CV.mode=m;cvSave();cvRender();if(st.mode==="disc"){dv.zoomT=m==="globe"?2.2:1;dv.tiltT=m==="globe"?0.55:0.38}}
+function cvSetMode(m){if(m===CV.mode)return;if(st.mode==="disc"||st.split)xfSnap();CV.mode=m;cvSave();cvRender();mTogSync();if(m==="globe"){SV.anim=null;SV.yaw=null;SV.lg=Math.log(SV.real?2.6:5.4);SV.pitch=38*D}else if(st.mode==="disc"){dv.tiltT=0.5}}
+function mTogSync(){document.querySelectorAll("#mTog [data-mm]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.mm===CV.mode));$("mini").setAttribute("aria-label",st.mode==="sky"?(CV.mode==="globe"?"Ir para o Globo":"Ir para o Disco"):"Ir para o céu")}
+$("mTog").addEventListener("click",e=>{const b=e.target.closest("[data-mm]");if(!b||b.dataset.mm===CV.mode)return;cvSetMode(b.dataset.mm);toast(CV.mode==="globe"?(st.mode==="sky"?"Modelo Globo. Toque no ícone acima para subir até o sistema solar.":"Modelo Globo: Terra esférica girando e orbitando o Sol."):(st.mode==="sky"?"Modelo Disco. Toque no ícone acima para ir ao disco.":"Modelo Disco: Sol e Lua circulando sobre o disco."))});
+setTimeout(mTogSync,0);
 function cvSlide(v){if(CV.mode!=="lens")return;CV.hc=+v;cvSave();cvRender()}
 function cvBarOpen(){panel(null);if(st.split){st.split=false;$("sSplit").setAttribute("aria-pressed",false);applyLayout()}if(st.mode!=="disc")setMode("disc");CVD.test=true;$("mpHint").hidden=true;$("cvBar").hidden=false;requestAnimationFrame(CVDRAG.place);$("info").hidden=true;st.sel=null;if(dv.tilt>0.6)dv.tiltT=0.38;cvRender()}
 function cvBarClose(){CVD.test=false;$("cvBar").hidden=true}
@@ -1571,7 +1581,7 @@ app.addEventListener("pointermove",e=>{if(!gest||!pts.has(e.pointerId))return;pt
 const end=e=>{clearTimeout(holdT);if(gest&&st.split)st.hits=gest.rect==="D"?(st.hitsD||[]):(st.hitsS||[]);if(gest&&gest.held){}else if(gest&&!gest.moved&&pts.size===1&&gest.area==="disc"){discTap(e.clientX-gest.ox,e.clientY-gest.oy)}else if(gest&&!gest.moved&&pts.size===1){const best=pickHit(e.clientX-gest.ox,e.clientY-gest.oy);st.sel=best?{kind:best.kind,i:best.i,id:best.id}:null}
  pts.delete(e.pointerId);if(!pts.size)gest=null;else gest={...gest,d0:0,fov:st.fov}};
 app.addEventListener("pointerup",end);app.addEventListener("pointercancel",end);
-app.addEventListener("wheel",e=>{e.preventDefault();if(st.mode==="fly"){FL.anim=null;FL.pAuto=true;FL.h=FL.h*Math.exp(e.deltaY*0.004);if(FL.h>FLTOP*1.05){FL.h=FLTOP;flyToDisc();return}FL.h=clamp(FL.h,0.0017,FLTOP);return}const ar=regionAt(e.clientX,e.clientY).area;if(ar==="globe"){SV.anim=null;SV.lg=clamp(SV.lg+e.deltaY*0.0016,...svLims());return}if(ar==="disc")dv.zoom=clamp(dv.zoom*(1-e.deltaY*0.0012),0.6,5);else st.fov=clamp(st.fov*(1+e.deltaY*0.001),2,130)},{passive:false});
+app.addEventListener("wheel",e=>{if(e.target.closest&&e.target.closest(".sheet,.card,#sim,.mp,.mtog,#mpHint"))return;e.preventDefault();if(st.mode==="fly"){FL.anim=null;FL.pAuto=true;FL.h=FL.h*Math.exp(e.deltaY*0.004);if(FL.h>FLTOP*1.05){FL.h=FLTOP;flyToDisc();return}FL.h=clamp(FL.h,0.0017,FLTOP);return}const ar=regionAt(e.clientX,e.clientY).area;if(ar==="globe"){SV.anim=null;SV.lg=clamp(SV.lg+e.deltaY*0.0016,...svLims());return}if(ar==="disc")dv.zoom=clamp(dv.zoom*(1-e.deltaY*0.0012),0.6,5);else st.fov=clamp(st.fov*(1+e.deltaY*0.001),2,130)},{passive:false});
 app.addEventListener("contextmenu",e=>{if(regionAt(e.clientX,e.clientY).area==="disc")e.preventDefault()});
 addEventListener("keydown",e=>{const k=3*D;if(e.key==="ArrowLeft")st.yaw-=k;if(e.key==="ArrowRight")st.yaw+=k;if(e.key==="ArrowUp")st.pitch=Math.min(st.pitch+k,89*D);if(e.key==="ArrowDown")st.pitch=Math.max(st.pitch-k,0)});
 // ---------- Laço ----------
