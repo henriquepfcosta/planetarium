@@ -542,20 +542,21 @@ async function loadTLE(g){if(SAT.loaded[g])return;SAT.loaded[g]="loading";let tx
  SAT.loaded[g]=true;SAT.ts=0;if(g!=="starlink")toast(`${SAT.list.filter(s=>s.g!=="starlink").length} satélites carregados.`)}
 function satAt(s,t){const pv=satellite.propagate(s.rec,new Date(t));if(!pv||!pv.position||typeof pv.position!=="object")return null;const gm=satellite.gstime(new Date(t)),geo=satellite.eciToGeodetic(pv.position,gm);
  return{p:pv.position,v:pv.velocity?Math.hypot(pv.velocity.x,pv.velocity.y,pv.velocity.z):0,la:geo.latitude*R2D,lo:norm(geo.longitude*R2D),h:geo.height}}
-function satUpdate(o){if(!SAT.list.length||typeof satellite==="undefined"||!(st.L.sat||st.L.starlink))return;const now=performance.now();if(now-SAT.ts<350&&Math.abs(st.t-SAT.tt)<2e4)return;SAT.ts=now;SAT.tt=st.t;
+function satUpdate(o){if(!(st.L.sat||st.L.starlink)){SAT.cache=[];SAT.path=null;return}if(!SAT.list.length||typeof satellite==="undefined")return;const now=performance.now();if(now-SAT.ts<350&&Math.abs(st.t-SAT.tt)<2e4)return;SAT.ts=now;SAT.tt=st.t;
  const ra=o.sp.lon+gmst(jdOf(st.t)),sv=eqv(ra,o.sp.lat);SAT.cache=[];
  for(const s of SAT.list){if(s.g==="starlink"?!st.L.starlink:!st.L.sat)continue;const a=satAt(s,st.t);if(!a)continue;const pp=a.p.x*sv[0]+a.p.y*sv[1]+a.p.z*sv[2],perp=Math.hypot(a.p.x-pp*sv[0],a.p.y-pp*sv[1],a.p.z-pp*sv[2]);
   SAT.cache.push({s,...a,lit:!(pp<0&&perp<EARTH_R),look:lookFrom(a.la,a.lo,a.h)})}
  const sel=st.sel&&st.sel.kind==="sat"?SAT.list.find(s=>s.id===st.sel.id):null;
  if(sel){SAT.path=[];for(let k=-50;k<=50;k+=1){const a=satAt(sel,st.t+k*6e4);if(a)SAT.path.push({k,la:a.la,lo:a.lo,h:a.h,look:lookFrom(a.la,a.lo,a.h)})}SAT.pathFor=sel.id}else SAT.path=null}
+const satOn=c=>c.s.g==="starlink"?st.L.starlink:st.L.sat;
 function drawSatsSky(o){if(!SAT.cache.length)return;const dark=o.sun.alt<-4;
  if(SAT.path){ctx.strokeStyle="rgba(180,220,255,.55)";ctx.setLineDash([2,4]);ctx.lineWidth=1;ctx.beginPath();let pen=false;for(const q of SAT.path){if(q.k<0||q.k>12||q.look.alt<0){pen=false;continue}const p=proj(q.look.v);if(!p.ok){pen=false;continue}pen?ctx.lineTo(p.sx,p.sy):ctx.moveTo(p.sx,p.sy);pen=true}ctx.stroke();ctx.setLineDash([])}
- for(const c of SAT.cache){if(c.look.alt<0)continue;const p=proj(c.look.v);if(!onScreen(p))continue;const vis=c.lit&&dark,r=c.s.big?2.6:c.s.g==="starlink"?1.1:1.6;
+ for(const c of SAT.cache){if(!satOn(c)||c.look.alt<0)continue;const p=proj(c.look.v);if(!onScreen(p))continue;const vis=c.lit&&dark,r=c.s.big?2.6:c.s.g==="starlink"?1.1:1.6;
   if(vis&&c.s.big)glow(p.sx,p.sy,r*6,"rgba(220,240,255,.3)");if(c.s.g==="starlink"){ctx.fillStyle=vis?"#f4fbff":"rgba(170,190,210,.55)";ctx.beginPath();ctx.arc(p.sx,p.sy,r,0,7);ctx.fill()}else satIcon(p.sx,p.sy,vis?"#f4fbff":"#aab8c6",c.s.big?1:0.7,c.lit);
   if(c.s.big||(st.sel&&st.sel.kind==="sat"&&st.sel.id===c.s.id))text(c.s.id===25544?"ISS":c.s.name.split(" (")[0],p.sx+12,p.sy+4,"#cfe8ff",10.5,500);st.hits.push({x:p.sx,y:p.sy,kind:"sat",id:c.s.id,m:c.s.big?-3:3})}}
 function drawSatsDisc(g){if(!SAT.cache.length)return;
  if(SAT.path){ctx.strokeStyle="rgba(180,220,255,.7)";ctx.lineWidth=1.2;ctx.setLineDash([3,3]);ctx.beginPath();let prev=null;for(const q of SAT.path){const d=toDisc(q.la,q.lo),[x,y1]=DS(g,d[0],d[1]),y=y1-g.R*(st.H/RKM)*1.6*g.lf*(0.35+0.4*Math.min(1,q.h/2000));if(prev&&Math.hypot(x-prev[0],y-prev[1])>g.R*0.6)ctx.moveTo(x,y);else if(!prev)ctx.moveTo(x,y);else ctx.lineTo(x,y);prev=[x,y]}ctx.stroke();ctx.setLineDash([])}
- for(const c of SAT.cache){const d=toDisc(c.la,c.lo),[x,y0]=DS(g,d[0],d[1]),hv=g.R*(st.H/RKM)*1.6*g.lf*(0.35+0.4*Math.min(1,c.h/2000)),y=y0-hv,r=c.s.big?3:c.s.g==="starlink"?1:1.6;
+ for(const c of SAT.cache){if(!satOn(c))continue;const d=toDisc(c.la,c.lo),[x,y0]=DS(g,d[0],d[1]),hv=g.R*(st.H/RKM)*1.6*g.lf*(0.35+0.4*Math.min(1,c.h/2000)),y=y0-hv,r=c.s.big?3:c.s.g==="starlink"?1:1.6;
   if(c.s.big&&g.lf>0.1){ctx.strokeStyle="rgba(200,225,255,.3)";ctx.setLineDash([1,3]);ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,y0);ctx.lineTo(x,y);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle="rgba(200,225,255,.6)";ctx.beginPath();ctx.arc(x,y0,1.5,0,7);ctx.fill()}
   if(c.s.g==="starlink"){ctx.fillStyle=c.lit?"#e9f6ff":"rgba(150,175,200,.7)";ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fill()}else satIcon(x,y,c.lit?"#eef6ff":"#9fb0c2",c.s.big?0.9:0.6,c.lit);
   if(c.s.big)text(c.s.id===25544?"ISS":c.s.name.split(" (")[0],x+11,y+4,"#cfe8ff",10,500);st.hits.push({x,y,kind:"sat",id:c.s.id,m:c.s.big?-3:3})}}
@@ -689,7 +690,7 @@ document.querySelectorAll("[data-sp]").forEach(b=>b.onclick=()=>{st.speed=+b.dat
 $("bBack").onclick=()=>{st.t-=36e5};$("bFwd").onclick=()=>{st.t+=36e5};$("bNow").onclick=()=>{st.t=Date.now();st.speed=1;st.play=true};
 $("bPlay").onclick=()=>{st.play=!st.play};
 const tog=(id,k)=>{$(id).onclick=()=>{st.L[k]=!st.L[k];$(id).setAttribute("aria-pressed",st.L[k])}};tog("lObs","obs");tog("lModel","model");tog("lLines","lines");tog("lGrid","grid");tog("lArt","art");tog("lLand","land");tog("lSat","sat");tog("lStarlink","starlink");tog("lAir","air");
-$("lSat").addEventListener("click",()=>{if(st.L.sat){loadTLE("stations").then(()=>loadTLE("visual"))}});$("lStarlink").addEventListener("click",()=>{if(st.L.starlink){toast("Carregando os satélites Starlink…");loadTLE("starlink")}});
+$("lSat").addEventListener("click",()=>{SAT.ts=0;if(st.L.sat){loadTLE("stations").then(()=>loadTLE("visual"))}else if(st.sel&&st.sel.kind==="sat")st.sel=null});$("lStarlink").addEventListener("click",()=>{SAT.ts=0;if(st.L.starlink){toast("Carregando os satélites Starlink…");loadTLE("starlink")}});
 $("lAir").addEventListener("click",()=>{if(st.L.air){AIR.err=0;AIR.first=false;airFetch(true)}else AIR.list=[]});
 setTimeout(()=>{if(st.L.sat)loadTLE("stations").then(()=>loadTLE("visual"))},1500);
 $("bSens").onclick=()=>{if(st.sensors){st.sensors=false;sens.got=false;const a=Math.atan2(cam.f[0],cam.f[1]);st.yaw=a;st.pitch=Math.asin(clamp(cam.f[2],-1,1));toast("Sensores desligados: arraste para navegar livremente.")}else{sens.off=null;sens.samp=[];enableSensors()}};
