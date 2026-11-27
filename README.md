@@ -86,6 +86,7 @@ Toque no relógio para abrir a barra de simulação: tocar/pausar, régua das 24
 ## Nuvens no disco, tempo no topo e cartão de simulação
 
 - Com **Nuvens do tempo real** ligado, o Disco 3D (plano ou em 3D) mostra as nuvens do mundo inteiro, a partir de uma grade de previsões Open-Meteo (a cada 15° de latitude e 20° de longitude), escurecidas no lado da noite; mudam com a hora simulada. As nuvens flutuam um pouco acima do disco e projetam sombra no chão, do lado oposto ao Sol.
+- Atalho **Nuvens** no canto esquerdo, abaixo do local (no Globo, abaixo de **Centro**): liga e desliga as nuvens com um toque, no Disco e no Globo.
 - Na tela dividida, as chaves **Disco | Globo** e o botão lado a lado sobem para o topo, sem cobrir o mapa.
 - No topo, abaixo da fase da Lua, aparece o tempo do seu local (ícone, temperatura, condição) e se as nuvens estão ligadas (✓) ou desligadas (✕); toque para abrir a previsão.
 - **Mini player** no rodapé: ▶/⏸, relógio, velocidade atual (toque para trocar) e o botão **Simular**, que abre a ficha de simulação (tempo, velocidade, ir para, simular, ver, situação). Escolher uma ação fecha a ficha e a simulação roda à vista. Na primeira vez, um aviso mostra onde simular.
