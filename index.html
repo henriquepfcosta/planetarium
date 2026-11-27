@@ -157,7 +157,7 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
       <p class="small" id="airMsg"></p>
     </details>
     <button class="btn" id="sheetClose">Fechar</button>
-    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-2</p>
+    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-3</p>
   </div>
   <div class="welcome" id="welcome">
     <div>
@@ -326,10 +326,11 @@ function drawSun(x,y,r,alt){const low=clamp(1-alt/8,0,1),core=`rgb(255,${Math.ro
  ctx.save();ctx.translate(x,y);ctx.globalCompositeOperation="lighter";for(let k=0;k<12;k++){ctx.rotate(Math.PI/6);const L=r*(k%2?4.5:7.5),g=ctx.createLinearGradient(0,0,L,0);g.addColorStop(0,"rgba(255,240,205,.30)");g.addColorStop(1,"rgba(255,240,205,0)");ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(0,-r*0.16);ctx.lineTo(L,0);ctx.lineTo(0,r*0.16);ctx.fill()}ctx.restore();
  ctx.fillStyle=core;ctx.beginPath();ctx.ellipse(x,y,r,r*(1-0.14*low),0,0,7);ctx.fill()}
 const MARIA=[[-.32,-.32,.27],[.12,-.38,.16],[.3,-.08,.18],[.6,-.22,.1],[-.55,.05,.3],[-.12,.33,.16],[.48,.2,.11],[.02,.08,.1]];
+const MOON_IMG=new Image();MOON_IMG.decoding="async";MOON_IMG.src="terra/lua.webp";
 function drawMoon(x,y,r,ph,sunP,south){glow(x,y,r*6,`rgba(215,228,240,${0.06+0.22*ph.k})`);ctx.save();ctx.translate(x,y);
- const g=ctx.createRadialGradient(-r*.3,-r*.3,r*.1,0,0,r);g.addColorStop(0,"#f6f4ec");g.addColorStop(1,"#cdc8be");ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,0,r,0,7);ctx.fill();
- ctx.save();ctx.beginPath();ctx.arc(0,0,r,0,7);ctx.clip();if(south)ctx.rotate(Math.PI);ctx.fillStyle="rgba(118,116,110,.42)";for(const[mx,my,mr]of MARIA){ctx.beginPath();ctx.ellipse(mx*r,my*r,mr*r,mr*r*0.85,mx,0,7);ctx.fill()}
- ctx.fillStyle="rgba(255,255,255,.55)";ctx.beginPath();ctx.arc(-0.08*r,0.72*r,0.05*r,0,7);ctx.fill();ctx.restore();
+ if(MOON_IMG.complete&&MOON_IMG.naturalWidth){ctx.save();if(south)ctx.rotate(Math.PI);ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality="high";ctx.drawImage(MOON_IMG,-r,-r,2*r,2*r);ctx.restore()}
+ else{const g=ctx.createRadialGradient(-r*.3,-r*.3,r*.1,0,0,r);g.addColorStop(0,"#f6f4ec");g.addColorStop(1,"#cdc8be");ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,0,r,0,7);ctx.fill();
+ ctx.save();ctx.beginPath();ctx.arc(0,0,r,0,7);ctx.clip();if(south)ctx.rotate(Math.PI);ctx.fillStyle="rgba(118,116,110,.42)";for(const[mx,my,mr]of MARIA){ctx.beginPath();ctx.ellipse(mx*r,my*r,mr*r,mr*r*0.85,mx,0,7);ctx.fill()}ctx.restore()}
  let ang=0;if(sunP)ang=sunP.ok?Math.atan2(-(sunP.sy-y),sunP.sx-x):Math.atan2(sunP.y,sunP.x);ctx.rotate(-ang+Math.PI);
  const k=1-ph.k,R1=r*1.02,ex=R1*Math.abs(1-2*k);ctx.fillStyle="rgba(12,16,22,.9)";ctx.beginPath();ctx.arc(0,0,R1,-Math.PI/2,Math.PI/2);ctx.ellipse(0,0,ex,R1,0,Math.PI/2,-Math.PI/2,k<0.5);ctx.fill();ctx.restore()}
 function draw(o){
@@ -514,7 +515,7 @@ function drawDisc(o){discInit();domeInit();if(dv.tiltT!=null){dv.tilt+=(dv.tiltT
  // Sol, Lua e planetas sob o domo
  const hpx=g.R*(st.H/RKM)*lift*1.6;
  const put=(b,col,gl,rad,h)=>{const q=toDisc(b.lat,b.lon),[x,y]=DS(g,q[0],q[1]);if(lift>0.05){ctx.strokeStyle="rgba(255,220,150,.35)";ctx.setLineDash([2,3]);ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y-h);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=col;ctx.beginPath();ctx.ellipse(x,y,3,3*dv.tilt,0,0,7);ctx.fill()}glow(x,y-h,rad*4,gl);ctx.fillStyle=col;ctx.beginPath();ctx.arc(x,y-h,rad,0,7);ctx.fill();return[x,y-h]};
- st.hits.push({x:ox,y:oy,kind:"obs",m:-9});const[mx,my]=put(mo,"#e2e8ea","rgba(200,215,225,.35)",5,hpx*0.96);text("Lua",mx+9,my+4,"#e2e8ea",11,500);st.hits.push({x:mx,y:my,kind:"moon",m:-12});
+ st.hits.push({x:ox,y:oy,kind:"obs",m:-9});const[mx,my]=put(mo,"rgba(0,0,0,0)","rgba(200,215,225,.25)",6,hpx*0.96);{const sq=toDisc(sp.lat,sp.lon),[ssx,ssy]=DS(g,sq[0],sq[1]);drawMoon(mx,my,Math.max(6,7*Math.sqrt(dv.zoom)),o.ph,{ok:true,sx:ssx,sy:ssy-hpx},st.obs.lat<0)}text("Lua",mx+9,my+4,"#e2e8ea",11,500);st.hits.push({x:mx,y:my,kind:"moon",m:-12});
  for(const P of o.pl){if(P.id==="ura"||P.id==="nep")continue;const q=toDisc(P.sub.lat,P.sub.lon),[x,y]=DS(g,q[0],q[1]),h=hpx*1.05;ctx.fillStyle=P.col;ctx.beginPath();ctx.arc(x,y-h,2.6,0,7);ctx.fill();text(P.name,x+5,y-h+4,P.col,10,500);st.hits.push({x,y:y-h,kind:"planet",id:P.id,m:P.mag})}
  const[sx,sy]=put(sp,"#ffe2a0","rgba(255,200,100,.55)",8,hpx);text("Sol",sx+11,sy+4,"#ffcf73",11,600);st.hits.push({x:sx,y:sy,kind:"sun",m:-27});
  if(st.sel){const h=st.sel.kind==="loc"?null:st.hits.find(h=>h.kind===st.sel.kind&&h.i===st.sel.i&&h.id===st.sel.id);if(h){ctx.strokeStyle="rgba(255,255,255,.85)";ctx.lineWidth=1.3;ctx.beginPath();ctx.arc(h.x,h.y,14,0,7);ctx.stroke()}}
@@ -720,7 +721,7 @@ const dist2=()=>{const[a,b]=[...pts.values()];return Math.hypot(a.x-b.x,a.y-b.y)
 app.addEventListener("pointermove",e=>{if(!gest||!pts.has(e.pointerId))return;pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
  const mid2=()=>{const[a,b]=[...pts.values()];return[(a.x+b.x)/2,(a.y+b.y)/2]};
  if(pts.size===2&&st.mode==="disc"){if(!gest.d0){gest.d0=dist2();gest.mid=mid2();gest.zoom=dv.zoom;gest.px=dv.px;gest.py=dv.py}const m=mid2();dv.zoom=clamp(gest.zoom*dist2()/gest.d0,0.6,5);dv.px=gest.px+m[0]-gest.mid[0];dv.py=gest.py+m[1]-gest.mid[1];gest.moved=true;return}
- if(pts.size===2&&st.mode==="sky"){if(!gest.d0)gest.d0=dist2();st.fov=clamp(gest.fov*gest.d0/dist2(),15,130);gest.moved=true;return}
+ if(pts.size===2&&st.mode==="sky"){if(!gest.d0)gest.d0=dist2();st.fov=clamp(gest.fov*gest.d0/dist2(),2,130);gest.moved=true;return}
  const dx=e.clientX-gest.x,dy=e.clientY-gest.y;if(Math.hypot(dx,dy)>6)gest.moved=true;if(!gest.moved)return;const k=1/F;
  if(st.mode==="disc"){dv.tiltT=null;if(gest.btn===2||gest.shift){dv.px=gest.px+dx;dv.py=gest.py+dy}else{dv.rot=gest.rot+dx*0.008;dv.tilt=clamp(gest.tilt+dy*0.004,0.12,1)}return}
  if(st.sensors&&sens.got){if(Math.abs(dx)>40&&!gest.warned){gest.warned=true;toast("Sensores ligados: a tela segue o celular. Toque na bússola para desligar e navegar com o dedo.")}return}
@@ -728,7 +729,7 @@ app.addEventListener("pointermove",e=>{if(!gest||!pts.has(e.pointerId))return;pt
 const end=e=>{clearTimeout(holdT);if(gest&&gest.held){}else if(gest&&!gest.moved&&pts.size===1&&st.mode==="disc"){discTap(e.clientX,e.clientY)}else if(gest&&!gest.moved&&pts.size===1){const best=pickHit(e.clientX,e.clientY);st.sel=best?{kind:best.kind,i:best.i,id:best.id}:null}
  pts.delete(e.pointerId);if(!pts.size)gest=null;else gest={...gest,d0:0,fov:st.fov}};
 app.addEventListener("pointerup",end);app.addEventListener("pointercancel",end);
-app.addEventListener("wheel",e=>{e.preventDefault();if(st.mode==="disc")dv.zoom=clamp(dv.zoom*(1-e.deltaY*0.0012),0.6,5);else st.fov=clamp(st.fov*(1+e.deltaY*0.001),15,130)},{passive:false});
+app.addEventListener("wheel",e=>{e.preventDefault();if(st.mode==="disc")dv.zoom=clamp(dv.zoom*(1-e.deltaY*0.0012),0.6,5);else st.fov=clamp(st.fov*(1+e.deltaY*0.001),2,130)},{passive:false});
 app.addEventListener("contextmenu",e=>{if(st.mode==="disc")e.preventDefault()});
 addEventListener("keydown",e=>{const k=3*D;if(e.key==="ArrowLeft")st.yaw-=k;if(e.key==="ArrowRight")st.yaw+=k;if(e.key==="ArrowUp")st.pitch=Math.min(st.pitch+k,89*D);if(e.key==="ArrowDown")st.pitch=Math.max(st.pitch-k,0)});
 // ---------- Laço ----------
