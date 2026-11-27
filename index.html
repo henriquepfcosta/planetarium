@@ -50,6 +50,7 @@ html,body{margin:0;height:100%;background:#03070f;color:var(--ink);font:15px/1.4
 dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 14px;margin:0;font-size:14px}
 dt{color:var(--mute)}dd{margin:0;text-align:right;font-variant-numeric:tabular-nums}
 .note{font-size:13px;color:#ffd9c9;margin:8px 0 0}
+.acts{display:grid;gap:8px;margin-top:10px}.card{max-height:58vh;overflow-y:auto}
 .sheet{position:absolute;inset:auto 0 0 0;padding:16px 16px calc(env(safe-area-inset-bottom) + 16px);background:#08121a;border-top:1px solid var(--line);border-radius:18px 18px 0 0;display:grid;gap:12px;max-height:80vh;overflow-y:auto;transform:translateY(105%);transition:transform .25s ease}
 .sheet.open{transform:none}
 .sheet h2{margin:0;font:600 19px "Chakra Petch",sans-serif;display:flex;gap:8px;align-items:center}
@@ -119,6 +120,7 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
       <button class="tile d" id="dIncl" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="15" rx="9" ry="3.5"/><path d="M4 13a8 6 0 0 1 16 0"/></svg><span>Vista inclinada</span></button>
       <button class="tile d" id="dReset" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4h4"/></svg><span>Centralizar</span></button>
     </div>
+    <button class="btn" id="bHome" hidden>Voltar para minha localização</button>
     <button class="btn" id="bRecal" hidden>Recalibrar o norte</button>
     <div class="two">
       <button class="btn ic" id="bSens" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2.5" width="10" height="19" rx="2.2"/><path d="M11 18.5h2"/><path d="M2.5 9a7 7 0 0 1 2-4M21.5 9a7 7 0 0 0-2-4"/></svg>Sensores</button>
@@ -200,8 +202,8 @@ const CITIES=[["São Paulo",-23.55,-46.63],["Rio de Janeiro",-22.91,-43.17],["Br
 const CAT={ready:false,n:0,v:null,mag:null,col:[],names:{},cons:[],mw:[]};
 const eqv=(ra,dec)=>[Math.cos(dec*D)*Math.cos(ra*D),Math.cos(dec*D)*Math.sin(ra*D),Math.sin(dec*D)];
 function bvCol(bv){const S=[[155,176,255],[202,215,255],[255,244,234],[255,214,170],[255,184,128]],t=clamp((bv+0.3)/2,0,1)*(S.length-1),i=Math.min(S.length-2,Math.floor(t)),f=t-i;return`rgb(${S[i].map((v,j)=>Math.round(v+(S[i+1][j]-v)*f)).join(",")})`}
-fetch("sky.json").then(r=>r.json()).then(d=>{const n=d.s.length/4;CAT.v=new Float32Array(n*3);CAT.mag=new Float32Array(n);
- for(let i=0;i<n;i++){CAT.v.set(eqv(d.s[i*4],d.s[i*4+1]),i*3);CAT.mag[i]=d.s[i*4+2];CAT.col.push(bvCol(d.s[i*4+3]))}CAT.n=n;CAT.names=d.n;
+fetch("sky.json").then(r=>r.json()).then(d=>{const n=d.s.length/4;CAT.v=new Float32Array(n*3);CAT.mag=new Float32Array(n);CAT.bv=new Float32Array(n);
+ for(let i=0;i<n;i++){CAT.v.set(eqv(d.s[i*4],d.s[i*4+1]),i*3);CAT.mag[i]=d.s[i*4+2];CAT.bv[i]=d.s[i*4+3];CAT.col.push(bvCol(d.s[i*4+3]))}CAT.n=n;CAT.names=d.n;CAT.hip=d.h||[];CAT.des=d.d||{};CAT.conName=Object.fromEntries(d.c.map(c=>[c[0],c[1]]));
  CAT.cons=d.c.map(([id,name,lr,ld,segs])=>({id,name,lab:eqv(lr,ld),segs:segs.map(s=>{const a=[];for(let k=0;k<s.length;k+=2)a.push(eqv(s[k],s[k+1]));return a})}));
  CAT.mw=d.mw.map(([lvl,r])=>{const a=[];for(let k=0;k<r.length;k+=2)a.push(eqv(r[k],r[k+1]));return{lvl,a}});CAT.ready=true})
  .catch(()=>toast("Não foi possível carregar o catálogo de estrelas."));
@@ -226,8 +228,12 @@ const st={t:Date.now(),play:true,speed:1,obs:{name:"São Paulo",lat:-23.55,lon:-
  L:{obs:true,model:true,lines:true,grid:false,art:true,land:true},sensors:false,mode:"sky",dg:null,sel:null,hits:[]};
 const sens={alpha:0,beta:90,gamma:0,cal:0,off:null,samp:[],got:false,rel:false,raw:null};
 let cam={f:[0,1,0],r:[1,0,0],u:[0,0,1]};
-try{const s=JSON.parse(localStorage.getItem("planetarium")||"null");if(s&&s.obs)st.obs=s.obs;if(s&&s.H)st.H=s.H}catch(e){}
-const save=()=>{try{localStorage.setItem("planetarium",JSON.stringify({obs:st.obs,H:st.H}))}catch(e){}};
+st.home={...st.obs};st.pend=null;
+try{const s=JSON.parse(localStorage.getItem("planetarium")||"null");if(s&&s.obs)st.obs=s.obs;if(s&&s.home)st.home=s.home;else if(s&&s.obs)st.home={...s.obs};if(s&&s.H)st.H=s.H}catch(e){}
+const save=()=>{try{localStorage.setItem("planetarium",JSON.stringify({obs:st.obs,home:st.home,H:st.H}))}catch(e){}};
+const setHome=()=>{st.home={name:st.obs.name,lat:st.obs.lat,lon:st.obs.lon};save()};
+const away=()=>Math.abs(st.obs.lat-st.home.lat)>0.01||Math.abs(st.obs.lon-st.home.lon)>0.01;
+function goHome(){st.obs={...st.home};st.pend=null;save();syncLoc();toast(`De volta a ${st.home.name}`);st.sel=null}
 // ---------- Canvas ----------
 const cv=$("sky"),ctx=cv.getContext("2d"),mini=$("mini"),mctx=mini.getContext("2d");let W=0,Hh=0,dpr=1,F=1,PY=0;
 function resize(){dpr=Math.min(devicePixelRatio||1,2);W=innerWidth;Hh=innerHeight;cv.width=W*dpr;cv.height=Hh*dpr}
@@ -335,10 +341,10 @@ function draw(o){
   const zs=Math.pow(90/st.fov,0.35),lab=0.9+(90-st.fov)/25;
   for(let i=0;i<CAT.n;i++){const m=CAT.mag[i];if(m>lim)continue;const q=[CAT.v[i*3],CAT.v[i*3+1],CAT.v[i*3+2]],al=dot(q,upE);if(al<0)continue;const p=pq(q);if(!p)continue;
    let a=clamp((lim-m)/1.6,0.3,1);if(m<3.8){const k=0.08+0.32*clamp(1-al/0.5,0,1);a*=1-k*(0.5+0.5*Math.sin(tnow*0.006*(1+(i%5)*0.37)+i*1.7))}
-   const r=Math.max(0.65,(2.2-0.4*m)*zs);ctx.fillStyle=CAT.col[i];
-   if(m<1.2){glow(p[0],p[1],r*4,`rgba(220,230,255,${0.16*a})`);if(m<0.3){ctx.strokeStyle=CAT.col[i];ctx.globalAlpha=a*0.25;ctx.lineWidth=0.6;const L=r*5;ctx.beginPath();ctx.moveTo(p[0]-L,p[1]);ctx.lineTo(p[0]+L,p[1]);ctx.moveTo(p[0],p[1]-L);ctx.lineTo(p[0],p[1]+L);ctx.stroke()}}
+   const r=Math.max(0.65,(2.5-0.45*m)*zs);ctx.fillStyle=CAT.col[i];
+   if(m<1.6){glow(p[0],p[1],r*4.5,`rgba(220,230,255,${0.24*a})`);if(m<0.3){ctx.strokeStyle=CAT.col[i];ctx.globalAlpha=a*0.25;ctx.lineWidth=0.6;const L=r*5;ctx.beginPath();ctx.moveTo(p[0]-L,p[1]);ctx.lineTo(p[0]+L,p[1]);ctx.moveTo(p[0],p[1]-L);ctx.lineTo(p[0],p[1]+L);ctx.stroke()}}
    ctx.globalAlpha=a;if(r<1.2)ctx.fillRect(p[0]-r,p[1]-r,r*2,r*2);else{ctx.beginPath();ctx.arc(p[0],p[1],r,0,7);ctx.fill()}
-   ctx.globalAlpha=1;const nm=CAT.names[i];if(nm&&m<lab)LB.push({t:nm,x:p[0]+r+4,y:p[1]+4,c:`rgba(215,222,235,${0.8*a})`,s:10.5,w:400,pr:1+m/10});if(m<4.5)st.hits.push({x:p[0],y:p[1],kind:"star",i})}
+   ctx.globalAlpha=1;const nm=CAT.names[i];if(nm&&m<lab)LB.push({t:nm,x:p[0]+r+4,y:p[1]+4,c:`rgba(215,222,235,${0.8*a})`,s:10.5,w:400,pr:1+m/10});st.hits.push({x:p[0],y:p[1],kind:"star",i,m})}
   for(const P of o.pl){if(P.alt<0)continue;const vis=P.mag<lim+0.6||(o.sun.alt<-8&&P.mag<8.5);if(!vis)continue;const p=proj(P.v);if(!onScreen(p))continue;const r=Math.max(1.6,(2.8-0.35*P.mag)*zs);
    glow(p.sx,p.sy,r*3,"rgba(255,240,210,.14)");ctx.fillStyle=P.col;ctx.beginPath();ctx.arc(p.sx,p.sy,r,0,7);ctx.fill();LB.push({t:P.name,x:p.sx+r+5,y:p.sy+4,c:P.col,s:11,w:500,pr:0});st.hits.push({x:p.sx,y:p.sy,kind:"planet",id:P.id})}
   LB.sort((a,b)=>a.pr-b.pr);const used=[];for(const L of LB){ctx.font=`${L.w} ${L.s}px Inter,sans-serif`;const w=ctx.measureText(L.t).width,x=L.ctr?L.x-w/2:L.x,y=L.y-L.s;
@@ -431,8 +437,10 @@ function discInit(){if(dv.dots)return;const N=dv.N,dots=[];for(let j=0;j<=N;j++)
  for(let y=0;y<dv.OS;y++)for(let x=0;x<dv.OS;x++){const u=(x+.5)/dv.OS*2-1,v=(y+.5)/dv.OS*2-1;dv.OP.push(u*u+v*v<=1?fromDisc(u,v):null)}}
 // Estrelas e constelações projetadas no domo: cada uma fica sobre o ponto do disco abaixo dela
 const toDome=q=>({r:(90-Math.asin(clamp(q[2],-1,1))*R2D)/180,ra:Math.atan2(q[1],q[0])*R2D});
-function domeInit(){if(dv.dome||!CAT.ready)return;const S=[];for(let i=0;i<CAT.n;i++){if(CAT.mag[i]>4.6)continue;const d=toDome([CAT.v[i*3],CAT.v[i*3+1],CAT.v[i*3+2]]);d.m=CAT.mag[i];d.c=CAT.col[i];S.push(d)}
- dv.dome={S,L:CAT.cons.map(c=>({name:c.name,lab:toDome(c.lab),segs:c.segs.map(sg=>sg.map(toDome))}))}}
+function domeInit(){if(dv.dome||!CAT.ready)return;const S=[];for(let i=0;i<CAT.n;i++){if(CAT.mag[i]>4.6)continue;const d=toDome([CAT.v[i*3],CAT.v[i*3+1],CAT.v[i*3+2]]);d.m=CAT.mag[i];d.c=CAT.col[i];d.i=i;S.push(d)}
+ const uv=d=>[d.r*Math.sin(d.ra*D),d.r*Math.cos(d.ra*D)],slerp=(a,b,t)=>nrm([a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t]);
+ const sub=(a,b,out,dep)=>{const A=toDome(a),B=toDome(b),pa=uv(A),pb=uv(B);if(dep<10&&Math.hypot(pa[0]-pb[0],pa[1]-pb[1])>0.02){const m=slerp(a,b,0.5);sub(a,m,out,dep+1);sub(m,b,out,dep+1)}else out.push(B)};
+ dv.dome={S,L:CAT.cons.map(c=>({name:c.name,lab:toDome(c.lab),segs:c.segs.map(sg=>{const out=[toDome(sg[0])];for(let k=1;k<sg.length;k++)sub(sg[k-1],sg[k],out,0);return out})}))}}
 function dgeom(){const top=100,bot=110,avail=Math.max(200,Hh-top-bot),lf=Math.sqrt(Math.max(0,1-dv.tilt*dv.tilt)),R0=Math.min(W*0.46,avail/(2*dv.tilt+dv.HD*lf)),R=R0*dv.zoom,
  cx=W/2+dv.px,cy=top+avail/2+R0*dv.HD*lf*0.5+dv.py,c=Math.cos(dv.rot),s=Math.sin(dv.rot);return{R,cx,cy,c,s,lf,a:R*c,b:R*dv.tilt*s,cc:-R*s,d:R*dv.tilt*c}}
 const DS=(g,u,v)=>[g.cx+g.a*u+g.cc*v,g.cy+g.b*u+g.d*v];
@@ -469,16 +477,20 @@ function drawDisc(o){discInit();domeInit();if(dv.tiltT!=null){dv.tilt+=(dv.tiltT
  if(dv.dome&&(dv.stars||dv.cons)&&lift>0.12){const al=clamp((lift-0.12)*1.8,0,1);
   if(dv.cons){ctx.strokeStyle=`rgba(120,210,200,${0.4*al})`;ctx.lineWidth=0.8;ctx.beginPath();for(const c of dv.dome.L)for(const sg of c.segs){sg.forEach((d,k)=>{const[x,y]=domePt(g,d,g0);k?ctx.lineTo(x,y):ctx.moveTo(x,y)})}ctx.stroke();
    if(dv.zoom>=1.6){const used=[];ctx.font="400 9px Inter,sans-serif";for(const c of dv.dome.L){const[x,y]=domePt(g,c.lab,g0);if(x<0||x>W||y<0||y>Hh)continue;const w=ctx.measureText(c.name).width,bx=x-w/2;if(used.some(b=>bx<b[2]+4&&bx+w+4>b[0]&&y-9<b[3]&&y+4>b[1]))continue;used.push([bx,y-9,bx+w,y+2]);text(c.name,bx,y,`rgba(160,230,220,${0.55*al})`,9,400)}}}
-  if(dv.stars){const zs=Math.min(1.8,Math.sqrt(dv.zoom));for(const d of dv.dome.S){const[x,y]=domePt(g,d,g0);if(x<-5||x>W+5||y<-5||y>Hh+5)continue;const r=Math.max(0.6,(2-0.35*d.m)*zs);ctx.globalAlpha=al*clamp((5-d.m)/2.5,0.35,1);ctx.fillStyle=d.c;ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fill()}ctx.globalAlpha=1}}
+  if(dv.stars){const zs=Math.min(1.8,Math.sqrt(dv.zoom));for(const d of dv.dome.S){const[x,y]=domePt(g,d,g0);if(x<-5||x>W+5||y<-5||y>Hh+5)continue;const r=Math.max(0.6,(2-0.35*d.m)*zs);ctx.globalAlpha=al*clamp((5-d.m)/2.5,0.35,1);ctx.fillStyle=d.c;ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fill();st.hits.push({x,y,kind:"star",i:d.i,m:d.m})}ctx.globalAlpha=1}}
  // Sol, Lua e planetas sob o domo
  const hpx=g.R*(st.H/RKM)*lift*1.6;
  const put=(b,col,gl,rad,h)=>{const q=toDisc(b.lat,b.lon),[x,y]=DS(g,q[0],q[1]);if(lift>0.05){ctx.strokeStyle="rgba(255,220,150,.35)";ctx.setLineDash([2,3]);ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y-h);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=col;ctx.beginPath();ctx.ellipse(x,y,3,3*dv.tilt,0,0,7);ctx.fill()}glow(x,y-h,rad*4,gl);ctx.fillStyle=col;ctx.beginPath();ctx.arc(x,y-h,rad,0,7);ctx.fill();return[x,y-h]};
- const[mx,my]=put(mo,"#e2e8ea","rgba(200,215,225,.35)",5,hpx*0.96);text("Lua",mx+9,my+4,"#e2e8ea",11,500);
- for(const P of o.pl){if(P.id==="ura"||P.id==="nep")continue;const q=toDisc(P.sub.lat,P.sub.lon),[x,y]=DS(g,q[0],q[1]),h=hpx*1.05;ctx.fillStyle=P.col;ctx.beginPath();ctx.arc(x,y-h,2.6,0,7);ctx.fill();text(P.name,x+5,y-h+4,P.col,10,500)}
- const[sx,sy]=put(sp,"#ffe2a0","rgba(255,200,100,.55)",8,hpx);text("Sol",sx+11,sy+4,"#ffcf73",11,600);
+ st.hits.push({x:ox,y:oy,kind:"obs",m:-9});const[mx,my]=put(mo,"#e2e8ea","rgba(200,215,225,.35)",5,hpx*0.96);text("Lua",mx+9,my+4,"#e2e8ea",11,500);st.hits.push({x:mx,y:my,kind:"moon",m:-12});
+ for(const P of o.pl){if(P.id==="ura"||P.id==="nep")continue;const q=toDisc(P.sub.lat,P.sub.lon),[x,y]=DS(g,q[0],q[1]),h=hpx*1.05;ctx.fillStyle=P.col;ctx.beginPath();ctx.arc(x,y-h,2.6,0,7);ctx.fill();text(P.name,x+5,y-h+4,P.col,10,500);st.hits.push({x,y:y-h,kind:"planet",id:P.id,m:P.mag})}
+ const[sx,sy]=put(sp,"#ffe2a0","rgba(255,200,100,.55)",8,hpx);text("Sol",sx+11,sy+4,"#ffcf73",11,600);st.hits.push({x:sx,y:sy,kind:"sun",m:-27});
+ if(st.sel){const h=st.sel.kind==="loc"?null:st.hits.find(h=>h.kind===st.sel.kind&&(h.kind!=="star"||h.i===st.sel.i)&&(h.kind!=="planet"||h.id===st.sel.id));if(h){ctx.strokeStyle="rgba(255,255,255,.85)";ctx.lineWidth=1.3;ctx.beginPath();ctx.arc(h.x,h.y,14,0,7);ctx.stroke()}}
+ if(st.pend){const q=toDisc(st.pend.lat,st.pend.lon),[x,y]=DS(g,q[0],q[1]);ctx.strokeStyle="#bff0e8";ctx.lineWidth=1.6;ctx.setLineDash([3,3]);ctx.beginPath();ctx.arc(x,y,9,0,7);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle="#bff0e8";ctx.beginPath();ctx.arc(x,y,2.5,0,7);ctx.fill()}
  st.dg=g}
-function discTap(x,y){const g=st.dg;if(!g)return;const p=(x-g.cx)/g.R,q=(y-g.cy)/(g.R*dv.tilt),u=g.c*p+g.s*q,v=-g.s*p+g.c*q;if(u*u+v*v>1)return;const[la,lo]=fromDisc(u,v);
- st.obs={name:"Ponto no disco",lat:la,lon:lo};save();st.sel={kind:"sun"};toast("Observador movido. Abra o modo Imersivo para ver o céu deste ponto.")}
+function pickHit(x,y){let best=null,bs=1e9;for(const h of st.hits){const d=Math.hypot(h.x-x,h.y-y);if(d>30)continue;const sc=d+(h.m??5)*3;if(sc<bs){bs=sc;best=h}}return best}
+function discPoint(x,y){const g=st.dg;if(!g)return null;const p=(x-g.cx)/g.R,q=(y-g.cy)/(g.R*dv.tilt),u=g.c*p+g.s*q,v=-g.s*p+g.c*q;if(u*u+v*v>1)return null;const[la,lo]=fromDisc(u,v);return{lat:la,lon:lo}}
+function discTap(x,y){const b=pickHit(x,y);st.pend=null;st.sel=b?{kind:b.kind,i:b.i,id:b.id}:null}
+function discHold(x,y){const P=discPoint(x,y);if(!P)return;st.pend=P;st.sel={kind:"loc"};try{navigator.vibrate&&navigator.vibrate(15)}catch(e){}}
 
 function nearestCon(q){let best=null,bd=-2;for(const c of CAT.cons)for(const seg of c.segs)for(const v of seg){const d=dot(v,q);if(d>bd){bd=d;best=c.name}}return bd>Math.cos(12*D)?best:null}
 // ---------- Textos ----------
@@ -486,15 +498,25 @@ const fmt=new Intl.DateTimeFormat("pt-BR",{day:"2-digit",month:"short",hour:"2-d
 const nf=(x,d=1)=>x.toLocaleString("pt-BR",{minimumFractionDigits:d,maximumFractionDigits:d});
 const latT=l=>`${nf(Math.abs(l),2)}°${l>=0?"N":"S"}`,lonT=l=>`${nf(Math.abs(l),2)}°${l>=0?"L":"O"}`;
 const CARDN=["N","NNE","NE","LNE","L","LSE","SE","SSE","S","SSO","SO","OSO","O","ONO","NO","NNO"],dirT=a=>CARDN[Math.round(a/22.5)%16];
-function info(o){const s=st.sel;if(!s){$("info").hidden=true;return}$("info").hidden=false;let h="",rows=[],note="";
+function info(o){const s=st.sel;if(!s){$("info").hidden=true;return}$("info").hidden=false;let h="",rows=[],note="",acts=[];
  if(s.kind==="sun"||s.kind==="msun"){const rs=riseSet(st.obs);h="Sol";rows=[["Observado",`${nf(o.sun.alt)}° de altura · ${Math.round(o.sun.az)}° ${dirT(o.sun.az)}`],["Nascer / pôr",`${rs.rise?fmtH.format(rs.rise):"—"} / ${rs.set?fmtH.format(rs.set):"—"}`],["Modelo do disco",`${nf(o.ms.alt)}° · ${Math.round(o.ms.az)}° ${dirT(o.ms.az)}`],["Distância no disco",`${Math.round(o.ms.dist).toLocaleString("pt-BR")} km`]];
   const sep=Math.acos(clamp(dot(o.sun.v,o.ms.v),-1,1))*R2D;note=o.sun.alt<-0.83?`Observado: o Sol está abaixo do horizonte. No modelo, ele estaria a ${nf(o.ms.alt)}° de altura.`:`O marcador do modelo está a ${nf(sep)}° do Sol observado.`}
  else if(s.kind==="moon"||s.kind==="mmoon"){h="Lua";rows=[["Fase",`${o.ph.n} · ${Math.round(o.ph.k*100)}%`],["Observada",`${nf(o.moon.alt)}° · ${Math.round(o.moon.az)}° ${dirT(o.moon.az)}`],["Modelo do disco",`${nf(o.mm.alt)}° · ${Math.round(o.mm.az)}° ${dirT(o.mm.az)}`],["Distância no disco",`${Math.round(o.mm.dist).toLocaleString("pt-BR")} km`]];
   const sep=Math.acos(clamp(dot(o.moon.v,o.mm.v),-1,1))*R2D;note=o.moon.alt<-0.5?`Observado: a Lua está abaixo do horizonte. No modelo, ela estaria a ${nf(o.mm.alt)}° de altura.`:`O marcador do modelo está a ${nf(sep)}° da Lua observada.`}
  else if(s.kind==="planet"){const P=o.pl.find(p=>p.id===s.id);h=P.name;rows=[["Brilho aproximado",`magnitude ${nf(P.mag)}`],["Posição",`${nf(P.alt)}° de altura · ${Math.round(P.az)}° ${dirT(P.az)}`],["Ponto abaixo dele",`${latT(P.sub.lat)} · ${lonT(P.sub.lon)}`]]}
+ else if(s.kind==="loc"){const P=st.pend;if(!P){st.sel=null;return}h="Ponto escolhido no disco";const sd=toDisc(o.sp.lat,o.sp.lon),pd=toDisc(P.lat,P.lon);
+  rows=[["Coordenadas",`${latT(P.lat)} · ${lonT(P.lon)}`],["Distância no disco até o Sol",`${Math.round(Math.hypot(sd[0]-pd[0],sd[1]-pd[1])*RKM).toLocaleString("pt-BR")} km`],["Sol neste ponto",`${nf(altOf(P.lat,P.lon,o.sp))}° de altura`]];
+  acts=[["move","Mover observador para cá",1],["sky","Ver o céu daqui"],["cancel","Cancelar"]]}
+ else if(s.kind==="obs"){h=st.obs.name;rows=[["Coordenadas",`${latT(st.obs.lat)} · ${lonT(st.obs.lon)}`],["Sol aqui",`${nf(o.sun.alt)}° de altura`]];note="Para mudar o observador de lugar, segure o dedo sobre qualquer ponto do disco.";acts=[["sky","Ver o céu daqui",1]];if(away())acts.push(["home",`Voltar para ${st.home.name}`])}
  else if(CAT.ready){const i=s.i,q=[CAT.v[i*3],CAT.v[i*3+1],CAT.v[i*3+2]],E=[dot(o.Mq[0],q),dot(o.Mq[1],q),dot(o.Mq[2],q)],al=Math.asin(clamp(E[2],-1,1))*R2D,az=(Math.atan2(E[0],E[1])*R2D+360)%360;
-  h=CAT.names[i]||"Estrela";const con=nearestCon(q);rows=[["Brilho (magnitude)",nf(CAT.mag[i],2)],["Posição",`${nf(al)}° de altura · ${Math.round(az)}° ${dirT(az)}`]];if(con)rows.push(["Constelação",con])}
- $("infoBody").innerHTML=`<h3>${h}</h3><dl>${rows.map(([a,b])=>`<dt>${a}</dt><dd>${b}</dd>`).join("")}</dl>${note?`<p class="note">${note}</p>`:""}`}
+  const dec=Math.asin(clamp(q[2],-1,1))*R2D,ra=(Math.atan2(q[1],q[0])*R2D+360)%360,g=gmst(jdOf(st.t)),bv=CAT.bv[i],T=Math.round(4600*(1/(0.92*bv+1.7)+1/(0.92*bv+0.62))/100)*100;
+  const cor=bv<0?"azulada":bv<0.3?"branco-azulada":bv<0.6?"branca":bv<0.85?"amarela":bv<1.35?"alaranjada":"avermelhada",ds=CAT.des[i],ab=ds?ds.split(" ").pop():null,con=(ab&&CAT.conName[ab])||nearestCon(q);
+  const fi=st.obs.lat*D,de=dec*D,cH=(Math.sin(-0.57*D)-Math.sin(fi)*Math.sin(de))/(Math.cos(fi)*Math.cos(de));let rs;
+  if(cH<-1)rs="Sempre acima do horizonte aqui";else if(cH>1)rs="Não nasce neste local";else{const H0=Math.acos(cH)*R2D,tr=st.t+norm(ra-(g+st.obs.lon))/15.0411*36e5;rs=`${fmtH.format(tr-H0/15.0411*36e5)} / ${fmtH.format(tr+H0/15.0411*36e5)}`}
+  const rh=ra/15,rm=Math.round((rh%1)*60);h=CAT.names[i]||ds||`HIP ${CAT.hip[i]}`;
+  rows=[["Designação",[ds,CAT.hip[i]?`HIP ${CAT.hip[i]}`:""].filter(Boolean).join(" · ")],["Constelação",con||"—"],["Brilho",`magnitude ${nf(CAT.mag[i],2)}`],["Cor",`${cor} · cerca de ${T.toLocaleString("pt-BR")} K`],
+   ["Posição agora",al>-1?`${nf(al)}° de altura · ${Math.round(az)}° ${dirT(az)}`:"abaixo do horizonte"],["Nasce / se põe",rs],["Coordenadas celestes",`AR ${Math.floor(rh)}h${String(rm%60).padStart(2,"0")}m · Dec ${dec>=0?"+":"−"}${nf(Math.abs(dec))}°`],["Ponto abaixo dela",`${latT(dec)} · ${lonT(norm(ra-g))}`]]}
+ $("infoBody").innerHTML=`<h3>${h}</h3><dl>${rows.map(([a,b])=>`<dt>${a}</dt><dd>${b}</dd>`).join("")}</dl>${note?`<p class="note">${note}</p>`:""}${acts.length?`<div class="acts">${acts.map(([k,t,pr])=>`<button class="btn${pr?" p":""}" data-act="${k}">${t}</button>`).join("")}</div>`:""}`}
 const fmtD=new Intl.DateTimeFormat("pt-BR",{day:"2-digit",month:"short",year:"numeric"}),SPN={60:"1 min/s",600:"10 min/s",3600:"1 h/s",86400:"1 dia/s"};
 const toLocalInput=d=>{const z=n=>String(n).padStart(2,"0");return`${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}T${z(d.getHours())}:${z(d.getMinutes())}`};
 function hud(){const d=new Date(st.t),live=st.speed===1&&st.play&&Math.abs(st.t-Date.now())<9e4;
@@ -502,7 +524,7 @@ function hud(){const d=new Date(st.t),live=st.speed===1&&st.play&&Math.abs(st.t-
  $("tNow").textContent=fmtH.format(d);$("tState").textContent=live?"ao vivo":!st.play?"pausado":st.speed===1?"simulado":SPN[st.speed];
  const az=(Math.atan2(cam.f[0],cam.f[1])*R2D+360)%360,al=Math.asin(clamp(cam.f[2],-1,1))*R2D;$("aim").textContent=`${Math.round(az)}° ${dirT(az)} · ${nf(al,0)}°`;
  $("bPlay").textContent=st.play?"Pausar":"Rodar";document.querySelectorAll("[data-sp]").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.sp===st.speed&&st.play));
- const on=!!(st.sensors&&sens.got);$("bSens").setAttribute("aria-pressed",on);$("bRecal").hidden=!on;$("sensTag").hidden=!on;$("bComp").classList.toggle("on",on);$("hVal").textContent=st.H.toLocaleString("pt-BR")+" km";
+ $("bHome").hidden=!away();$("bHome").textContent=`Voltar para ${st.home.name}`;const on=!!(st.sensors&&sens.got);$("bSens").setAttribute("aria-pressed",on);$("bRecal").hidden=!on;$("sensTag").hidden=!on;$("bComp").classList.toggle("on",on);$("hVal").textContent=st.H.toLocaleString("pt-BR")+" km";
  if(document.activeElement!==$("dt"))$("dt").value=toLocalInput(d)}
 let toastT;function toast(m){const t=$("toast");t.textContent=m;t.classList.add("on");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("on"),4200)}
 // ---------- Sensores e GPS ----------
@@ -518,8 +540,8 @@ async function enableSensors(){try{if(typeof DeviceOrientationEvent!=="undefined
  addEventListener("deviceorientationabsolute",onOri,true);addEventListener("deviceorientation",onOri,true);st.sensors=true;
  setTimeout(()=>{if(!sens.got){st.sensors=false;toast("Sensores indisponíveis nesta página. Arraste para olhar em volta; no app instalado o celular guia a tela.")}else toast(sens.off!=null||sens.samp.length?"Sensores ligados: a tela segue o celular. O norte foi calibrado pela bússola.":"Sensores ligados, mas sem bússola: o norte pode ficar deslocado.")},1500)}
 function gps(silent){const msg=$("gpsMsg");if(!navigator.geolocation){msg.textContent="Este navegador não oferece localização.";return}msg.textContent="Buscando sua posição…";
- navigator.geolocation.getCurrentPosition(async p=>{const la=p.coords.latitude,lo=p.coords.longitude;st.obs={name:"Minha localização",lat:la,lon:lo,gps:true};syncLoc();save();
-   msg.textContent=`Posição obtida com precisão de ${Math.round(p.coords.accuracy)} m.`;const n=await placeName(la,lo);if(st.obs.gps){st.obs.name=n;save()}if(!silent)toast(`Localização real: ${n}`)},
+ navigator.geolocation.getCurrentPosition(async p=>{const la=p.coords.latitude,lo=p.coords.longitude;st.obs={name:"Minha localização",lat:la,lon:lo,gps:true};syncLoc();setHome();
+   msg.textContent=`Posição obtida com precisão de ${Math.round(p.coords.accuracy)} m.`;const n=await placeName(la,lo);if(st.obs.gps){st.obs.name=n;setHome()}if(!silent)toast(`Localização real: ${n}`)},
   ()=>{msg.textContent="Não foi possível obter a localização. Busque uma cidade ou digite as coordenadas.";if(!silent)toast("Localização indisponível. Usando "+st.obs.name+".")},{enableHighAccuracy:true,timeout:12000,maximumAge:60000})}
 try{navigator.permissions&&navigator.permissions.query({name:"geolocation"}).then(p=>{if(p.state==="granted")gps(true)}).catch(()=>{})}catch(e){}
 
@@ -529,9 +551,9 @@ const fold=s=>String(s).normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]);
 function loadBR(){if(CITY.br)return Promise.resolve(CITY.br);if(!CITY.loading)CITY.loading=fetch("cidades-br.json").then(r=>r.json()).then(a=>CITY.br=a.map(c=>({n:c[0],uf:c[1],lat:c[2],lon:c[3],cap:c[4],k:fold(c[0])}))).catch(()=>CITY.br=[]);return CITY.loading}
 function nearestBR(lat,lon){if(!CITY.br||!CITY.br.length)return null;let b=null,bd=1e9;const cl=Math.cos(lat*D);for(const c of CITY.br){const d=(c.lat-lat)**2+((c.lon-lon)*cl)**2;if(d<bd){bd=d;b=c}}return Math.sqrt(bd)*111<30?b:null}
-async function placeName(lat,lon){await loadBR();const b=nearestBR(lat,lon);if(b)return`${b.n}, ${b.uf}`;
- try{const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat.toFixed(4)}&lon=${lon.toFixed(4)}&zoom=10&accept-language=pt-BR`);const j=await r.json(),a=j.address||{},n=a.city||a.town||a.village||a.municipality||a.county||a.state;return n?(a.country?`${n}, ${a.country}`:n):"Minha localização"}catch(e){return"Minha localização"}}
-function pick(c){st.obs={name:c.label,lat:c.lat,lon:c.lon};syncLoc();save();toast(`Local: ${c.label}`);panel(null)}
+async function placeName(lat,lon,fb="Minha localização"){await loadBR();const b=nearestBR(lat,lon);if(b)return`${b.n}, ${b.uf}`;
+ try{const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat.toFixed(4)}&lon=${lon.toFixed(4)}&zoom=10&accept-language=pt-BR`);const j=await r.json(),a=j.address||{},n=a.city||a.town||a.village||a.municipality||a.county||a.state;return n?(a.country?`${n}, ${a.country}`:n):fb}catch(e){return fb}}
+function pick(c){st.obs={name:c.label,lat:c.lat,lon:c.lon};syncLoc();setHome();toast(`Local: ${c.label}`);panel(null)}
 function renderRes(list,msg){$("res").innerHTML=(msg?`<p class="small">${esc(msg)}</p>`:"")+list.map((c,i)=>`<button class="ri" data-i="${i}"><b>${esc(c.n)}</b><span>${esc(c.sub)}</span></button>`).join("");
  $("res").querySelectorAll(".ri").forEach(b=>b.onclick=()=>pick(list[+b.dataset.i]))}
 let qT=null,qSeq=0;
@@ -547,7 +569,7 @@ function suggest(){renderRes(CITIES.map(c=>({n:c[0],sub:"",label:c[0],lat:c[1],l
 // ---------- Controles ----------
 function syncLoc(){$("lat").value=st.obs.lat.toFixed(4);$("lon").value=st.obs.lon.toFixed(4)}
 $("q").oninput=e=>{clearTimeout(qT);qT=setTimeout(()=>search(e.target.value),280)};
-const manualLoc=()=>{const la=parseFloat($("lat").value),lo=parseFloat($("lon").value);if(isFinite(la)&&isFinite(lo)&&Math.abs(la)<=90&&Math.abs(lo)<=180){st.obs={name:"Ponto escolhido",lat:la,lon:lo};save();placeName(la,lo).then(n=>{if(st.obs.lat===la&&st.obs.lon===lo){st.obs.name=n;save()}})}};
+const manualLoc=()=>{const la=parseFloat($("lat").value),lo=parseFloat($("lon").value);if(isFinite(la)&&isFinite(lo)&&Math.abs(la)<=90&&Math.abs(lo)<=180){st.obs={name:"Ponto escolhido",lat:la,lon:lo};setHome();placeName(la,lo,"Ponto escolhido").then(n=>{if(st.obs.lat===la&&st.obs.lon===lo){st.obs.name=n;setHome()}})}};
 $("lat").onchange=manualLoc;$("lon").onchange=manualLoc;
 $("height").oninput=e=>{st.H=+e.target.value;save()};$("gps").onclick=gps;
 function panel(id){["pMenu","pTime","sheet"].forEach(k=>$(k).classList.toggle("open",k===id));$("scrim").hidden=!id}
@@ -561,10 +583,15 @@ $("bPlay").onclick=()=>{st.play=!st.play};
 const tog=(id,k)=>{$(id).onclick=()=>{st.L[k]=!st.L[k];$(id).setAttribute("aria-pressed",st.L[k])}};tog("lObs","obs");tog("lModel","model");tog("lLines","lines");tog("lGrid","grid");tog("lArt","art");tog("lLand","land");
 $("bSens").onclick=()=>{if(st.sensors){st.sensors=false;sens.got=false;const a=Math.atan2(cam.f[0],cam.f[1]);st.yaw=a;st.pitch=Math.asin(clamp(cam.f[2],-1,1));toast("Sensores desligados: arraste para navegar livremente.")}else{sens.off=null;sens.samp=[];enableSensors()}};
 $("bRecal").onclick=()=>{recalNorth();panel(null)};
-$("infoX").onclick=()=>{st.sel=null};
+$("infoX").onclick=()=>{st.sel=null;st.pend=null};
+$("infoBody").addEventListener("click",e=>{const b=e.target.closest("[data-act]");if(!b)return;const k=b.dataset.act;
+ if(k==="move"&&st.pend){const P=st.pend;st.obs={name:"Ponto no disco",lat:P.lat,lon:P.lon};st.pend=null;save();st.sel={kind:"obs"};placeName(P.lat,P.lon,"Ponto no disco").then(n=>{if(st.obs.lat===P.lat){st.obs.name=n;save()}});toast("Observador movido. Toque em Voltar quando quiser retornar ao seu local.")}
+ else if(k==="sky"){if(st.pend){const P=st.pend;st.obs={name:"Ponto no disco",lat:P.lat,lon:P.lon};st.pend=null;save();placeName(P.lat,P.lon,"Ponto no disco").then(n=>{if(st.obs.lat===P.lat){st.obs.name=n;save()}})}st.sel=null;setMode("sky")}
+ else if(k==="home")goHome();else{st.pend=null;st.sel=null}});
+$("bHome").onclick=()=>{goHome();panel(null)};
 function setMode(m){st.mode=m;$("mSky").setAttribute("aria-pressed",m==="sky");$("mDisc").setAttribute("aria-pressed",m==="disc");
  document.querySelectorAll(".tile.s").forEach(b=>b.hidden=m!=="sky");document.querySelectorAll(".tile.d").forEach(b=>b.hidden=m!=="disc");$("bComp").style.visibility=m==="sky"?"visible":"hidden";
- document.querySelector(".reticle").hidden=m!=="sky";$("mini").style.visibility=m==="sky"?"visible":"hidden";if(m==="disc"){discInit();if(!dv.seen){dv.seen=true;toast("Arraste para girar e inclinar. Pinça ou roda do mouse para aproximar; dois dedos ou botão direito para mover.")}}}
+ document.querySelector(".reticle").hidden=m!=="sky";$("mini").style.visibility=m==="sky"?"visible":"hidden";if(m==="disc"){discInit();if(!dv.seen){dv.seen=true;toast("Arraste para girar e inclinar; pinça para aproximar. Toque num astro para ver detalhes. Segure o dedo num ponto para mudar o observador.")}}}
 $("mSky").onclick=()=>setMode("sky");$("mDisc").onclick=()=>setMode("disc");$("mini").onclick=()=>setMode("disc");
 $("dTop").onclick=()=>{dv.tiltT=1};$("dIncl").onclick=()=>{dv.tiltT=0.45};$("dReset").onclick=()=>{dv.tiltT=0.5;dv.rot=0;dv.zoom=1;dv.px=0;dv.py=0};
 const dtog=(id,k)=>{$(id).onclick=()=>{dv[k]=!dv[k];$(id).setAttribute("aria-pressed",dv[k])}};dtog("dStars","stars");dtog("dCons","cons");
@@ -572,8 +599,9 @@ dtog("dLight","light");
 const begin=()=>{$("welcome").hidden=true;const o=compute();if(o.sun.alt>0){st.yaw=o.sun.az*D;st.pitch=clamp(o.sun.alt-20,0,50)*D}else{st.yaw=(st.obs.lat<0?180:0)*D;st.pitch=12*D}};
 $("start").onclick=()=>{begin();enableSensors();gps()};$("startManual").onclick=()=>{begin();gps(true);toast("Arraste para olhar em volta. Use dois dedos para aproximar.")};
 // arrastar, aproximar e tocar
-const pts=new Map();let gest=null;const app=$("app");
+const pts=new Map();let gest=null,holdT=null;const app=$("app");
 app.addEventListener("pointerdown",e=>{if(e.target.closest("button,.card,.sheet,select,input,#mini,#scrim,.dock"))return;pts.set(e.pointerId,{x:e.clientX,y:e.clientY});app.setPointerCapture(e.pointerId);
+ clearTimeout(holdT);if(st.mode==="disc"&&pts.size===1){const hx=e.clientX,hy=e.clientY;holdT=setTimeout(()=>{if(gest&&!gest.moved&&pts.size===1){gest.held=true;discHold(hx,hy)}},550)}
  gest={rot:dv.rot,tilt:dv.tilt,zoom:dv.zoom,px:dv.px,py:dv.py,btn:e.button,shift:e.shiftKey,mid:null,x:e.clientX,y:e.clientY,yaw:st.yaw,pitch:st.pitch,cal:sens.cal,moved:false,fov:st.fov,d0:pts.size===2?dist2():0}});
 const dist2=()=>{const[a,b]=[...pts.values()];return Math.hypot(a.x-b.x,a.y-b.y)};
 app.addEventListener("pointermove",e=>{if(!gest||!pts.has(e.pointerId))return;pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
@@ -584,7 +612,7 @@ app.addEventListener("pointermove",e=>{if(!gest||!pts.has(e.pointerId))return;pt
  if(st.mode==="disc"){dv.tiltT=null;if(gest.btn===2||gest.shift){dv.px=gest.px+dx;dv.py=gest.py+dy}else{dv.rot=gest.rot+dx*0.008;dv.tilt=clamp(gest.tilt+dy*0.004,0.12,1)}return}
  if(st.sensors&&sens.got){if(Math.abs(dx)>40&&!gest.warned){gest.warned=true;toast("Sensores ligados: a tela segue o celular. Toque na bússola para desligar e navegar com o dedo.")}return}
  st.yaw=gest.yaw-dx*k;st.pitch=clamp(gest.pitch+dy*k,-80*D,89*D)});
-const end=e=>{if(gest&&!gest.moved&&pts.size===1&&st.mode==="disc"){discTap(e.clientX,e.clientY)}else if(gest&&!gest.moved&&pts.size===1){let best=null,bd=34;for(const h of st.hits){const d=Math.hypot(h.x-e.clientX,h.y-e.clientY);if(d<bd){bd=d;best=h}}st.sel=best?{kind:best.kind,i:best.i,id:best.id}:null}
+const end=e=>{clearTimeout(holdT);if(gest&&gest.held){}else if(gest&&!gest.moved&&pts.size===1&&st.mode==="disc"){discTap(e.clientX,e.clientY)}else if(gest&&!gest.moved&&pts.size===1){const best=pickHit(e.clientX,e.clientY);st.sel=best?{kind:best.kind,i:best.i,id:best.id}:null}
  pts.delete(e.pointerId);if(!pts.size)gest=null;else gest={...gest,d0:0,fov:st.fov}};
 app.addEventListener("pointerup",end);app.addEventListener("pointercancel",end);
 app.addEventListener("wheel",e=>{e.preventDefault();if(st.mode==="disc")dv.zoom=clamp(dv.zoom*(1-e.deltaY*0.0012),0.6,5);else st.fov=clamp(st.fov*(1+e.deltaY*0.001),15,130)},{passive:false});
