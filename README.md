@@ -59,16 +59,14 @@ Toque no relógio para abrir a barra de simulação: tocar/pausar, régua das 24
 - **Nuvens do tempo real:** no Imersivo, nuvens desenhadas conforme a cobertura prevista para o local e a hora simulada, andando com o vento (dados Open-Meteo, CC BY 4.0). O formato das nuvens é ilustrativo; a quantidade, a altura (baixas, médias, altas) e o vento vêm da previsão.
 - **Previsão do tempo:** condições na hora simulada, nuvens das próximas 48 horas e as próximas noites boas para observar.
 
-## Teste da curvatura
+## Teste da curvatura e Disco 3D
 
-- **Teste da curvatura** (menu, nos dois modos): um controle de curvatura do disco, começando no valor medido (1° a cada 111,2 km, das medições de Eratóstenes, al-Biruni, das expedições do século XVIII e do Arco de Struve até o GPS) e ajustável de 0% (plano) a 150%.
-- Mostra o perfil norte–sul em corte e, para várias cidades (de Reykjavík a Ushuaia, mais o seu local), a altura observada dos polos celestes comparada com a prevista; escolha entre estrelas muito distantes ou no domo. **Melhor ajuste** procura a curvatura que mais se aproxima do observado.
-
-## Disco em 3D
-
-- **Disco em 3D (forma e muralha)** (menu, Disco 3D) ou **Ver esta forma no Disco 3D** (no Teste da curvatura): o disco passa a ser desenhado em 3D de verdade, com espessura de rocha, muralha de gelo na borda e a forma escolhida no Teste da curvatura: plano (0%), convexo (centro mais alto, até fechar numa esfera em 100%) ou côncavo (bordas mais altas, valores negativos). A forma muda ao vivo ao mexer no controle.
-- Com estrelas "muito distantes" o céu fica ao fundo; com "no domo", as estrelas ficam no domo do modelo. Espessura e muralha são ilustrativas.
-- Ao descer para o seu local a partir de um disco curvado, ele volta a ficar plano antes do mergulho.
+- **Teste da curvatura** (menu): abre uma barra sobre o mapa e o disco passa para 3D enquanto ela estiver aberta. Mexendo no controle, a forma muda ao vivo:
+  - **Disco convexo:** o disco mantém o tamanho e a borda; só o centro sobe (até +6.000 km) ou desce, deixando as bordas mais altas (côncavo). Nunca vira globo.
+  - **Curvatura medida (modo globo):** inclinação de 1° a cada 111,2 km (Eratóstenes, al-Biruni, expedições do século XVIII, Arco de Struve, GPS); em 100% fecha num globo.
+- O céu não se mexe ao deformar o chão: no disco, o domo e as estrelas ficam no lugar; no modo globo, o céu fica ao fundo.
+- **Detalhes** mostra o perfil em corte e, para várias cidades, a altura observada e a prevista dos polos celestes, com **Melhor ajuste**.
+- **Disco em 3D (forma e muralha)** (menu, Disco 3D) mantém o disco em 3D com espessura de rocha e muralha de gelo mesmo com a barra fechada. Espessura e muralha são ilustrativas.
 
 ## Marés
 
