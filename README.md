@@ -31,6 +31,14 @@ Toque no relógio para abrir a barra de simulação: tocar/pausar, régua das 24
 - **Tela dividida** (ficha de simulação): Céu + Disco, Disco + Globo ou Globo + Céu, no mesmo relógio.
 - **Comparar Disco × Globo:** Um dia, Estações, Fases da Lua e Eclipse — prepara a tela Disco + Globo, a velocidade e a vista para comparar os dois modelos.
 
+## Satélite no disco plano
+
+- O Disco 3D usa as mesmas imagens de satélite do Globo (EOxCloudless / Sentinel-2), reprojetadas no mapa equidistante do disco, com dia e noite, luzes das cidades e as nuvens reais flutuando acima com sombra. A pinça aproxima até o nível das cidades, ancorada nos dedos; com zoom alto, arrastar move o mapa. **Nomes, ruas e fronteiras** (OpenStreetMap) aparecem a partir do zoom regional.
+- Como no mapa do disco, as regiões do sul aparecem esticadas no sentido leste-oeste: é a própria geometria do modelo plano.
+- No máximo do zoom, perto do seu local, a pinça desce ao chão (mergulho), que também usa o satélite.
+- O Disco 3D passa a ser o padrão; o **Disco 2D** clássico continua disponível (desligue **Disco em 3D** no menu) e na tela dividida. O estilo **Gleason 1892** mantém o mapa histórico, sem satélite.
+- Chaves no menu, em **Nos dois modos**: **Satélite com zoom** e **Nomes, ruas e fronteiras**. O atalho **Nuvens** aparece também no Imersivo.
+
 ## Mergulho: do disco ao chão
 
 - **Ícone do canto superior direito:** troca entre o Imersivo e o Disco 3D com a viagem animada (subida ou descida, cerca de 5 s). Tocando de novo durante a viagem, ela inverte o sentido.
