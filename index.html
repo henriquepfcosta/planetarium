@@ -103,7 +103,7 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
     </div>
   </div>
   <div class="sheet" id="pMenu" role="dialog" aria-label="Camadas e ações">
-    <div class="seg" role="group" aria-label="Visão"><button id="mSky" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.5 6.7 19.4l1.2-6L3.4 9.3l6-.7Z"/></svg>Céu</button><button id="mDisc" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="15" rx="9" ry="4"/><circle cx="12" cy="6" r="2.2"/><path d="M12 8.5v5"/></svg>Disco</button></div>
+    <div class="seg" role="group" aria-label="Visão"><button id="mSky" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.5 6.7 19.4l1.2-6L3.4 9.3l6-.7Z"/></svg>Imersivo</button><button id="mDisc" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="15" rx="9" ry="4"/><circle cx="12" cy="6" r="2.2"/><path d="M12 8.5v5"/></svg>Disco 3D</button></div>
     <div class="tiles">
       <button class="tile s" id="lObs" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.5 6.7 19.4l1.2-6L3.4 9.3l6-.7Z"/></svg><span>Céu observado</span></button>
       <button class="tile s m" id="lModel" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="15" rx="9" ry="4"/><circle cx="12" cy="6" r="2.2"/><path d="M12 8.5v5"/></svg><span>Modelo do disco</span></button>
@@ -111,8 +111,12 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
       <button class="tile s" id="lArt" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19c3-1 4-4 7-5s5 1 9-3"/><path d="M14 5c2 0 4 2 3 4"/><circle cx="8" cy="8" r="2"/></svg><span>Desenhos</span></button>
       <button class="tile s" id="lLand" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 19h20"/><path d="m3 19 5-7 4 5 3-3 6 5"/><circle cx="17" cy="7" r="2.5"/></svg><span>Paisagem</span></button>
       <button class="tile s" id="lGrid" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18c5-6 13-6 18 0"/><path d="M6 20c2-9 10-9 12 0"/><path d="M12 6v14M3 13h18"/></svg><span>Grade</span></button>
-      <button class="tile d" id="dTilt" aria-pressed="false" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="16" rx="9" ry="3.5"/><path d="M12 3v9"/><circle cx="12" cy="5" r="2"/></svg><span>Vista 3D</span></button>
       <button class="tile d" id="dLight" aria-pressed="true" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span>Luz do Sol</span></button>
+      <button class="tile d" id="dStars" aria-pressed="true" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 15a9 9 0 0 1 18 0"/><path d="M2 15h20"/><path d="m8 8 .6 1.3 1.4.2-1 1 .2 1.4L8 11.2l-1.2.7.2-1.4-1-1 1.4-.2Z"/><circle cx="15" cy="8" r=".8"/><circle cx="12" cy="11" r=".8"/></svg><span>Estrelas no domo</span></button>
+      <button class="tile d" id="dCons" aria-pressed="true" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 15a9 9 0 0 1 18 0"/><path d="M2 15h20"/><path d="m7 11 4-3 3 2 3-1"/><circle cx="7" cy="11" r="1"/><circle cx="11" cy="8" r="1"/><circle cx="14" cy="10" r="1"/><circle cx="17" cy="9" r="1"/></svg><span>Constelações no domo</span></button>
+      <button class="tile d" id="dTop" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="1.5"/><path d="M12 4v3M12 17v3M4 12h3M17 12h3"/></svg><span>Vista de cima</span></button>
+      <button class="tile d" id="dIncl" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="15" rx="9" ry="3.5"/><path d="M4 13a8 6 0 0 1 16 0"/></svg><span>Vista inclinada</span></button>
+      <button class="tile d" id="dReset" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4h4"/></svg><span>Centralizar</span></button>
     </div>
     <div class="two">
       <button class="btn ic" id="bSens" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2.5" width="10" height="19" rx="2.2"/><path d="M11 18.5h2"/><path d="M2.5 9a7 7 0 0 1 2-4M21.5 9a7 7 0 0 0-2-4"/></svg>Sensores</button>
@@ -416,44 +420,63 @@ const isLand=(lon,lat)=>antarctic(lon,lat)||(inAny(lon,lat,LAND,LB)&&!inAny(lon,
 const fromDisc=(u,v)=>[90-180*Math.hypot(u,v),Math.atan2(u,v)*R2D];
 function dest(lat,lon,dist,brg){const p=lat*D,dd=dist*D,b=brg*D;const p2=Math.asin(Math.sin(p)*Math.cos(dd)+Math.cos(p)*Math.sin(dd)*Math.cos(b));
  return[p2*R2D,norm(lon+Math.atan2(Math.sin(b)*Math.sin(dd)*Math.cos(p),Math.cos(dd)-Math.sin(p)*Math.sin(p2))*R2D)]}
-const dv={tilt:1,tiltT:1,rot:0,light:true,dots:null,off:null,octx:null,img:null,OP:null,N:118,OS:150};
-function discInit(){if(dv.dots)return;const N=dv.N,dots=[];for(let j=0;j<=N;j++)for(let i=0;i<=N;i++){const u=-1+2*i/N,v=-1+2*j/N;if(u*u+v*v>1)continue;const[la,lo]=fromDisc(u,v);const land=isLand(lo,la);if(land||(i%2===0&&j%2===0))dots.push({u,v,la,lo,land})}dv.dots=dots;
+const dv={tilt:0.5,tiltT:null,rot:0,zoom:1,px:0,py:0,light:true,stars:true,cons:true,dots:null,off:null,octx:null,img:null,OP:null,N:118,OS:160,dome:null,HD:0.78,seen:false};
+const DESERT=(la,lo)=>(la>15&&la<32&&lo>-15&&lo<35)||(la>15&&la<31&&lo>35&&lo<58)||(la>-31&&la<-19&&lo>119&&lo<142)||(la>-28&&la<-19&&lo>14&&lo<25)||(la>36&&la<46&&lo>78&&lo<110)||(la>-28&&la<-18&&lo>-71&&lo<-68)||(la>28&&la<38&&lo>-118&&lo<-108);
+const ICEZ=(la,lo,land)=>la<-60||(land&&la>64&&lo>-74&&lo<-11)||(land&&la>77);
+function discInit(){if(dv.dots)return;const N=dv.N,dots=[];for(let j=0;j<=N;j++)for(let i=0;i<=N;i++){const u=-1+2*i/N,v=-1+2*j/N;if(u*u+v*v>1)continue;const[la,lo]=fromDisc(u,v),land=isLand(lo,la),ice=ICEZ(la,lo,land);
+  if(land||ice||(i%2===0&&j%2===0))dots.push({u,v,la,lo,t:ice?2:land?(DESERT(la,lo)?3:1):0})}dv.dots=dots;
  dv.off=document.createElement("canvas");dv.off.width=dv.off.height=dv.OS;dv.octx=dv.off.getContext("2d");dv.img=dv.octx.createImageData(dv.OS,dv.OS);dv.OP=[];
  for(let y=0;y<dv.OS;y++)for(let x=0;x<dv.OS;x++){const u=(x+.5)/dv.OS*2-1,v=(y+.5)/dv.OS*2-1;dv.OP.push(u*u+v*v<=1?fromDisc(u,v):null)}}
-function dgeom(){const top=140,bot=150,avail=Math.max(200,Hh-top-bot),lf=Math.sqrt(Math.max(0,1-dv.tilt*dv.tilt)),R=Math.min(W*0.46,avail/(2*dv.tilt+0.9*lf)),cx=W/2,cy=top+avail/2+R*lf*0.2,c=Math.cos(dv.rot),s=Math.sin(dv.rot);
- return{R,cx,cy,c,s,a:R*c,b:R*dv.tilt*s,cc:-R*s,d:R*dv.tilt*c}}
+// Estrelas e constelações projetadas no domo: cada uma fica sobre o ponto do disco abaixo dela
+const toDome=q=>({r:(90-Math.asin(clamp(q[2],-1,1))*R2D)/180,ra:Math.atan2(q[1],q[0])*R2D});
+function domeInit(){if(dv.dome||!CAT.ready)return;const S=[];for(let i=0;i<CAT.n;i++){if(CAT.mag[i]>4.6)continue;const d=toDome([CAT.v[i*3],CAT.v[i*3+1],CAT.v[i*3+2]]);d.m=CAT.mag[i];d.c=CAT.col[i];S.push(d)}
+ dv.dome={S,L:CAT.cons.map(c=>({name:c.name,lab:toDome(c.lab),segs:c.segs.map(sg=>sg.map(toDome))}))}}
+function dgeom(){const top=100,bot=110,avail=Math.max(200,Hh-top-bot),lf=Math.sqrt(Math.max(0,1-dv.tilt*dv.tilt)),R0=Math.min(W*0.46,avail/(2*dv.tilt+dv.HD*lf)),R=R0*dv.zoom,
+ cx=W/2+dv.px,cy=top+avail/2+R0*dv.HD*lf*0.5+dv.py,c=Math.cos(dv.rot),s=Math.sin(dv.rot);return{R,cx,cy,c,s,lf,a:R*c,b:R*dv.tilt*s,cc:-R*s,d:R*dv.tilt*c}}
 const DS=(g,u,v)=>[g.cx+g.a*u+g.cc*v,g.cy+g.b*u+g.d*v];
 const dM=g=>ctx.setTransform(dpr*g.a,dpr*g.b,dpr*g.cc,dpr*g.d,dpr*g.cx,dpr*g.cy),dS=()=>ctx.setTransform(dpr,0,0,dpr,0,0);
 function dCircle(g,lat,px,col,dash){dM(g);ctx.beginPath();ctx.arc(0,0,(90-lat)/180,0,7);dS();ctx.lineWidth=px;ctx.strokeStyle=col;ctx.setLineDash(dash||[]);ctx.stroke();ctx.setLineDash([])}
-function dLabel(g,lat,txt,col){const r=(90-lat)/180,x=r*Math.sin(50*D),y=r*Math.cos(50*D),u=g.c*x+g.s*y,v=-g.s*x+g.c*y,[sx,sy]=DS(g,u,v);text(txt,sx+5,sy-3,col,11,600)}
-function drawDisc(o){discInit();dv.tilt+=(dv.tiltT-dv.tilt)*0.12;if(Math.abs(dv.tiltT-dv.tilt)<0.002)dv.tilt=dv.tiltT;
- const g=dgeom(),sp=o.sp,mo=o.mo,lift=Math.sqrt(Math.max(0,1-dv.tilt*dv.tilt));dS();
- const bg=ctx.createRadialGradient(W/2,g.cy,0,W/2,g.cy,Math.max(W,Hh)*0.7);bg.addColorStop(0,"#0e2228");bg.addColorStop(1,"#03070f");ctx.fillStyle=bg;ctx.fillRect(0,0,W,Hh);
- if(lift>0.05){ctx.strokeStyle=`rgba(108,195,182,${0.35*lift})`;ctx.setLineDash([2,5]);ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(g.cx,g.cy,g.R*1.02,g.R*0.95*lift,0,Math.PI,2*Math.PI);ctx.stroke();ctx.setLineDash([]);
-  ctx.fillStyle="#0a191d";ctx.beginPath();ctx.ellipse(g.cx,g.cy+g.R*0.05*lift,g.R*1.02,g.R*1.02*dv.tilt,0,0,7);ctx.fill()}
- dM(g);ctx.fillStyle="#0b1d22";ctx.beginPath();ctx.arc(0,0,1,0,7);ctx.fill();
- if(dv.light){const dt=dv.img.data;for(let k=0;k<dv.OP.length;k++){const p=dv.OP[k],q=k*4;if(!p){dt[q+3]=0;continue}const a=altOf(p[0],p[1],sp),f=a>0?1:a>-18?(1+a/18)**2*0.8:0;dt[q]=255;dt[q+1]=196;dt[q+2]=120;dt[q+3]=f*58}
+function dLabel(g,lat,txt,col){const r=(90-lat)/180,x=r*Math.sin(50*D),y=r*Math.cos(50*D),u=g.c*x+g.s*y,v=-g.s*x+g.c*y,[sx,sy]=DS(g,u,v);text(txt,sx+5,sy-3,col,10,500)}
+function domePt(g,d,g0){const lo=(d.ra-g0)*D,u=d.r*Math.sin(lo),v=d.r*Math.cos(lo),[x,y]=DS(g,u,v);return[x,y-g.R*dv.HD*Math.sqrt(Math.max(0,1-d.r*d.r))*g.lf]}
+function drawDisc(o){discInit();domeInit();if(dv.tiltT!=null){dv.tilt+=(dv.tiltT-dv.tilt)*0.15;if(Math.abs(dv.tiltT-dv.tilt)<0.002){dv.tilt=dv.tiltT;dv.tiltT=null}}
+ const g=dgeom(),sp=o.sp,mo=o.mo,lift=g.lf,g0=gmst(jdOf(st.t));dS();
+ const bg=ctx.createRadialGradient(W/2,g.cy,0,W/2,g.cy,Math.max(W,Hh)*0.75);bg.addColorStop(0,"#0f2531");bg.addColorStop(1,"#03070f");ctx.fillStyle=bg;ctx.fillRect(0,0,W,Hh);
+ // espessura do disco
+ if(lift>0.05){ctx.fillStyle="#08141a";ctx.beginPath();ctx.ellipse(g.cx,g.cy+g.R*0.05*lift,g.R,g.R*dv.tilt,dv.rot*0,0,7);ctx.fill()}
+ // oceano, terra, desertos e gelo
+ dM(g);const oc=ctx.createRadialGradient(0,0,0,0,0,1);oc.addColorStop(0,"#164f78");oc.addColorStop(1,"#0c3350");ctx.fillStyle=oc;ctx.beginPath();ctx.arc(0,0,1,0,7);ctx.fill();
+ const COL=["rgba(150,200,240,.2)","#5aa865","#eef6f8","#cdb57e"],B=[[],[],[],[]],sz=0.9*2/dv.N;for(const p of dv.dots)B[p.t].push(p);
+ B.forEach((arr,t)=>{ctx.fillStyle=COL[t];ctx.beginPath();const z=t?sz:sz*0.45;for(const p of arr)ctx.rect(p.u-z/2,p.v-z/2,z,z);ctx.fill()});
+ // noite por cima das cores
+ if(dv.light){const dt=dv.img.data;for(let k=0;k<dv.OP.length;k++){const p=dv.OP[k],q=k*4;if(!p){dt[q+3]=0;continue}const a=altOf(p[0],p[1],sp),f=a>-0.83?0:Math.min(1,(-a+0.83)/12);dt[q]=3;dt[q+1]=9;dt[q+2]=24;dt[q+3]=f*170}
   dv.octx.putImageData(dv.img,0,0);dM(g);ctx.imageSmoothingEnabled=true;ctx.drawImage(dv.off,-1,-1,2,2)}
- const B=[[],[],[],[],[],[],[]];for(const p of dv.dots){const a=dv.light?altOf(p.la,p.lo,sp):1;B[p.land?(a>-0.83?0:a>-6?1:a>-12?2:a>-18?3:4):(a>-0.83?5:6)].push(p)}
- const cols=["#f4e8c4","#c7b48a","#8a8066","#566059","#34444a","rgba(244,232,196,.16)","rgba(130,165,170,.16)"],sz=0.62*2/dv.N;dM(g);
- B.forEach((arr,b)=>{ctx.fillStyle=cols[b];ctx.beginPath();const z=b>4?sz*0.7:sz;for(const p of arr)ctx.rect(p.u-z/2,p.v-z/2,z,z);ctx.fill()});
- dM(g);ctx.beginPath();ctx.arc(0,0,1,0,7);dS();ctx.strokeStyle="#dfe9ea";ctx.lineWidth=2;ctx.stroke();
- dCircle(g,66.56,1,"rgba(108,195,182,.35)",[3,5]);dCircle(g,23.44,1.2,"rgba(108,195,182,.8)",[5,4]);dCircle(g,0,1.4,"rgba(238,240,234,.75)");dCircle(g,-23.44,1.2,"rgba(108,195,182,.8)",[5,4]);
- if(dv.tilt>0.8){dLabel(g,23.44,"CÂNCER","#8fd8cc");dLabel(g,0,"EQUADOR","#eef0ea");dLabel(g,-23.44,"CAPRICÓRNIO","#8fd8cc")}
- dCircle(g,sp.lat,1.4,"rgba(255,207,115,.55)",[1,4]);
- if(dv.light){dM(g);ctx.beginPath();let prev=null;for(let b=0;b<=360;b+=2){const[la,lo]=dest(sp.lat,sp.lon,90.83,b),q=toDisc(la,lo);if(!prev||Math.hypot(q[0]-prev[0],q[1]-prev[1])>0.25)ctx.moveTo(q[0],q[1]);else ctx.lineTo(q[0],q[1]);prev=q}dS();ctx.strokeStyle="rgba(255,226,170,.85)";ctx.lineWidth=1.3;ctx.stroke()}
- const[nx,ny]=DS(g,0,0);ctx.fillStyle="#eef0ea";ctx.beginPath();ctx.arc(nx,ny,2.2,0,7);ctx.fill();text("N",nx+5,ny-4,"#eef0ea",12,600);
+ // borda de gelo
+ dM(g);ctx.beginPath();ctx.arc(0,0,1,0,7);dS();ctx.strokeStyle="rgba(240,248,250,.95)";ctx.lineWidth=2.5;ctx.stroke();
+ dCircle(g,66.56,0.8,"rgba(160,230,220,.35)",[3,5]);dCircle(g,23.44,1,"rgba(160,230,220,.75)",[5,4]);dCircle(g,0,1.2,"rgba(255,255,255,.7)");dCircle(g,-23.44,1,"rgba(160,230,220,.75)",[5,4]);
+ if(dv.tilt>0.8&&dv.zoom<2.5){dLabel(g,23.44,"CÂNCER","#bff0e8");dLabel(g,0,"EQUADOR","#ffffff");dLabel(g,-23.44,"CAPRICÓRNIO","#bff0e8")}
+ dCircle(g,sp.lat,1.2,"rgba(255,207,115,.6)",[1,4]);
+ if(dv.light){dM(g);ctx.beginPath();let prev=null;for(let b=0;b<=360;b+=2){const[la,lo]=dest(sp.lat,sp.lon,90.83,b),q=toDisc(la,lo);if(!prev||Math.hypot(q[0]-prev[0],q[1]-prev[1])>0.25)ctx.moveTo(q[0],q[1]);else ctx.lineTo(q[0],q[1]);prev=q}dS();ctx.strokeStyle="rgba(255,226,170,.8)";ctx.lineWidth=1.1;ctx.stroke()}
+ const[nx,ny]=DS(g,0,0);ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(nx,ny,2,0,7);ctx.fill();text("N",nx+5,ny-4,"#fff",11,600);
  const od=toDisc(st.obs.lat,st.obs.lon),[ox,oy]=DS(g,od[0],od[1]),sd=toDisc(sp.lat,sp.lon),[gx,gy]=DS(g,sd[0],sd[1]);
- ctx.strokeStyle="rgba(255,143,107,.6)";ctx.setLineDash([3,4]);ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(gx,gy);ctx.stroke();ctx.setLineDash([]);
- ctx.strokeStyle="#ff8f6b";ctx.lineWidth=2;ctx.beginPath();ctx.arc(ox,oy,7,0,7);ctx.stroke();ctx.beginPath();ctx.moveTo(ox-11,oy);ctx.lineTo(ox+11,oy);ctx.moveTo(ox,oy-11);ctx.lineTo(ox,oy+11);ctx.stroke();
+ ctx.strokeStyle="rgba(255,143,107,.65)";ctx.setLineDash([3,4]);ctx.lineWidth=1.1;ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(gx,gy);ctx.stroke();ctx.setLineDash([]);
+ ctx.strokeStyle="#ff8f6b";ctx.lineWidth=1.8;ctx.beginPath();ctx.arc(ox,oy,6,0,7);ctx.stroke();ctx.beginPath();ctx.moveTo(ox-10,oy);ctx.lineTo(ox+10,oy);ctx.moveTo(ox,oy-10);ctx.lineTo(ox,oy+10);ctx.stroke();
+ // domo de vidro
+ if(lift>0.05){const ryTop=Math.hypot(g.R*dv.tilt,g.R*dv.HD*lift);ctx.strokeStyle=`rgba(160,220,235,${0.3*lift})`;ctx.setLineDash([2,5]);ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(g.cx,g.cy,g.R,ryTop,0,Math.PI,2*Math.PI);ctx.stroke();ctx.setLineDash([]);
+  const dg=ctx.createLinearGradient(0,g.cy-ryTop,0,g.cy);dg.addColorStop(0,"rgba(120,180,230,.07)");dg.addColorStop(1,"rgba(120,180,230,0)");ctx.fillStyle=dg;ctx.beginPath();ctx.ellipse(g.cx,g.cy,g.R,ryTop,0,Math.PI,2*Math.PI);ctx.fill()}
+ // estrelas e constelações no domo
+ if(dv.dome&&(dv.stars||dv.cons)&&lift>0.12){const al=clamp((lift-0.12)*1.8,0,1);
+  if(dv.cons){ctx.strokeStyle=`rgba(120,210,200,${0.4*al})`;ctx.lineWidth=0.8;ctx.beginPath();for(const c of dv.dome.L)for(const sg of c.segs){sg.forEach((d,k)=>{const[x,y]=domePt(g,d,g0);k?ctx.lineTo(x,y):ctx.moveTo(x,y)})}ctx.stroke();
+   if(dv.zoom>=1.6){const used=[];ctx.font="400 9px Inter,sans-serif";for(const c of dv.dome.L){const[x,y]=domePt(g,c.lab,g0);if(x<0||x>W||y<0||y>Hh)continue;const w=ctx.measureText(c.name).width,bx=x-w/2;if(used.some(b=>bx<b[2]+4&&bx+w+4>b[0]&&y-9<b[3]&&y+4>b[1]))continue;used.push([bx,y-9,bx+w,y+2]);text(c.name,bx,y,`rgba(160,230,220,${0.55*al})`,9,400)}}}
+  if(dv.stars){const zs=Math.min(1.8,Math.sqrt(dv.zoom));for(const d of dv.dome.S){const[x,y]=domePt(g,d,g0);if(x<-5||x>W+5||y<-5||y>Hh+5)continue;const r=Math.max(0.6,(2-0.35*d.m)*zs);ctx.globalAlpha=al*clamp((5-d.m)/2.5,0.35,1);ctx.fillStyle=d.c;ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fill()}ctx.globalAlpha=1}}
+ // Sol, Lua e planetas sob o domo
  const hpx=g.R*(st.H/RKM)*lift*1.6;
  const put=(b,col,gl,rad,h)=>{const q=toDisc(b.lat,b.lon),[x,y]=DS(g,q[0],q[1]);if(lift>0.05){ctx.strokeStyle="rgba(255,220,150,.35)";ctx.setLineDash([2,3]);ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y-h);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=col;ctx.beginPath();ctx.ellipse(x,y,3,3*dv.tilt,0,0,7);ctx.fill()}glow(x,y-h,rad*4,gl);ctx.fillStyle=col;ctx.beginPath();ctx.arc(x,y-h,rad,0,7);ctx.fill();return[x,y-h]};
- const[mx,my]=put(mo,"#d6dde0","rgba(200,215,225,.35)",6,hpx*0.96);text("Lua",mx+10,my+4,"#d6dde0",12,600);
- for(const P of o.pl){if(P.id==="ura"||P.id==="nep")continue;const q=toDisc(P.sub.lat,P.sub.lon),[x,y]=DS(g,q[0],q[1]),h=hpx*1.05;ctx.fillStyle=P.col;ctx.beginPath();ctx.arc(x,y-h,3.5,0,7);ctx.fill();text(P.name,x+6,y-h+4,P.col,11,500)}
- const[sx,sy]=put(sp,"#ffe2a0","rgba(255,200,100,.55)",9,hpx);text("Sol",sx+12,sy+4,"#ffcf73",13,600);
+ const[mx,my]=put(mo,"#e2e8ea","rgba(200,215,225,.35)",5,hpx*0.96);text("Lua",mx+9,my+4,"#e2e8ea",11,500);
+ for(const P of o.pl){if(P.id==="ura"||P.id==="nep")continue;const q=toDisc(P.sub.lat,P.sub.lon),[x,y]=DS(g,q[0],q[1]),h=hpx*1.05;ctx.fillStyle=P.col;ctx.beginPath();ctx.arc(x,y-h,2.6,0,7);ctx.fill();text(P.name,x+5,y-h+4,P.col,10,500)}
+ const[sx,sy]=put(sp,"#ffe2a0","rgba(255,200,100,.55)",8,hpx);text("Sol",sx+11,sy+4,"#ffcf73",11,600);
  st.dg=g}
 function discTap(x,y){const g=st.dg;if(!g)return;const p=(x-g.cx)/g.R,q=(y-g.cy)/(g.R*dv.tilt),u=g.c*p+g.s*q,v=-g.s*p+g.c*q;if(u*u+v*v>1)return;const[la,lo]=fromDisc(u,v);
- st.obs={name:"Ponto no disco",lat:la,lon:lo};save();st.sel={kind:"sun"};toast("Observador movido. Toque em “Céu” para ver o céu deste ponto.")}
+ st.obs={name:"Ponto no disco",lat:la,lon:lo};save();st.sel={kind:"sun"};toast("Observador movido. Abra o modo Imersivo para ver o céu deste ponto.")}
 
 function nearestCon(q){let best=null,bd=-2;for(const c of CAT.cons)for(const seg of c.segs)for(const v of seg){const d=dot(v,q);if(d>bd){bd=d;best=c.name}}return bd>Math.cos(12*D)?best:null}
 // ---------- Textos ----------
@@ -539,26 +562,30 @@ $("bSens").onclick=()=>{if(st.sensors){st.sensors=false;sens.got=false;const a=M
 $("infoX").onclick=()=>{st.sel=null};
 function setMode(m){st.mode=m;$("mSky").setAttribute("aria-pressed",m==="sky");$("mDisc").setAttribute("aria-pressed",m==="disc");
  document.querySelectorAll(".tile.s").forEach(b=>b.hidden=m!=="sky");document.querySelectorAll(".tile.d").forEach(b=>b.hidden=m!=="disc");$("bComp").style.visibility=m==="sky"?"visible":"hidden";
- document.querySelector(".reticle").hidden=m!=="sky";$("mini").style.visibility=m==="sky"?"visible":"hidden";if(m==="disc")discInit()}
+ document.querySelector(".reticle").hidden=m!=="sky";$("mini").style.visibility=m==="sky"?"visible":"hidden";if(m==="disc"){discInit();if(!dv.seen){dv.seen=true;toast("Arraste para girar e inclinar. Pinça ou roda do mouse para aproximar; dois dedos ou botão direito para mover.")}}}
 $("mSky").onclick=()=>setMode("sky");$("mDisc").onclick=()=>setMode("disc");$("mini").onclick=()=>setMode("disc");
-$("dTilt").onclick=()=>{dv.tiltT=dv.tiltT===1?0.42:1;$("dTilt").setAttribute("aria-pressed",dv.tiltT!==1)};
-$("dLight").onclick=()=>{dv.light=!dv.light;$("dLight").setAttribute("aria-pressed",dv.light)};
+$("dTop").onclick=()=>{dv.tiltT=1};$("dIncl").onclick=()=>{dv.tiltT=0.45};$("dReset").onclick=()=>{dv.tiltT=0.5;dv.rot=0;dv.zoom=1;dv.px=0;dv.py=0};
+const dtog=(id,k)=>{$(id).onclick=()=>{dv[k]=!dv[k];$(id).setAttribute("aria-pressed",dv[k])}};dtog("dStars","stars");dtog("dCons","cons");
+dtog("dLight","light");
 const begin=()=>{$("welcome").hidden=true;const o=compute();if(o.sun.alt>0){st.yaw=o.sun.az*D;st.pitch=clamp(o.sun.alt,5,60)*D}else{st.yaw=(st.obs.lat<0?180:0)*D;st.pitch=30*D}};
 $("start").onclick=()=>{begin();enableSensors();gps()};$("startManual").onclick=()=>{begin();gps(true);toast("Arraste para olhar em volta. Use dois dedos para aproximar.")};
 // arrastar, aproximar e tocar
 const pts=new Map();let gest=null;const app=$("app");
 app.addEventListener("pointerdown",e=>{if(e.target.closest("button,.card,.sheet,select,input,#mini,#scrim,.dock"))return;pts.set(e.pointerId,{x:e.clientX,y:e.clientY});app.setPointerCapture(e.pointerId);
- gest={rot:dv.rot,x:e.clientX,y:e.clientY,yaw:st.yaw,pitch:st.pitch,cal:sens.cal,moved:false,fov:st.fov,d0:pts.size===2?dist2():0}});
+ gest={rot:dv.rot,tilt:dv.tilt,zoom:dv.zoom,px:dv.px,py:dv.py,btn:e.button,shift:e.shiftKey,mid:null,x:e.clientX,y:e.clientY,yaw:st.yaw,pitch:st.pitch,cal:sens.cal,moved:false,fov:st.fov,d0:pts.size===2?dist2():0}});
 const dist2=()=>{const[a,b]=[...pts.values()];return Math.hypot(a.x-b.x,a.y-b.y)};
 app.addEventListener("pointermove",e=>{if(!gest||!pts.has(e.pointerId))return;pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+ const mid2=()=>{const[a,b]=[...pts.values()];return[(a.x+b.x)/2,(a.y+b.y)/2]};
+ if(pts.size===2&&st.mode==="disc"){if(!gest.d0){gest.d0=dist2();gest.mid=mid2();gest.zoom=dv.zoom;gest.px=dv.px;gest.py=dv.py}const m=mid2();dv.zoom=clamp(gest.zoom*dist2()/gest.d0,0.6,5);dv.px=gest.px+m[0]-gest.mid[0];dv.py=gest.py+m[1]-gest.mid[1];gest.moved=true;return}
  if(pts.size===2&&st.mode==="sky"){if(!gest.d0)gest.d0=dist2();st.fov=clamp(gest.fov*gest.d0/dist2(),15,130);gest.moved=true;return}
  const dx=e.clientX-gest.x,dy=e.clientY-gest.y;if(Math.hypot(dx,dy)>6)gest.moved=true;if(!gest.moved)return;const k=1/F;
- if(st.mode==="disc"){dv.rot=gest.rot+dx*0.008;return}
+ if(st.mode==="disc"){dv.tiltT=null;if(gest.btn===2||gest.shift){dv.px=gest.px+dx;dv.py=gest.py+dy}else{dv.rot=gest.rot+dx*0.008;dv.tilt=clamp(gest.tilt+dy*0.004,0.12,1)}return}
  if(st.sensors&&sens.got)sens.cal=gest.cal+dx*k*R2D;else{st.yaw=gest.yaw-dx*k;st.pitch=clamp(gest.pitch+dy*k,-80*D,89*D)}});
 const end=e=>{if(gest&&!gest.moved&&pts.size===1&&st.mode==="disc"){discTap(e.clientX,e.clientY)}else if(gest&&!gest.moved&&pts.size===1){let best=null,bd=34;for(const h of st.hits){const d=Math.hypot(h.x-e.clientX,h.y-e.clientY);if(d<bd){bd=d;best=h}}st.sel=best?{kind:best.kind,i:best.i,id:best.id}:null}
  pts.delete(e.pointerId);if(!pts.size)gest=null;else gest={...gest,d0:0,fov:st.fov}};
 app.addEventListener("pointerup",end);app.addEventListener("pointercancel",end);
-app.addEventListener("wheel",e=>{e.preventDefault();st.fov=clamp(st.fov*(1+e.deltaY*0.001),15,130)},{passive:false});
+app.addEventListener("wheel",e=>{e.preventDefault();if(st.mode==="disc")dv.zoom=clamp(dv.zoom*(1-e.deltaY*0.0012),0.6,5);else st.fov=clamp(st.fov*(1+e.deltaY*0.001),15,130)},{passive:false});
+app.addEventListener("contextmenu",e=>{if(st.mode==="disc")e.preventDefault()});
 addEventListener("keydown",e=>{const k=3*D;if(e.key==="ArrowLeft")st.yaw-=k;if(e.key==="ArrowRight")st.yaw+=k;if(e.key==="ArrowUp")st.pitch=Math.min(st.pitch+k,89*D);if(e.key==="ArrowDown")st.pitch=Math.max(st.pitch-k,-80*D)});
 // ---------- Laço ----------
 let last=performance.now(),lastI=0;
