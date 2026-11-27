@@ -185,6 +185,7 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
       <button class="tile s" id="lWx" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18h10a4 4 0 0 0 .5-8 6 6 0 0 0-11.4 1.6A3.3 3.3 0 0 0 7 18Z"/></svg><span>Nuvens do tempo real</span></button>
       <div class="mh d" hidden>Disco 3D</div>
       <button class="tile d" id="dDive" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v13M7 11l5 5 5-5"/><ellipse cx="12" cy="20" rx="8" ry="2"/></svg><span>Descer até meu local</span></button>
+      <button class="tile d" id="dCurve" aria-pressed="false" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="13" rx="9" ry="3.5"/><path d="M3 13v2c0 2 4 3.5 9 3.5s9-1.5 9-3.5v-2"/><path d="M8 9.8c1-2.4 2.4-3.6 4-3.6s3 1.2 4 3.6"/></svg><span>Disco em 3D (forma e muralha)</span></button>
       <button class="tile d" id="dCity" aria-pressed="true" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6-5.5-6-10a6 6 0 0 1 12 0c0 4.5-6 10-6 10Z"/><circle cx="12" cy="11" r="2"/></svg><span>Cidades no mapa</span></button>
       <button class="tile d" id="dFollow" aria-pressed="true" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 7 13h10Z"/><circle cx="12" cy="17" r="3"/></svg><span>Seguir minha posição e direção</span></button>
       <button class="tile d" id="dReal" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M5 9c3 1 4-2 7-1s3 4 6 3M7 17c2-2 5-1 6-3"/></svg><span>Estilo do mapa</span><em id="dRealL">mapa</em></button>
@@ -221,9 +222,11 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
     <h2><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 16c4-6 14-6 18 0"/><path d="M12 3v4M10 5l2-2 2 2"/></svg>Teste da curvatura</h2>
     <p class="small" style="margin:0">Se o chão se curva, o horizonte de cada lugar se inclina e os polos do céu mudam de altura. Compare o que se observa em várias cidades com o que cada curvatura prevê.</p>
     <canvas id="cvCurve" style="width:100%;height:190px;border-radius:12px;background:#0b1820" aria-label="Perfil do disco em corte, do polo norte à borda sul"></canvas>
-    <label class="f"><span>Curvatura: <b id="cvVal" style="color:var(--ink)">100%</b> do valor medido <span id="cvKm"></span></span><input type="range" id="cvK" min="0" max="150" step="1" value="100"></label>
+    <label class="f"><span>Curvatura: <b id="cvVal" style="color:var(--ink)">100%</b> do valor medido <span id="cvKm"></span></span><input type="range" id="cvK" min="-150" max="150" step="1" value="100"></label>
     <div class="seg" id="cvDist"><button data-d="far" aria-pressed="true">Estrelas muito distantes</button><button data-d="dome" aria-pressed="false">Estrelas no domo</button></div>
     <div class="two"><button class="btn" id="cvReset">Usar o valor medido</button><button class="btn" id="cvFit">Melhor ajuste</button></div>
+    <button class="btn p" id="cvShow">Ver esta forma no Disco 3D</button>
+    <p class="small" style="margin:0">Valores positivos: centro mais alto (convexo). Negativos: bordas mais altas (côncavo). Zero: plano.</p>
     <p style="margin:0" id="cvSum"></p>
     <div class="res" id="cvList" style="max-height:none"></div>
     <details class="adv"><summary>De onde vem o valor medido</summary>
@@ -286,7 +289,7 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
       <p class="small" id="airMsg"></p>
     </details>
     <button class="btn" id="sheetClose">Fechar</button>
-    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-18</p>
+    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-19</p>
   </div>
   <div class="welcome" id="welcome">
     <div>
@@ -656,7 +659,7 @@ const dM=g=>ctx.setTransform(dpr*g.a,dpr*g.b,dpr*g.cc,dpr*g.d,dpr*g.cx,dpr*g.cy)
 function dCircle(g,lat,px,col,dash){dM(g);ctx.beginPath();ctx.arc(0,0,(90-lat)/180,0,7);dS();ctx.lineWidth=px;ctx.strokeStyle=col;ctx.setLineDash(dash||[]);ctx.stroke();ctx.setLineDash([])}
 function dLabel(g,lat,txt,col){const r=(90-lat)/180,x=r*Math.sin(50*D),y=r*Math.cos(50*D),u=g.c*x+g.s*y,v=-g.s*x+g.c*y,[sx,sy]=DS(g,u,v);text(txt,sx+5,sy-3,col,10,500)}
 function domePt(g,d,g0){const lo=(d.ra-g0)*D,u=d.r*Math.sin(lo),v=d.r*Math.cos(lo),[x,y]=DS(g,u,v);return[x,y-g.R*dv.HD*Math.sqrt(Math.max(0,1-d.r*d.r))*g.lf]}
-function drawDisc(o){LBQ=[];try{drawDisc0(o)}finally{flushLB()}}
+function drawDisc(o){LBQ=[];try{d3Step();if(disc3D())drawDisc3D(o);else drawDisc0(o)}finally{flushLB()}}
 function drawDisc0(o){discInit();domeInit();discFollow();if(dv.tiltT!=null){dv.tilt+=(dv.tiltT-dv.tilt)*0.15;if(Math.abs(dv.tiltT-dv.tilt)<0.002){dv.tilt=dv.tiltT;dv.tiltT=null}}
  const g=dgeom(),sp=o.sp,mo=o.mo,lift=g.lf,g0=gmst(jdOf(st.t));dS();
  const bg=ctx.createRadialGradient(W/2,g.cy,0,W/2,g.cy,Math.max(W,Hh)*0.75);bg.addColorStop(0,"#0f2531");bg.addColorStop(1,"#03070f");ctx.fillStyle=bg;ctx.fillRect(0,0,W,Hh);
@@ -721,7 +724,7 @@ function drawDisc0(o){discInit();domeInit();discFollow();if(dv.tiltT!=null){dv.t
 function pickHit(x,y){let best=null,bs=1e9;for(const h of st.hits){const d=Math.hypot(h.x-x,h.y-y);if(d>30)continue;const sc=d+(h.m??5)*3;if(sc<bs){bs=sc;best=h}}return best}
 function discPoint(x,y){const g=st.dg;if(!g)return null;const p=(x-g.cx)/g.R,q=(y-g.cy)/(g.R*dv.tilt),u=g.c*p+g.s*q,v=-g.s*p+g.c*q;if(u*u+v*v>1)return null;const[la,lo]=fromDisc(u,v);return{lat:la,lon:lo}}
 function discTap(x,y){const b=pickHit(x,y);st.pend=null;st.sel=b?{kind:b.kind,i:b.i,id:b.id}:null}
-function discHold(x,y){const P=discPoint(x,y);if(!P)return;st.pend=P;st.sel={kind:"loc"};try{navigator.vibrate&&navigator.vibrate(15)}catch(e){}}
+function discHold(x,y){if(disc3D()&&Math.abs(CVD.kd)>0.004){toast("Para mudar o observador segurando o dedo, use o disco plano (forma 0%).");return}const P=discPoint(x,y);if(!P)return;st.pend=P;st.sel={kind:"loc"};try{navigator.vibrate&&navigator.vibrate(15)}catch(e){}}
 
 let POL=null;function polIdx(){if(POL==null&&CAT.ready){for(const k in CAT.names)if(CAT.names[k]==="Polaris"){POL=+k;break}}return POL}
 function nearestCon(q){let best=null,bd=-2;for(const c of CAT.cons)for(const seg of c.segs)for(const v of seg){const d=dot(v,q);if(d>bd){bd=d;best=c.name}}return bd>Math.cos(12*D)?best:null}
@@ -1003,10 +1006,10 @@ function drawView(g){if(!dv.follow)return;const o=st.obs,az=heading(),h=Math.min
 const G3={ok:null,gl:null,cv:null,P:{},B:{},tex:null,texT:-1e15,texW:0,texK:"",ground:null,gK:"",aniso:null,ext:null};
 const VS_G=`attribute vec2 aP;attribute vec2 aT;uniform vec3 uC,uR,uU,uF;uniform vec4 uK;uniform float uFar;varying vec2 vT;varying float vD;varying vec2 vW;
 void main(){vec3 r=vec3(aP,0.)-uC;float x=dot(r,uR),y=dot(r,uU),z=dot(r,uF),n=uK.w,f=uFar;vT=aT;vD=length(r);vW=aP;gl_Position=vec4(x*uK.x,y*uK.y+uK.z*z,(z*(f+n)-2.*f*n)/(f-n),z);}`;
-const FS_G=`precision highp float;uniform sampler2D uTex;uniform vec3 uHaze,uClC;uniform float uHs,uCl,uThr;uniform vec2 uOff;varying vec2 vT;varying float vD;varying vec2 vW;
+const FS_G=`precision highp float;uniform sampler2D uTex;uniform vec3 uHaze,uClC;uniform float uHs,uCl,uThr,uBf;uniform vec2 uOff;varying vec2 vT;varying float vD;varying vec2 vW;
 float hs(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 float vn(vec2 p){vec2 i=floor(p),f=fract(p),u=f*f*(3.-2.*f);return mix(mix(hs(i),hs(i+vec2(1.,0.)),u.x),mix(hs(i+vec2(0.,1.)),hs(i+vec2(1.,1.)),u.x),u.y);}
-void main(){vec3 c=texture2D(uTex,vT).rgb;if(uCl>0.){vec2 p=(vW+uOff)/9.;float n=vn(p)*.55+vn(p*2.1)*.3+vn(p*4.3)*.15;float d=smoothstep(uThr-.1,uThr+.1,n)*uCl;c=mix(c,uClC*(.86+.14*n),d);}
+void main(){vec3 c=texture2D(uTex,vT).rgb;if(uBf!=0.&&((uBf>0.)!=gl_FrontFacing))c=vec3(.16,.13,.11)*(.8+.2*fract(sin(dot(floor(vW/300.),vec2(12.9,78.2)))*437.5));if(uCl>0.){vec2 p=(vW+uOff)/9.;float n=vn(p)*.55+vn(p*2.1)*.3+vn(p*4.3)*.15;float d=smoothstep(uThr-.1,uThr+.1,n)*uCl;c=mix(c,uClC*(.86+.14*n),d);}
 float h=1.-exp(-vD/uHs);gl_FragColor=vec4(mix(c,uHaze,h*.88),1.);}`;
 const VS_P=`attribute vec3 aP;attribute vec4 aC;attribute float aS;uniform vec3 uC,uR,uU,uF;uniform vec4 uK;uniform float uFar;varying vec4 vC;
 void main(){vec3 r=aP-uC;float x=dot(r,uR),y=dot(r,uU),z=dot(r,uF),n=uK.w,f=uFar;gl_Position=vec4(x*uK.x,y*uK.y+uK.z*z,(z*(f+n)-2.*f*n)/(f-n),z);gl_PointSize=aS;vC=aC;}`;
@@ -1014,9 +1017,9 @@ const FS_P=`precision mediump float;varying vec4 vC;void main(){vec2 d=gl_PointC
 const FS_L=`precision mediump float;varying vec4 vC;void main(){gl_FragColor=vec4(vC.rgb*vC.a,vC.a);}`;
 function g3Init(){if(G3.ok!==null)return G3.ok;try{const c=document.createElement("canvas");c.width=c.height=8;const gl=c.getContext("webgl",{alpha:true,premultipliedAlpha:true,antialias:true,preserveDrawingBuffer:true});if(!gl)throw 0;
  const mk=(vs,fs)=>{const p=gl.createProgram();for(const[t,src]of[[gl.VERTEX_SHADER,vs],[gl.FRAGMENT_SHADER,fs]]){const s=gl.createShader(t);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw gl.getShaderInfoLog(s);gl.attachShader(p,s)}gl.linkProgram(p);if(!gl.getProgramParameter(p,gl.LINK_STATUS))throw gl.getProgramInfoLog(p);
-  const u={},a={};for(const n of["uC","uR","uU","uF","uK","uFar","uTex","uHaze","uHs","uCl","uClC","uOff","uThr"])u[n]=gl.getUniformLocation(p,n);for(const n of["aP","aT","aC","aS"])a[n]=gl.getAttribLocation(p,n);return{p,u,a}};
- G3.P.g=mk(VS_G,FS_G);G3.P.p=mk(VS_P,FS_P);G3.P.l=mk(VS_P.replace("gl_PointSize=aS;",""),FS_L);
- for(const k of["gP","gT","gI","pP","pC","pS","lP","lC"])G3.B[k]=gl.createBuffer();G3.ext=gl.getExtension("OES_element_index_uint");G3.aniso=gl.getExtension("EXT_texture_filter_anisotropic")||gl.getExtension("WEBKIT_EXT_texture_filter_anisotropic");
+  const u={},a={};for(const n of["uC","uR","uU","uF","uK","uFar","uTex","uHaze","uHs","uCl","uClC","uOff","uThr","uBf"])u[n]=gl.getUniformLocation(p,n);for(const n of["aP","aT","aC","aS"])a[n]=gl.getAttribLocation(p,n);return{p,u,a}};
+ G3.P.g=mk(VS_G,FS_G);G3.P.g3=mk(VS_G.replace("attribute vec2 aP;","attribute vec3 aP;").replace("vec3 r=vec3(aP,0.)-uC;","vec3 r=aP-uC;").replace("vW=aP;","vW=aP.xy;"),FS_G);G3.P.p=mk(VS_P,FS_P);G3.P.l=mk(VS_P.replace("gl_PointSize=aS;",""),FS_L);
+ for(const k of["gP","gT","gI","pP","pC","pS","lP","lC","cP","cT","cI","wP","wC"])G3.B[k]=gl.createBuffer();G3.ext=gl.getExtension("OES_element_index_uint");G3.aniso=gl.getExtension("EXT_texture_filter_anisotropic")||gl.getExtension("WEBKIT_EXT_texture_filter_anisotropic");
  G3.tex=gl.createTexture();G3.cv=c;G3.gl=gl;G3.ok=true}catch(e){console.warn("WebGL indisponível",e);G3.ok=false}return G3.ok}
 // Mapa composto (estilo escolhido + noite + luzes das cidades) para o chão 3D
 const TXN=2048;let TXC=null,TXX=null,NGT=null;
@@ -1044,7 +1047,7 @@ function g3Ground(){const k=st.obs.lat.toFixed(4)+","+st.obs.lon.toFixed(4);if(G
  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,G3.B.gI);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,G3.ext?new Uint32Array(I):new Uint16Array(I),gl.STATIC_DRAW);G3.gN=I.length}
 function g3Begin(w,h){const gl=G3.gl,c=G3.cv,pw=Math.round(w*dpr),ph=Math.round(h*dpr);if(c.width!==pw||c.height!==ph){c.width=pw;c.height=ph}gl.viewport(0,0,pw,ph);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);gl.disable(gl.DEPTH_TEST);gl.enable(gl.BLEND);gl.blendFunc(gl.ONE,gl.ONE_MINUS_SRC_ALPHA)}
 function g3Cam(P,V){const gl=G3.gl;gl.useProgram(P.p);gl.uniform3fv(P.u.uC,V.C);gl.uniform3fv(P.u.uR,V.r);gl.uniform3fv(P.u.uU,V.u);gl.uniform3fv(P.u.uF,V.f);gl.uniform4f(P.u.uK,V.Ff/(V.w/2),V.Ff/(V.h/2),(V.h-2*V.py)/V.h,V.near);gl.uniform1f(P.u.uFar,V.far)}
-function g3DrawGround(V,haze,hs,cl){const gl=G3.gl,P=G3.P.g;g3Cam(P,V);gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,G3.tex);gl.uniform1i(P.u.uTex,0);gl.uniform3fv(P.u.uHaze,haze);gl.uniform1f(P.u.uHs,hs);cl=cl||{a:0,c:[1,1,1],o:[0,0],t:0.5};gl.uniform1f(P.u.uCl,cl.a);gl.uniform3fv(P.u.uClC,cl.c);gl.uniform2fv(P.u.uOff,cl.o);gl.uniform1f(P.u.uThr,cl.t);
+function g3DrawGround(V,haze,hs,cl){const gl=G3.gl,P=G3.P.g;g3Cam(P,V);gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,G3.tex);gl.uniform1i(P.u.uTex,0);gl.uniform3fv(P.u.uHaze,haze);gl.uniform1f(P.u.uHs,hs);cl=cl||{a:0,c:[1,1,1],o:[0,0],t:0.5};gl.uniform1f(P.u.uBf,0);gl.uniform1f(P.u.uCl,cl.a);gl.uniform3fv(P.u.uClC,cl.c);gl.uniform2fv(P.u.uOff,cl.o);gl.uniform1f(P.u.uThr,cl.t);
  gl.bindBuffer(gl.ARRAY_BUFFER,G3.B.gP);gl.enableVertexAttribArray(P.a.aP);gl.vertexAttribPointer(P.a.aP,2,gl.FLOAT,false,0,0);gl.bindBuffer(gl.ARRAY_BUFFER,G3.B.gT);gl.enableVertexAttribArray(P.a.aT);gl.vertexAttribPointer(P.a.aT,2,gl.FLOAT,false,0,0);
  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,G3.B.gI);gl.disable(gl.BLEND);gl.drawElements(gl.TRIANGLES,G3.gN,G3.ext?gl.UNSIGNED_INT:gl.UNSIGNED_SHORT,0);gl.enable(gl.BLEND);gl.disableVertexAttribArray(P.a.aT)}
 function g3DrawPts(V,pos,col,size,n,lines){const gl=G3.gl,P=lines?G3.P.l:G3.P.p;g3Cam(P,V);gl.bindBuffer(gl.ARRAY_BUFFER,lines?G3.B.lP:G3.B.pP);gl.bufferData(gl.ARRAY_BUFFER,pos,gl.DYNAMIC_DRAW);gl.enableVertexAttribArray(P.a.aP);gl.vertexAttribPointer(P.a.aP,3,gl.FLOAT,false,0,0);
@@ -1144,7 +1147,7 @@ const CV={k:1,dist:"far"};try{const c=JSON.parse(localStorage.getItem("planetari
 const KMDEG=RKM/180,RE=RKM/Math.PI;
 const CVC=[["Reykjavík",64.15],["Londres",51.51],["Cairo",30.04],["Macapá (equador)",0.03],["Buenos Aires",-34.6],["Cidade do Cabo",-33.92],["Sydney",-33.87],["Ushuaia",-54.8]];
 // posição e normal no corte (km), polo norte na origem; s = distância ao polo ao longo do chão
-function cvPos(sk,k){if(k<1e-4)return{p:[sk,0],n:[0,1],t:[-1,0]};const rho=RE/k,f=sk/rho;return{p:[rho*Math.sin(f),rho*(Math.cos(f)-1)],n:[Math.sin(f),Math.cos(f)],t:[-Math.cos(f),Math.sin(f)]}}
+function cvPos(sk,k){if(Math.abs(k)<1e-4)return{p:[sk,0],n:[0,1],t:[-1,0]};const rho=RE/k,f=sk/rho;return{p:[rho*Math.sin(f),rho*(Math.cos(f)-1)],n:[Math.sin(f),Math.cos(f)],t:[-Math.cos(f),Math.sin(f)]}}
 // altura prevista do polo norte (e sul) celeste para uma latitude, curvatura k e distância das estrelas
 function cvPred(lat,k,dist){const P=cvPos((90-lat)*KMDEG,k),Hd=dv.HD*RKM;let dN;if(dist==="far")dN=[0,1];else{const d=[-P.p[0],Hd-P.p[1]],l=Math.hypot(d[0],d[1]);dN=[d[0]/l,d[1]/l]}
  const altN=Math.atan2(dot2(dN,P.n),Math.max(1e-9,dot2(dN,P.t)))*R2D,altS=dist==="far"?Math.asin(clamp(-P.n[1],-1,1))*R2D:null;return{altN:altN>90?180-altN:altN,altS}}
@@ -1152,14 +1155,14 @@ const dot2=(a,b)=>a[0]*b[0]+a[1]*b[1];
 function cvRows(){const L=CVC.map(([n,lat])=>({n,lat}));const me=st.obs;if(!L.some(c=>Math.abs(c.lat-me.lat)<0.2))L.push({n:me.name,lat:me.lat,me:1});return L.sort((a,b)=>b.lat-a.lat)}
 function cvErr(k,dist){let s=0,n=0;for(const c of cvRows()){const p=cvPred(c.lat,k,dist);s+=Math.abs(p.altN-c.lat);n++;if(p.altS!=null){s+=Math.abs(p.altS+c.lat);n++}}return s/n}
 function cvOpen(){cvRender();panel("pCurve")}
-function cvRender(){const k=CV.k,dist=CV.dist;$("cvK").value=Math.round(k*100);$("cvVal").textContent=Math.round(k*100)+"%";$("cvKm").textContent=k>0?`(1° a cada ${Math.round(KMDEG/k).toLocaleString("pt-BR")} km)`:"(disco plano)";
+function cvRender(){const k=CV.k,dist=CV.dist;$("cvK").value=Math.round(k*100);$("cvVal").textContent=Math.round(k*100)+"%";$("cvKm").textContent=Math.abs(k)<0.005?"(disco plano)":`(${k>0?"convexo":"côncavo, bordas mais altas"}: 1° a cada ${Math.round(KMDEG/Math.abs(k)).toLocaleString("pt-BR")} km)`;
  document.querySelectorAll("#cvDist button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.d===dist));
  const rows=cvRows(),fmt=a=>a==null?"—":`${a>=0?"+":"−"}${nf(Math.abs(a),1)}°`;
  $("cvList").innerHTML=rows.map(c=>{const p=cvPred(c.lat,k,dist),oN=c.lat,oS=-c.lat,eN=Math.abs(p.altN-oN),eS=p.altS==null?null:Math.abs(p.altS-oS),ok=e=>e==null?"var(--mute)":e<=1?"#7dffb0":e<=5?"#ffd27a":"#ff9f80";
   return`<div class="ri" style="cursor:default;display:grid;gap:3px;justify-content:stretch"><b${c.me?' style="color:#ffb39b"':""}>${c.n} · ${latT(c.lat)}</b><span style="text-align:left">Polo norte (Polaris): observado ${fmt(oN)} · previsto <b style="color:${ok(eN)}">${fmt(p.altN)}</b></span><span style="text-align:left">Polo sul (Cruzeiro do Sul aponta): observado ${fmt(oS)} · previsto <b style="color:${ok(eS)}">${p.altS==null?"não definido no domo":fmt(p.altS)}</b></span></div>`}).join("");
  const e=cvErr(k,dist);$("cvSum").innerHTML=`Diferença média entre previsto e observado: <b style="color:${e<=1?"#7dffb0":e<=5?"#ffd27a":"#ff9f80"}">${nf(e,1)}°</b>`+(dist==="dome"?" (o polo sul celeste não tem posição no modelo do domo; só o polo norte entra na média).":"");
  const c=$("cvCurve"),r=c.getBoundingClientRect(),w=Math.max(260,r.width||320),h=190,dp=devicePixelRatio||1;c.width=w*dp;c.height=h*dp;const x=c.getContext("2d");x.setTransform(dp,0,0,dp,0,0);x.clearRect(0,0,w,h);
- const N=120,pts=[];for(let i=0;i<=N;i++)pts.push(cvPos(i/N*RKM,k).p);const Hd=dv.HD*RKM;let x0=-200,x1=Math.max(...pts.map(p=>p[0]))+200,y0=Math.min(...pts.map(p=>p[1]))-200,y1=dist==="dome"?Hd+600:1800;
+ const N=120,pts=[];for(let i=0;i<=N;i++)pts.push(cvPos(i/N*RKM,k).p);const Hd=dv.HD*RKM;let x0=-200,x1=Math.max(...pts.map(p=>p[0]))+200,y0=Math.min(...pts.map(p=>p[1]))-200,y1=Math.max(dist==="dome"?Hd+600:1800,Math.max(...pts.map(p=>p[1]))+1800);
  const sc=Math.min((w-24)/(x1-x0),(h-24)/(y1-y0)),ox=12-x0*sc+((w-24)-(x1-x0)*sc)/2,oy=h-12+y0*sc-((h-24)-(y1-y0)*sc)/2,X=p=>[ox+p[0]*sc,oy-p[1]*sc];
  x.strokeStyle="#6cb8ff";x.lineWidth=2.5;x.beginPath();pts.forEach((p,i)=>{const q=X(p);i?x.lineTo(q[0],q[1]):x.moveTo(q[0],q[1])});x.stroke();x.fillStyle="#cfe9ff";x.font="600 10px Inter,sans-serif";const qN=X([0,0]);x.fillText("Polo Norte",qN[0]+4,qN[1]+12);const qS=X(pts[N]);x.fillText("borda sul",qS[0]-48,qS[1]+(k>0.6?-6:12));
  if(dist==="dome"){const qP=X([0,Hd]);x.fillStyle="#bfe6ff";x.beginPath();x.arc(qP[0],qP[1],3.5,0,7);x.fill();x.fillText("Polaris no domo",qP[0]+6,qP[1]+4)}
@@ -1172,7 +1175,61 @@ $("bCurve").onclick=cvOpen;$("cvClose").onclick=()=>panel(null);
 $("cvK").oninput=e=>{CV.k=+e.target.value/100;cvSave();cvRender()};
 $("cvDist").addEventListener("click",e=>{const b=e.target.closest("[data-d]");if(!b)return;CV.dist=b.dataset.d;cvSave();cvRender()});
 $("cvReset").onclick=()=>{CV.k=1;cvSave();cvRender()};
-$("cvFit").onclick=()=>{let best=0,be=1e9;for(let i=0;i<=150;i++){const e=cvErr(i/100,CV.dist);if(e<be){be=e;best=i/100}}CV.k=best;cvSave();cvRender();toast(`Melhor ajuste com ${CV.dist==="far"?"estrelas muito distantes":"estrelas no domo"}: ${Math.round(best*100)}% da curvatura medida, diferença média de ${nf(be,1)}°.`)};
+$("cvFit").onclick=()=>{let best=0,be=1e9;for(let i=-150;i<=150;i++){const e=cvErr(i/100,CV.dist);if(e<be){be=e;best=i/100}}CV.k=best;cvSave();cvRender();toast(`Melhor ajuste com ${CV.dist==="far"?"estrelas muito distantes":"estrelas no domo"}: ${Math.round(best*100)}% da curvatura medida, diferença média de ${nf(be,1)}°.`)};
+
+// ---------- Disco em 3D: espessura, muralha de gelo e curvatura (convexa ou côncava) ----------
+const CVD={on:false,kd:0,mk:null,unbend:false,after:null};try{CVD.on=localStorage.getItem("planetarium-disco3d")==="1"}catch(e){}
+const WALL=650,THICK=900;
+function surfAbs(sk,lon,k){if(Math.abs(k)<1e-4)return[sk*Math.sin(lon),-sk*Math.cos(lon),0];const rho=RE/k,f=sk/rho,q=rho*Math.sin(f);return[q*Math.sin(lon),-q*Math.cos(lon),rho*(Math.cos(f)-1)]}
+function surfN(sk,lon,k){const f=k*sk/RE;return[Math.sin(f)*Math.sin(lon),-Math.sin(f)*Math.cos(lon),Math.cos(f)]}
+const surfLL=(lat,lon,k)=>surfAbs((90-lat)*KMDEG,lon*D,k),surfNLL=(lat,lon,k)=>surfN((90-lat)*KMDEG,lon*D,k);
+function cMesh(k){if(CVD.mk!=null&&Math.abs(CVD.mk-k)<0.0015)return;CVD.mk=k;const gl=G3.gl,NR=96,NS=180,P=[0,0,0],T=[0.5,0.5],I=[];
+ for(let i=1;i<=NR;i++){const sk=RKM*i/NR;for(let j=0;j<NS;j++){const lon=(j/NS)*2*Math.PI,q=surfAbs(sk,lon,k);P.push(q[0],q[1],q[2]);const r=sk/RKM;T.push((r*Math.sin(lon)+1)/2,(r*Math.cos(lon)+1)/2)}}
+ for(let j=0;j<NS;j++)I.push(0,1+j,1+(j+1)%NS);for(let i=0;i<NR-1;i++)for(let j=0;j<NS;j++){const a=1+i*NS+j,b=1+i*NS+(j+1)%NS,c=a+NS,d=b+NS;I.push(a,c,b,b,c,d)}
+ gl.bindBuffer(gl.ARRAY_BUFFER,G3.B.cP);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(P),gl.DYNAMIC_DRAW);gl.bindBuffer(gl.ARRAY_BUFFER,G3.B.cT);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(T),gl.STATIC_DRAW);
+ gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,G3.B.cI);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,G3.ext?new Uint32Array(I):new Uint16Array(I),gl.STATIC_DRAW);G3.cN=I.length;
+ // muralha de gelo (para fora e para cima na borda) e espessura do disco (lado de baixo)
+ const W2=[],C2=[],tri=(a,b,c,ca,cb,cc)=>{W2.push(...a,...b,...c);C2.push(...ca,...cb,...cc)},wf=k>0.85?Math.max(0,(1-k)/0.15):1;
+ for(let j=0;j<NS;j++){const l0=j/NS*2*Math.PI,l1=(j+1)/NS*2*Math.PI,a=surfAbs(RKM,l0,k),b=surfAbs(RKM,l1,k),na=surfN(RKM,l0,k),nb=surfN(RKM,l1,k),Hw=WALL*wf,Ht=THICK*wf;
+  const at=[a[0]+na[0]*Hw,a[1]+na[1]*Hw,a[2]+na[2]*Hw],bt=[b[0]+nb[0]*Hw,b[1]+nb[1]*Hw,b[2]+nb[2]*Hw],ab=[a[0]-na[0]*Ht,a[1]-na[1]*Ht,a[2]-na[2]*Ht],bb=[b[0]-nb[0]*Ht,b[1]-nb[1]*Ht,b[2]-nb[2]*Ht];
+  const ice=[0.93,0.96,0.98,1],ice2=[0.78,0.86,0.9,1],rk=[0.2,0.17,0.14,1],rk2=[0.08,0.07,0.06,1];if(Hw>1){tri(a,b,at,ice2,ice2,ice);tri(b,bt,at,ice2,ice,ice)}if(Ht>1){tri(a,ab,b,rk,rk2,rk);tri(b,ab,bb,rk,rk2,rk2)}}
+ G3.wN=W2.length/3;gl.bindBuffer(gl.ARRAY_BUFFER,G3.B.wP);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(W2),gl.DYNAMIC_DRAW);gl.bindBuffer(gl.ARRAY_BUFFER,G3.B.wC);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(C2),gl.DYNAMIC_DRAW)}
+function c3Cam(k){const g=dgeom(),sc=g.R/RKM,c=g.c,sn=g.s,t=dv.tilt,lf=g.lf,f=[-lf*sn,lf*c,-t],u=[-t*sn,t*c,lf],r=[c,sn,0],A=(W/2-g.cx)/sc,Bv=(Hh/2-g.cy)/(sc*Math.max(0.05,t)),X=c*A+sn*Bv,Y=sn*A-c*Bv;
+ const s0=Math.min(RKM,Math.hypot(X,Y)),l0=Math.atan2(X,-Y),Ts=surfAbs(s0,l0,k),ak=Math.abs(k),rho=ak>1e-4?RE/ak:1e12,fr=RKM/rho,qmax=ak<1e-4?RKM:fr>=Math.PI/2?rho:rho*Math.sin(fr),zr=ak<1e-4?0:rho*(1-Math.cos(fr)),Reff=Math.max(qmax,zr/2),w=clamp((dv.zoom-1.1)/0.9,0,1),cz=(k>0?-1:1)*zr/2*(1-w)*clamp(ak*1.5,0,1);
+ const T=[Ts[0],Ts[1],Ts[2]*(w)+(1-w)*cz],Df=3e6,scale=sc*Math.pow(RKM/Reff,0.85);return{C:[T[0]-f[0]*Df,T[1]-f[1]*Df,T[2]-f[2]*Df],f,r,u,Ff:scale*Df,w:W,h:Hh,py:Hh/2,near:Df-1.5e5,far:Df+1.5e5,T,Reff}}
+function drawDisc3D(o){const gl=G3.gl;if(dv.tiltT!=null){dv.tilt+=(dv.tiltT-dv.tilt)*0.15;if(Math.abs(dv.tiltT-dv.tilt)<0.002){dv.tilt=dv.tiltT;dv.tiltT=null}}discInit();domeInit();discFollow();
+ const k=CVD.kd,V=c3Cam(k),g0=gmst(jdOf(st.t)),far=CV.dist==="far"||Math.abs(k)>0.6;cMesh(k);g3Tex(o);
+ ctx.setTransform(dpr,0,0,dpr,0,0);const bg=ctx.createRadialGradient(W/2,Hh/2,0,W/2,Hh/2,Math.max(W,Hh)*0.75);bg.addColorStop(0,"#0f2531");bg.addColorStop(1,"#03070f");ctx.fillStyle=bg;ctx.fillRect(0,0,W,Hh);
+ g3Begin(W,Hh);gl.clear(gl.DEPTH_BUFFER_BIT);const Rbg=V.Reff*2.6;
+ // céu: estrelas muito distantes (fundo) ou no domo do modelo
+ const S=dv.dome?dv.dome.S:[],pos=new Float32Array(S.length*3),col=new Float32Array(S.length*4),siz=new Float32Array(S.length);let n=0;
+ for(const d of S){let P;if(far){const lo=(d.ra-g0)*D,dec=90-d.r*180,cd=Math.cos(dec*D);P=[V.T[0]+cd*Math.sin(lo)*Rbg,V.T[1]-cd*Math.cos(lo)*Rbg,V.T[2]+Math.sin(dec*D)*Rbg]}else{const lo=(d.ra-g0)*D;P=[d.r*Math.sin(lo)*RKM,-d.r*Math.cos(lo)*RKM,dv.HD*RKM*Math.sqrt(Math.max(0,1-d.r*d.r))]}
+  pos.set(P,n*3);const cc=hexRGB(d.c);col.set([cc[0],cc[1],cc[2],clamp((5.2-d.m)/3.2,0.25,1)],n*4);siz[n]=Math.max(1.4,(4.2-0.65*d.m))*dpr;n++}
+ if(far&&n)g3DrawPts(V,pos.subarray(0,n*3),col.subarray(0,n*4),siz.subarray(0,n),n,false);
+ gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.disable(gl.BLEND);
+ {const P=G3.P.g3;g3Cam(P,V);gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,G3.tex);gl.uniform1i(P.u.uTex,0);gl.uniform3fv(P.u.uHaze,[0,0,0]);gl.uniform1f(P.u.uHs,1e12);gl.uniform1f(P.u.uBf,G3.bf||1);gl.uniform1f(P.u.uCl,0);gl.uniform3fv(P.u.uClC,[1,1,1]);gl.uniform2fv(P.u.uOff,[0,0]);gl.uniform1f(P.u.uThr,0.5);
+  gl.bindBuffer(gl.ARRAY_BUFFER,G3.B.cP);gl.enableVertexAttribArray(P.a.aP);gl.vertexAttribPointer(P.a.aP,3,gl.FLOAT,false,0,0);gl.bindBuffer(gl.ARRAY_BUFFER,G3.B.cT);gl.enableVertexAttribArray(P.a.aT);gl.vertexAttribPointer(P.a.aT,2,gl.FLOAT,false,0,0);
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,G3.B.cI);gl.drawElements(gl.TRIANGLES,G3.cN,G3.ext?gl.UNSIGNED_INT:gl.UNSIGNED_SHORT,0);gl.disableVertexAttribArray(P.a.aT)}
+ if(G3.wN){const P=G3.P.l;g3Cam(P,V);gl.bindBuffer(gl.ARRAY_BUFFER,G3.B.wP);gl.enableVertexAttribArray(P.a.aP);gl.vertexAttribPointer(P.a.aP,3,gl.FLOAT,false,0,0);gl.bindBuffer(gl.ARRAY_BUFFER,G3.B.wC);gl.enableVertexAttribArray(P.a.aC);gl.vertexAttribPointer(P.a.aC,4,gl.FLOAT,false,0,0);gl.drawArrays(gl.TRIANGLES,0,G3.wN);gl.disableVertexAttribArray(P.a.aC)}
+ gl.enable(gl.BLEND);if(!far&&n){gl.depthMask(false);g3DrawPts(V,pos.subarray(0,n*3),col.subarray(0,n*4),siz.subarray(0,n),n,false);gl.depthMask(true)}gl.disable(gl.DEPTH_TEST);
+ ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.drawImage(G3.cv,0,0);ctx.restore();ctx.setTransform(dpr,0,0,dpr,0,0);
+ // linhas e rótulos por cima (só a face voltada para a câmera)
+ const nf2=[-V.f[0],-V.f[1],-V.f[2]],rho=Math.abs(k)>1e-4?RE/k:0,Cs=[0,0,-rho],front=(lat,lon)=>{if(dot(surfNLL(lat,lon,k),nf2)<=0.02)return false;if(!rho)return true;const P=surfLL(lat,lon,k),pc=[P[0]-Cs[0],P[1]-Cs[1],P[2]-Cs[2]],t1=-2*dot(nf2,pc);if(t1<=1)return true;const H=[P[0]+nf2[0]*t1-Cs[0],P[1]+nf2[1]*t1-Cs[1],P[2]+nf2[2]*t1-Cs[2]],ang=Math.acos(clamp(dot(nrm(H),nrm([-Cs[0],-Cs[1],-Cs[2]])),-1,1));return ang*Math.abs(rho)>RKM},pp=(lat,lon,h=0)=>{const q=surfLL(lat,lon,k),nn=surfNLL(lat,lon,k),p=vproj(V,[q[0]+nn[0]*h,q[1]+nn[1]*h,q[2]+nn[2]*h]);return p.ok?[p.sx,p.sy]:null};
+ const line=(pts,col,dash)=>{ctx.strokeStyle=col;ctx.lineWidth=1;ctx.setLineDash(dash||[]);ctx.beginPath();let pen=false;for(const[la,lo]of pts){const p=front(la,lo)?pp(la,lo):null;if(p){pen?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]);pen=true}else pen=false}ctx.stroke();ctx.setLineDash([])};
+ for(const[la,c2,ds]of[[0,"rgba(255,255,255,.55)"],[23.44,"rgba(160,230,220,.5)",[5,4]],[-23.44,"rgba(160,230,220,.5)",[5,4]],[66.56,"rgba(160,230,220,.35)",[3,5]],[-66.56,"rgba(160,230,220,.35)",[3,5]]]){const L=[];for(let lo=-180;lo<=180;lo+=3)L.push([la,lo]);line(L,c2,ds)}
+ for(let lo=-180;lo<180;lo+=30){const L=[];for(let la=89;la>=-90;la-=3)L.push([la,lo]);line(L,"rgba(235,245,255,.14)")}
+ st.hits=[];drawCities(c=>front(c.lat,c.lon)?(()=>{const p=pp(c.lat,c.lon);return p?[p[0],p[1],V.Ff/Math.max(1,dot([c.d[0]*RKM-V.C[0],-c.d[1]*RKM-V.C[1],-V.C[2]],V.f))*Math.pow(1,0)]:null})():null);
+ const body=(b,lab,col,r,kind,draw)=>{let P;if(far){const n2=surfNLL(b.lat,b.lon,k);P=[V.T[0]+n2[0]*Rbg*0.62,V.T[1]+n2[1]*Rbg*0.62,V.T[2]+n2[2]*Rbg*0.62];if(Math.abs(k)<0.05){const q=surfLL(b.lat,b.lon,k);P=[q[0],q[1],st.H*1.6]}}else{const q=surfLL(b.lat,b.lon,k),n2=surfNLL(b.lat,b.lon,k);P=[q[0]+n2[0]*st.H*1.6,q[1]+n2[1]*st.H*1.6,q[2]+n2[2]*st.H*1.6]}
+  const p=vproj(V,P);if(!onScreen(p))return null;draw(p.sx,p.sy);text(lab,p.sx+r+5,p.sy+4,col,11,600,0);st.hits.push({x:p.sx,y:p.sy,kind});return p};
+ const pS=body(o.sp,"Sol","#ffcf73",8,"sun",(x,y)=>{glow(x,y,46,"rgba(255,214,150,.4)");ctx.fillStyle="#ffe9b8";ctx.beginPath();ctx.arc(x,y,8,0,7);ctx.fill()});
+ body(o.mo,"Lua","#e2e8ea",7,"moon",(x,y)=>drawMoon(x,y,7,o.ph,pS?{ok:true,sx:pS.sx,sy:pS.sy}:null,st.obs.lat<0,o.lun,true));
+ {const P=far?[V.T[0],V.T[1],V.T[2]+Rbg*0.62]:[0,0,dv.HD*RKM],p=vproj(V,P);if(onScreen(p)){ctx.fillStyle="#e8f6ff";ctx.beginPath();ctx.arc(p.sx,p.sy,3,0,7);ctx.fill();text("Polaris",p.sx+7,p.sy-5,"#bfe6ff",11,600,2)}}
+ {const p=pp(90,0);if(p&&front(90,0))text("N",p[0]+5,p[1]-4,"#fff",11,600,3)}
+ if(front(st.obs.lat,st.obs.lon)){const p=pp(st.obs.lat,st.obs.lon);if(p){ctx.strokeStyle="#ff8f6b";ctx.lineWidth=1.8;ctx.beginPath();ctx.arc(p[0],p[1],6,0,7);ctx.stroke();ctx.beginPath();ctx.moveTo(p[0]-10,p[1]);ctx.lineTo(p[0]+10,p[1]);ctx.moveTo(p[0],p[1]-10);ctx.lineTo(p[0],p[1]+10);ctx.stroke();st.hits.push({x:p[0],y:p[1],kind:"obs",m:-9})}}
+ const lab=Math.abs(k)<0.005?"Disco 3D · plano":k>0?`Disco 3D · convexo ${Math.round(k*100)}%`:`Disco 3D · côncavo ${Math.round(-k*100)}% (bordas mais altas)`;ctx.textAlign="center";text(lab+(far&&Math.abs(k)>0.6&&CV.dist==="dome"?" · estrelas distantes nesta forma":""),W/2,Math.max(HDRB+14,DMG.top-8),"rgba(235,245,255,.85)",11,600,0);ctx.textAlign="left"}
+function d3Step(){const tgt=CVD.on&&!CVD.unbend?CV.k:0;CVD.kd+=(tgt-CVD.kd)*0.08;if(Math.abs(tgt-CVD.kd)<0.002)CVD.kd=tgt;if(CVD.unbend&&Math.abs(CVD.kd)<0.004){CVD.kd=0;CVD.unbend=false;const a=CVD.after;CVD.after=null;if(a)a()}}
+const disc3D=()=>(CVD.on||Math.abs(CVD.kd)>0.002||CVD.unbend)&&!st.split&&g3Init();
+function setDisc3D(v){CVD.on=v;$("dCurve").setAttribute("aria-pressed",v);try{localStorage.setItem("planetarium-disco3d",v?"1":"0")}catch(e){}}
 // ---------- Zodíaco, eclíptica e caminhos do dia ----------
 const EPS=23.4393*D,SIGNS=[["♈","Áries"],["♉","Touro"],["♊","Gêmeos"],["♋","Câncer"],["♌","Leão"],["♍","Virgem"],["♎","Libra"],["♏","Escorpião"],["♐","Sagitário"],["♑","Capricórnio"],["♒","Aquário"],["♓","Peixes"]];
 const signT=l=>{const L=((l%360)+360)%360,k=Math.floor(L/30);return`${SIGNS[k][1]} (${nf(L-k*30,0)}° do signo)`};
@@ -1291,11 +1348,11 @@ function setMode(m){if(m!==st.mode)xfSnap();st.mode=m;$("bSens").hidden=m==="dis
  document.querySelector(".reticle").hidden=m!=="sky";applyLayout();if(m==="disc"){discInit();if(!dv.seen){dv.seen=true;toast("Arraste para girar e inclinar; pinça para aproximar. Toque num astro para ver detalhes. Segure o dedo num ponto para mudar o observador.")}}}
 function modeTrip(){const R=3.4;if(st.split||!g3Init()){setMode(st.mode==="sky"?"disc":"sky");return}
  if(st.mode==="sky"){dv.follow=true;$("dFollow").setAttribute("aria-pressed",true);try{localStorage.setItem("planetarium-follow","1")}catch(e){}dv.zoom=1;dv.zoomT=null;dv.px=0;dv.py=0;dv.tilt=Math.max(dv.tilt,0.5);dv.tiltT=null;flyEnter(0.004,FLTOP,R)}
- else if(st.mode==="disc"){st.yaw=heading()*D;flyEnter(FLTOP,0.0017,R)}
+ else if(st.mode==="disc"){const go=()=>{st.yaw=heading()*D;flyEnter(FLTOP,0.0017,R)};if(Math.abs(CVD.kd)>0.004){CVD.unbend=true;CVD.after=go}else go()}
  else{FL.rate=R;FL.v=0;FL.anim=FL.anim!=null?(FL.anim>=FLTOP?0.0017:FLTOP):(FL.h>100?0.0017:FLTOP)}}
 $("mini").onclick=modeTrip;
 $("dFollow").onclick=()=>setFollow(!dv.follow);
-tog("lGmap","gmap");tog("dCity","city");$("dDive").onclick=()=>{panel(null);st.yaw=heading()*D;if(flyEnter(FLTOP,0.0017))toast("Descendo até "+st.obs.name+"…")};$("bRise").onclick=()=>{panel(null);dv.follow=true;$("dFollow").setAttribute("aria-pressed",true);dv.zoom=1;dv.zoomT=null;dv.px=0;dv.py=0;if(flyEnter(0.004,FLTOP))toast("Subindo até o disco…")};
+tog("lGmap","gmap");$("dCurve").setAttribute("aria-pressed",CVD.on);$("dCurve").onclick=()=>{setDisc3D(!CVD.on);toast(CVD.on?`Disco em 3D com a forma do Teste da curvatura (${Math.round(CV.k*100)}%). Mude a forma em Teste da curvatura; incline o disco arrastando para cima e para baixo.`:"Disco plano de volta.")};$("cvShow").onclick=()=>{setDisc3D(true);panel(null);if(st.mode!=="disc")setMode("disc");dv.tiltT=0.32};tog("dCity","city");$("dDive").onclick=()=>{panel(null);st.yaw=heading()*D;if(flyEnter(FLTOP,0.0017))toast("Descendo até "+st.obs.name+"…")};$("bRise").onclick=()=>{panel(null);dv.follow=true;$("dFollow").setAttribute("aria-pressed",true);dv.zoom=1;dv.zoomT=null;dv.px=0;dv.py=0;if(flyEnter(0.004,FLTOP))toast("Subindo até o disco…")};
 for(const[id,v]of[["flyUp",1],["flyDn",-1]]){const b=$(id);b.addEventListener("pointerdown",e=>{e.preventDefault();FL.anim=null;FL.v=v});for(const ev of["pointerup","pointerleave","pointercancel"])b.addEventListener(ev,()=>{FL.v=0})}
 $("flyLand").onclick=()=>{FL.v=0;FL.anim=0.0017};$("flyDisc").onclick=()=>{FL.v=0;FL.anim=FLTOP};$("dFollow").setAttribute("aria-pressed",dv.follow);
 $("dTop").onclick=()=>{dv.tiltT=1};$("dIncl").onclick=()=>{dv.tiltT=0.45};$("dReset").onclick=()=>{setFollow(false,true);dv.zoomT=null;dv.tiltT=0.5;dv.rot=0;dv.zoom=1;dv.px=0;dv.py=0};
@@ -1313,7 +1370,7 @@ app.addEventListener("pointerdown",e=>{if(e.target.closest("button,.card,.sheet,
 const dist2=()=>{const[a,b]=[...pts.values()];return Math.hypot(a.x-b.x,a.y-b.y)};
 app.addEventListener("pointermove",e=>{if(!gest||!pts.has(e.pointerId))return;pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
  const mid2=()=>{const[a,b]=[...pts.values()];return[(a.x+b.x)/2,(a.y+b.y)/2]};
- if(pts.size===2&&gest.area==="disc"){if(!gest.d0){gest.d0=dist2();gest.mid=mid2();gest.zoom=dv.zoom;gest.px=dv.px;gest.py=dv.py}const m=mid2(),rawZ=gest.zoom*dist2()/gest.d0;if(rawZ>5.8&&!st.split&&dv.zoom>4.8){if(flyEnter(FLTOP)){gest.area="fly";gest.d0=dist2();gest.h0=FL.h;st.yaw=heading()*D}return}dv.zoomT=null;dv.zoom=clamp(rawZ,0.6,5);if(!dv.follow){dv.px=gest.px+m[0]-gest.mid[0];dv.py=gest.py+m[1]-gest.mid[1]}gest.moved=true;return}
+ if(pts.size===2&&gest.area==="disc"){if(!gest.d0){gest.d0=dist2();gest.mid=mid2();gest.zoom=dv.zoom;gest.px=dv.px;gest.py=dv.py}const m=mid2(),rawZ=gest.zoom*dist2()/gest.d0;if(rawZ>5.8&&!st.split&&dv.zoom>4.8&&Math.abs(CVD.kd)<0.004){if(flyEnter(FLTOP)){gest.area="fly";gest.d0=dist2();gest.h0=FL.h;st.yaw=heading()*D}return}dv.zoomT=null;dv.zoom=clamp(rawZ,0.6,5);if(!dv.follow){dv.px=gest.px+m[0]-gest.mid[0];dv.py=gest.py+m[1]-gest.mid[1]}gest.moved=true;return}
  if(pts.size===2&&gest.area==="fly"){if(!gest.d0||gest.h0==null){gest.d0=dist2();gest.h0=FL.h}FL.anim=null;FL.pAuto=true;const rawH=gest.h0*Math.pow(gest.d0/dist2(),3);if(rawH>FLTOP*1.05){FL.h=FLTOP;flyToDisc();gest.area="disc";gest.d0=dist2();gest.zoom=dv.zoom;gest.mid=mid2();gest.px=dv.px;gest.py=dv.py;return}FL.h=clamp(rawH,0.0017,FLTOP);gest.moved=true;return}
  if(pts.size===2&&gest.area==="sky"){if(!gest.d0)gest.d0=dist2();const raw=gest.fov*gest.d0/dist2();if(raw>150&&gest.fov>=100&&!st.split){if(flyEnter(0.004)){gest.area="fly";gest.d0=dist2();gest.h0=FL.h}return}st.fov=clamp(raw,2,130);gest.moved=true;return}
  const dx=e.clientX-gest.x,dy=e.clientY-gest.y;if(Math.hypot(dx,dy)>6)gest.moved=true;if(!gest.moved)return;const k=1/F;

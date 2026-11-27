@@ -64,6 +64,12 @@ Toque no relógio para abrir a barra de simulação: tocar/pausar, régua das 24
 - **Teste da curvatura** (menu, nos dois modos): um controle de curvatura do disco, começando no valor medido (1° a cada 111,2 km, das medições de Eratóstenes, al-Biruni, das expedições do século XVIII e do Arco de Struve até o GPS) e ajustável de 0% (plano) a 150%.
 - Mostra o perfil norte–sul em corte e, para várias cidades (de Reykjavík a Ushuaia, mais o seu local), a altura observada dos polos celestes comparada com a prevista; escolha entre estrelas muito distantes ou no domo. **Melhor ajuste** procura a curvatura que mais se aproxima do observado.
 
+## Disco em 3D
+
+- **Disco em 3D (forma e muralha)** (menu, Disco 3D) ou **Ver esta forma no Disco 3D** (no Teste da curvatura): o disco passa a ser desenhado em 3D de verdade, com espessura de rocha, muralha de gelo na borda e a forma escolhida no Teste da curvatura: plano (0%), convexo (centro mais alto, até fechar numa esfera em 100%) ou côncavo (bordas mais altas, valores negativos). A forma muda ao vivo ao mexer no controle.
+- Com estrelas "muito distantes" o céu fica ao fundo; com "no domo", as estrelas ficam no domo do modelo. Espessura e muralha são ilustrativas.
+- Ao descer para o seu local a partir de um disco curvado, ele volta a ficar plano antes do mergulho.
+
 ## Marés
 
 - **Marés** (menu, nos dois modos): calcula a maré astronômica de equilíbrio pelas posições reais da Lua e do Sol. No Disco 3D, o oceano fica azul onde a água se acumula (maré alta) e cor de areia onde baixa, com as duas regiões de maré alta marcadas: sob a Lua e do lado oposto.
