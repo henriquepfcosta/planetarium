@@ -23,7 +23,7 @@ Toque no relógio para abrir a barra de simulação: tocar/pausar, régua das 24
 - **Globo:** a vista do Disco 3D vira o **Sistema Solar** — Sol no centro, planetas nas órbitas (elementos orbitais do JPL/NASA), Terra com o eixo inclinado 23,4°, girando e com dia e noite reais no mapa, e a Lua na sua órbita. Arraste para girar, pinça para aproximar até a Terra e o seu local; o ícone de troca faz a viagem até o chão e de volta. Escala didática (padrão) ou real.
 - A Terra é desenhada com a foto de satélite (Blue Marble), iluminação real (dia, crepúsculo, noite com as luzes das cidades) e brilho da atmosfera; sua órbita fica em destaque.
 - **Movimento na galáxia** (cartão Modelo): o Sol avança a cerca de 230 km/s rumo a Cygnus e os planetas o acompanham, deixando um rastro em espiral (velocidade comprimida na escala didática).
-- **Lado a lado** (botão abaixo da chave Disco | Globo): abre e fecha a tela dividida Disco + Globo com um toque.
+- **Lado a lado** (botão abaixo da chave Disco | Globo): abre e fecha a tela dividida Disco + Globo com um toque. A simulação vale para os dois, e o globo se aproxima sozinho da vista certa para cada ação (um dia: a Terra girando; um ano: a órbita; 1 dia/s: Terra e Lua; nascer, meio-dia, pôr e meia-noite: o seu local).
 - **Tela dividida** (ficha de simulação): Céu + Disco, Disco + Globo ou Globo + Céu, no mesmo relógio.
 - **Comparar Disco × Globo:** Um dia, Estações, Fases da Lua e Eclipse — prepara a tela Disco + Globo, a velocidade e a vista para comparar os dois modelos.
 

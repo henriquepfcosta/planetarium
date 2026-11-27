@@ -317,7 +317,7 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
       <p class="small" id="airMsg"></p>
     </details>
     <button class="btn" id="sheetClose">Fechar</button>
-    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-29</p>
+    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-30</p>
   </div>
   <div class="welcome" id="welcome">
     <div>
@@ -989,7 +989,7 @@ function panel(id){if(id)$("mpHint").hidden=true;["pMenu","pTime","sheet","pEcl"
 $("scrim").onclick=()=>panel(null);$("bMenu").onclick=()=>panel($("pMenu").classList.contains("open")?null:"pMenu");const simOpen=()=>$("sim").classList.contains("open");const simToggle=()=>panel(simOpen()?null:"sim");$("bTime").onclick=simToggle;$("mpMore").onclick=simToggle;$("sClose").onclick=()=>panel(null);
 const SPDS=[1,60,600,3600,86400];
 {let seen=false;try{seen=localStorage.getItem("planetarium-simhint")==="1"}catch(e){}const done=()=>{$("mpHint").hidden=true;$("mp").classList.remove("pulse");try{localStorage.setItem("planetarium-simhint","1")}catch(e){}};
- if(!seen)setTimeout(()=>{if(document.querySelector(".sheet.open")||!$("cvBar").hidden)return;$("mp").classList.add("pulse");$("mpHint").hidden=false;setTimeout(()=>{$("mpHint").hidden=true},14000)},4500);$("mpHintX").onclick=done;$("mpMore").addEventListener("click",done);$("bTime").addEventListener("click",done)}$("mpPlay").onclick=()=>{st.play=!st.play};$("mpSpd").onclick=()=>{const i=SPDS.indexOf(st.speed),n=SPDS[(i+1)%SPDS.length];st.speed=n;st.year=false;st.play=true;toast(n===1?"Velocidade normal (1×)":`Simulando a ${SPN[n]}`)};
+ if(!seen)setTimeout(()=>{if(document.querySelector(".sheet.open")||!$("cvBar").hidden)return;$("mp").classList.add("pulse");$("mpHint").hidden=false;setTimeout(()=>{$("mpHint").hidden=true},14000)},4500);$("mpHintX").onclick=done;$("mpMore").addEventListener("click",done);$("bTime").addEventListener("click",done)}$("mpPlay").onclick=()=>{st.play=!st.play};$("mpSpd").onclick=()=>{const i=SPDS.indexOf(st.speed),n=SPDS[(i+1)%SPDS.length];st.speed=n;st.year=false;st.play=true;svAuto(n>=86400?"moon":"day");toast(n===1?"Velocidade normal (1×)":`Simulando a ${SPN[n]}`)};
 $("sNow").onclick=()=>{st.t=Date.now();st.speed=1;st.play=true;st.year=false;trClear();panel(null)};
 // escolher uma ação fecha a ficha para a simulação ficar à vista
 $("sim").addEventListener("click",e=>{const b=e.target.closest("[data-sp],[data-go],#sTrail,#sSplit");if(b)setTimeout(()=>{if(simOpen())panel(null)},120)});$("sCal").onclick=()=>panel("pTime");
@@ -1003,7 +1003,14 @@ document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{const k=b.datas
  else if(k==="noon"){st.t=T.noon;st.play=false}else if(k==="mid"){st.t=T.mid;st.play=false}
  else if(k==="day"){st.t=dayStart(st.t);st.speed=3600;st.play=true;setTrail(true);toast("Um dia inteiro em 24 segundos.")}
  else if(k==="night"){st.t=(T.set||dayStart(st.t)+18*36e5)-30*6e4;st.speed=1800;st.play=true;setTrail(true);toast("Do pôr ao nascer do Sol: veja as constelações nascendo e se pondo.")}
- else if(k==="year"){st.year=true;st.yAcc=0;st.play=true;setTrail(true);toast("Um ano, sempre neste mesmo horário: 15 dias por segundo.")}});
+ else if(k==="year"){st.year=true;st.yAcc=0;st.play=true;setTrail(true);toast("Um ano, sempre neste mesmo horário: 15 dias por segundo.")}
+ svAuto(k==="year"?"year":k==="day"||k==="night"?"day":"obs")});
+// o globo acompanha a simulação: aproxima da vista em que o movimento escolhido aparece
+function svAuto(k){const on=(st.split&&pairA().includes("globe"))||(st.mode==="disc"&&MODEL()==="globe");if(!on||G3.ok===false)return;const o=compute(),S=svState(o),e=nrm(S.E),side=Math.atan2(-e[1],-e[0]),eR=svRad("ter");
+ if(k==="year")SV.anim={lg:Math.log(Math.hypot(...S.E)*2.4),pitch:30*D,rate:1.3};
+ else if(k==="moon")SV.anim={lg:Math.log(svMoonD(o.mo)*3.4),pitch:62*D,rate:1.3};
+ else if(k==="obs"){const a=svAimObs(S);SV.anim={lg:Math.log(eR*4.6),pitch:a.pitch,yaw:a.yaw,rate:1.4}}
+ else SV.anim={lg:Math.log(eR*5.5),pitch:16*D,yaw:side,rate:1.4}}
 function setTrail(v){st.L.trail=v;$("sTrail").setAttribute("aria-pressed",v);if(!v)trClear()}
 $("sTrail").onclick=()=>setTrail(!st.L.trail);
 function setSplit(k){if(k==="off"){st.split=false}else{st.split=true;st.pair=k;discInit();if(k!=="sd"&&SV.lg<Math.log(svRad("ter")*3)){SV.anim=null;SV.lg=Math.log(svRad("ter")*6)}}$("sSplit").setAttribute("aria-pressed",st.split);applyLayout()}
@@ -1020,7 +1027,7 @@ $("sSplit").onclick=()=>{st.split=!st.split;$("sSplit").setAttribute("aria-press
 $("bLoc").onclick=()=>{syncLoc();$("height").value=st.H;$("q").value="";suggest();panel("sheet")};$("sheetClose").onclick=()=>panel(null);
 $("bComp").onclick=()=>$("bSens").click();
 $("dt").onchange=e=>{const t=new Date(e.target.value).getTime();if(isFinite(t)){st.t=t;st.year=false;trClear();if(st.speed===1)st.play=false}};
-document.querySelectorAll("[data-sp]").forEach(b=>b.onclick=()=>{st.speed=+b.dataset.sp;st.year=false;st.play=true});
+document.querySelectorAll("[data-sp]").forEach(b=>b.onclick=()=>{st.speed=+b.dataset.sp;st.year=false;st.play=true;svAuto(st.speed>=86400?"moon":"day")});
 $("bBack").onclick=()=>{st.t-=36e5;trClear()};$("bFwd").onclick=()=>{st.t+=36e5;trClear()};$("bNow").onclick=()=>{st.t=Date.now();st.speed=1;st.year=false;st.play=true;trClear()};
 $("bPlay").onclick=()=>{st.play=!st.play};
 const tog=(id,k)=>{$(id).onclick=()=>{st.L[k]=!st.L[k];$(id).setAttribute("aria-pressed",st.L[k])}};tog("lObs","obs");tog("lModel","model");tog("lLines","lines");tog("lGrid","grid");tog("lArt","art");tog("lLand","land");tog("lSat","sat");tog("lPolar","polar");$("dRing").onclick=()=>{dv.ring=!dv.ring;$("dRing").setAttribute("aria-pressed",dv.ring)};
@@ -1379,7 +1386,7 @@ const svDir=(y,p)=>[Math.cos(p)*Math.sin(y),-Math.cos(p)*Math.cos(y),Math.sin(p)
 function svAimObs(S){const R=svEarthRot(),n=R.f(svLL(st.obs.lat,st.obs.lon));return{yaw:Math.atan2(n[0],-n[1]),pitch:Math.asin(clamp(n[2],-0.999,0.999))}}
 function svStep(dt,S){const[lo,hi]=svLims();if(SV.yaw==null){const e=S.E;SV.yaw=Math.atan2(e[0],-e[1])+0.35}
  if(SV.anim){const A=SV.anim,k=Math.min(1,dt/1000*(A.rate||1.6));SV.lg+=(A.lg-SV.lg)*k*1.4;if(A.aim){const t=svAimObs(S);let dy=Math.atan2(Math.sin(t.yaw-SV.yaw),Math.cos(t.yaw-SV.yaw));SV.yaw+=dy*k*1.6;SV.pitch+=(t.pitch-SV.pitch)*k*1.6}
-  if(A.pitch!=null&&!A.aim)SV.pitch+=(A.pitch-SV.pitch)*k*1.2;if(Math.abs(A.lg-SV.lg)<0.03&&(A.pitch==null||A.aim||Math.abs(A.pitch-SV.pitch)<0.02)){SV.lg=A.lg;SV.anim=null;if(A.done)A.done()}}SV.lg=clamp(SV.lg,lo,hi);SV.pitch=clamp(SV.pitch,-89*D,89*D)}
+  if(A.pitch!=null&&!A.aim)SV.pitch+=(A.pitch-SV.pitch)*k*1.2;if(A.yaw!=null&&!A.aim){const dy=Math.atan2(Math.sin(A.yaw-SV.yaw),Math.cos(A.yaw-SV.yaw));SV.yaw+=dy*k*1.2}if(Math.abs(A.lg-SV.lg)<0.03&&(A.pitch==null||A.aim||Math.abs(A.pitch-SV.pitch)<0.02)&&(A.yaw==null||A.aim||Math.abs(Math.atan2(Math.sin(A.yaw-SV.yaw),Math.cos(A.yaw-SV.yaw)))<0.02)){SV.lg=A.lg;SV.anim=null;if(A.done)A.done()}}SV.lg=clamp(SV.lg,lo,hi);SV.pitch=clamp(SV.pitch,-89*D,89*D)}
 function svView(S,w,h){const Dd=Math.exp(SV.lg),eR=Math.hypot(...S.E),near=eR*0.45,far=eR*2.6,x=clamp((Math.log(Dd)-Math.log(near))/(Math.log(far)-Math.log(near)),0,1),wE=1-x*x*(3-2*x),T=[S.E[0]*wE,S.E[1]*wE,S.E[2]*wE];
  const d=svDir(SV.yaw,SV.pitch),f=[-d[0],-d[1],-d[2]],up=Math.abs(f[2])>0.995?[0,1,0]:[0,0,1];let r=nrm(cross(f,up));const u=cross(r,f),Ff=(Math.min(w,h)/2)/Math.tan(26*D);
  return{T,Dd,Crel:[d[0]*Dd,d[1]*Dd,d[2]*Dd],f,r,u,Ff,wE}}
