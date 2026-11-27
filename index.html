@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#03070f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Planetarium</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE: instrumento de observação, calmo, para usar ao ar livre à noite
+   IDEA: a cúpula do céu vista do chão, como a janela de um planetário de bolso
+   PICTURE: o céu em tela cheia; o Sol, a Lua e as estrelas onde estão agora, e os marcadores do modelo do disco
+   COLOUR and TYPE: céu que muda com a hora real, chão escuro, ouro para o Sol, coral para o modelo; Chakra Petch + Inter
+   LAYOUT: tela cheia; marca e local no topo, minimapa do disco à direita, controles em pílulas embaixo */
+:root{color-scheme:dark;--ink:#eef0ea;--mute:#a9b4b6;--sun:#ffcf73;--model:#ff8f6b;--teal:#6cc3b6;--glass:rgba(4,10,16,.72);--line:rgba(255,255,255,.14)}
+*{box-sizing:border-box;min-width:0;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:#03070f;color:var(--ink);font:15px/1.45 Inter,system-ui,sans-serif;overflow:hidden;overscroll-behavior:none}
+#app{position:fixed;inset:0;touch-action:none;user-select:none;-webkit-user-select:none}
+#sky{position:absolute;inset:0;width:100%;height:100%}
+.top{position:absolute;left:0;right:0;top:0;padding:calc(env(safe-area-inset-top) + 10px) 14px 0;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;pointer-events:none}
+.brand b{display:block;font:600 22px/1.05 "Chakra Petch",sans-serif;letter-spacing:.03em}
+.brand span{display:block;font-size:13px;color:var(--mute);text-shadow:0 1px 3px #000}
+.brand .t{color:var(--ink);font-variant-numeric:tabular-nums}
+#mini{width:96px;height:96px;flex:none;border-radius:50%;background:rgba(4,10,16,.6);border:1px solid var(--line);pointer-events:auto;cursor:pointer}
+.reticle{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;text-align:center}
+.reticle i{display:block;width:26px;height:26px;margin:0 auto;border:1.5px solid rgba(255,255,255,.55);border-radius:50%}
+.reticle span{display:block;margin-top:6px;font-size:12px;color:var(--mute);text-shadow:0 1px 3px #000;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bottom{position:absolute;left:0;right:0;bottom:0;padding:0 8px calc(env(safe-area-inset-bottom) + 10px);display:grid;gap:8px;pointer-events:none}
+.bar{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;pointer-events:auto;padding:2px}
+.bar::-webkit-scrollbar{display:none}
+.chip{flex:none;font:500 14px Inter,sans-serif;color:var(--ink);background:var(--glass);border:1px solid var(--line);border-radius:999px;min-height:40px;padding:0 14px;cursor:pointer;white-space:nowrap;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.chip[aria-pressed=true]{background:var(--ink);color:#08121a;border-color:var(--ink)}
+.chip.v[aria-pressed=true]{background:var(--sun);border-color:var(--sun);color:#1b1404}
+.chip.m[aria-pressed=true]{background:var(--model);border-color:var(--model);color:#1a0b06}
+.chip:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--sun);outline-offset:2px}
+.card{pointer-events:auto;background:var(--glass);border:1px solid var(--line);border-radius:16px;padding:12px 14px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);max-width:520px;width:100%;justify-self:center;position:relative}
+.card h3{margin:0 0 6px;font:600 17px "Chakra Petch",sans-serif}
+.card .x{position:absolute;right:6px;top:6px;width:36px;height:36px;border:0;background:none;color:var(--mute);font-size:20px;cursor:pointer}
+dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 14px;margin:0;font-size:14px}
+dt{color:var(--mute)}dd{margin:0;text-align:right;font-variant-numeric:tabular-nums}
+.note{font-size:13px;color:#ffd9c9;margin:8px 0 0}
+.sheet{position:absolute;inset:auto 0 0 0;padding:16px 16px calc(env(safe-area-inset-bottom) + 16px);background:#08121a;border-top:1px solid var(--line);border-radius:18px 18px 0 0;display:grid;gap:12px;max-height:80vh;overflow-y:auto;transform:translateY(105%);transition:transform .25s ease}
+.sheet.open{transform:none}
+.sheet h2{margin:0;font:600 20px "Chakra Petch",sans-serif}
+.btn{font:600 15px Inter,sans-serif;min-height:46px;border-radius:12px;border:1px solid var(--line);background:#12232c;color:var(--ink);padding:0 16px;cursor:pointer}
+.btn.p{background:var(--sun);color:#1b1404;border-color:var(--sun)}
+select,input[type=number]{font:16px Inter,sans-serif;width:100%;min-height:46px;background:#0f1d25;color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:0 12px}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+label.f{display:grid;gap:4px;font-size:13px;color:var(--mute)}
+input[type=range]{width:100%;accent-color:var(--model);height:32px}
+.small{font-size:13px;color:var(--mute);margin:0}
+.welcome{position:absolute;inset:0;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 50% 30%,rgba(20,40,70,.55),rgba(3,7,15,.92) 70%)}
+.welcome div{max-width:420px;display:grid;gap:14px;text-align:center}
+.welcome h1{margin:0;font:600 clamp(36px,9vw,52px)/1.05 "Chakra Petch",sans-serif;letter-spacing:.03em}
+.welcome p{margin:0;color:var(--mute);font-size:16px}
+.toast{position:absolute;left:50%;top:calc(env(safe-area-inset-top) + 118px);transform:translateX(-50%);background:var(--glass);border:1px solid var(--line);border-radius:12px;padding:10px 14px;font-size:14px;max-width:min(92vw,460px);text-align:center;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.on{opacity:1}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div id="app">
+  <canvas id="sky" aria-label="Céu em tela cheia"></canvas>
+  <div class="top">
+    <div class="brand"><b>Planetarium</b><span id="place">—</span><span class="t" id="clock">—</span></div>
+    <canvas id="mini" width="192" height="192" aria-label="Minimapa do disco"></canvas>
+  </div>
+  <div class="reticle"><i></i><span id="aim">—</span></div>
+  <div class="toast" id="toast"></div>
+  <div class="bottom">
+    <div class="card" id="info" hidden><button class="x" id="infoX" aria-label="Fechar">×</button><div id="infoBody"></div></div>
+    <div class="bar">
+      <button class="chip" id="bBack">−1 h</button>
+      <button class="chip" id="bNow">Agora</button>
+      <button class="chip" id="bFwd">+1 h</button>
+      <button class="chip" id="bSpeed">Tempo 1×</button>
+      <button class="chip" id="bPlay">Pausar</button>
+    </div>
+    <div class="bar">
+      <button class="chip v" id="mSky" aria-pressed="true">Céu</button>
+      <button class="chip v" id="mDisc" aria-pressed="false">Disco</button>
+      <button class="chip d" id="dTilt" aria-pressed="false" hidden>Vista 3D</button>
+      <button class="chip d" id="dLight" aria-pressed="true" hidden>Luz do Sol</button>
+      <button class="chip s" id="lObs" aria-pressed="true">Céu observado</button>
+      <button class="chip m s" id="lModel" aria-pressed="true">Modelo do disco</button>
+      <button class="chip s" id="lLines" aria-pressed="true">Constelações</button>
+      <button class="chip s" id="lGrid" aria-pressed="false">Grade</button>
+      <button class="chip s" id="bSens" aria-pressed="false">Sensores</button>
+      <button class="chip" id="bLoc">Local e modelo</button>
+    </div>
+  </div>
+  <div class="sheet" id="sheet" role="dialog" aria-label="Local e modelo">
+    <h2>Local e modelo</h2>
+    <button class="btn p" id="gps">Usar minha localização (GPS)</button>
+    <p class="small" id="gpsMsg">A posição exata deixa o céu igual ao que você vê da sua janela.</p>
+    <label class="f">Cidade<select id="city"></select></label>
+    <div class="two">
+      <label class="f">Latitude<input type="number" id="lat" step="0.01" min="-90" max="90"></label>
+      <label class="f">Longitude<input type="number" id="lon" step="0.01" min="-180" max="180"></label>
+    </div>
+    <label class="f"><span>Altura do Sol e da Lua no modelo: <b id="hVal" style="color:var(--ink)">5.000 km</b></span><input type="range" id="height" min="500" max="20000" step="100" value="5000"></label>
+    <p class="small">Os marcadores coral mostram onde um Sol e uma Lua locais, nessa altura acima do disco, apareceriam do seu ponto. Os dourados e brancos são o céu observado.</p>
+    <button class="btn" id="sheetClose">Fechar</button>
+  </div>
+  <div class="welcome" id="welcome">
+    <div>
+      <h1>Planetarium</h1>
+      <p>Aponte o celular para o céu. O Sol, a Lua e as estrelas aparecem onde estão agora, junto com o que o modelo do disco prevê para o seu ponto.</p>
+      <button class="btn p" id="start">Ativar sensores e localização</button>
+      <button class="btn" id="startManual">Explorar arrastando</button>
+    </div>
+  </div>
+</div>
+<script>
+{
+const D=Math.PI/180,R2D=180/Math.PI,RKM=20015;
+const $=id=>document.getElementById(id);
+const norm=a=>((a%360)+540)%360-180;
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+// ---------- Efemérides ----------
+const jdOf=ms=>ms/864e5+2440587.5;
+const gmst=jd=>{const T=(jd-2451545)/36525;return 280.46061837+360.98564736629*(jd-2451545)+0.000387933*T*T};
+function sun(ms){const jd=jdOf(ms),T=(jd-2451545)/36525;
+ const L0=280.46646+T*(36000.76983+T*0.0003032),M=357.52911+T*(35999.05029-0.0001537*T);
+ const C=Math.sin(M*D)*(1.914602-T*(0.004817+0.000014*T))+Math.sin(2*M*D)*(0.019993-0.000101*T)+Math.sin(3*M*D)*0.000289;
+ const om=125.04-1934.136*T,lam=L0+C-0.00569-0.00478*Math.sin(om*D);
+ const eps=23+(26+(21.448-T*(46.815+T*(0.00059-T*0.001813)))/60)/60+0.00256*Math.cos(om*D);
+ const dec=Math.asin(Math.sin(eps*D)*Math.sin(lam*D))*R2D,ra=Math.atan2(Math.cos(eps*D)*Math.sin(lam*D),Math.cos(lam*D))*R2D;
+ return{lat:dec,lon:norm(ra-gmst(jd)),lam}}
+function moon(ms){const jd=jdOf(ms),d=jd-2451543.5;
+ const N=125.1228-0.0529538083*d,i=5.1454,w=318.0634+0.1643573223*d,a=60.2666,e=0.0549,M=115.3654+13.0649929509*d;
+ let E=M+e*R2D*Math.sin(M*D)*(1+e*Math.cos(M*D));for(let k=0;k<3;k++)E=E-(E-e*R2D*Math.sin(E*D)-M)/(1-e*Math.cos(E*D));
+ const xv=a*(Math.cos(E*D)-e),yv=a*Math.sqrt(1-e*e)*Math.sin(E*D),v=Math.atan2(yv,xv)*R2D,r=Math.hypot(xv,yv);
+ const xh=r*(Math.cos(N*D)*Math.cos((v+w)*D)-Math.sin(N*D)*Math.sin((v+w)*D)*Math.cos(i*D));
+ const yh=r*(Math.sin(N*D)*Math.cos((v+w)*D)+Math.cos(N*D)*Math.sin((v+w)*D)*Math.cos(i*D));
+ const zh=r*Math.sin((v+w)*D)*Math.sin(i*D);
+ let lon=Math.atan2(yh,xh)*R2D,lat=Math.atan2(zh,Math.hypot(xh,yh))*R2D;
+ const Ms=356.047+0.9856002585*d,Ls=Ms+282.9404+4.70935e-5*d,Lm=N+w+M,Dd=Lm-Ls,F=Lm-N,s=x=>Math.sin(x*D);
+ lon+=-1.274*s(M-2*Dd)+0.658*s(2*Dd)-0.186*s(Ms)-0.059*s(2*M-2*Dd)-0.057*s(M-2*Dd+Ms)+0.053*s(M+2*Dd)+0.046*s(2*Dd-Ms)+0.041*s(M-Ms)-0.035*s(Dd)-0.031*s(M+Ms)-0.015*s(2*F-2*Dd)+0.011*s(M-4*Dd);
+ lat+=-0.173*s(F-2*Dd)-0.055*s(M-F-2*Dd)-0.046*s(M+F-2*Dd)+0.033*s(F+2*Dd)+0.017*s(2*M+F);
+ const ecl=(23.4393-3.563e-7*d)*D,x=Math.cos(lat*D)*Math.cos(lon*D),y=Math.cos(lat*D)*Math.sin(lon*D),z=Math.sin(lat*D);
+ const ye=y*Math.cos(ecl)-z*Math.sin(ecl),ze=y*Math.sin(ecl)+z*Math.cos(ecl);
+ const ra=Math.atan2(ye,x)*R2D,dec=Math.atan2(ze,Math.hypot(x,ye))*R2D;
+ return{lat:dec,lon:norm(ra-gmst(jd)),elon:lon,elat:lat}}
+const altOf=(lat,lon,s)=>Math.asin(clamp(Math.sin(lat*D)*Math.sin(s.lat*D)+Math.cos(lat*D)*Math.cos(s.lat*D)*Math.cos((lon-s.lon)*D),-1,1))*R2D;
+function azOf(lat,lon,s){const H=(lon-s.lon)*D;return(Math.atan2(Math.sin(H),Math.cos(H)*Math.sin(lat*D)-Math.tan(s.lat*D)*Math.cos(lat*D))*R2D+180)%360}
+const toDisc=(lat,lon)=>{const r=(90-lat)/180;return[r*Math.sin(lon*D),r*Math.cos(lon*D)]};
+const enu=(alt,az)=>[Math.sin(az*D)*Math.cos(alt*D),Math.cos(az*D)*Math.cos(alt*D),Math.sin(alt*D)];
+const dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+const nrm=a=>{const l=Math.hypot(...a)||1;return[a[0]/l,a[1]/l,a[2]/l]};
+// ---------- Estrelas principais (J2000: AR em horas, Dec em graus, magnitude) ----------
+const CITIES=[["São Paulo",-23.55,-46.63],["Rio de Janeiro",-22.91,-43.17],["Brasília",-15.79,-47.88],["Lisboa",38.72,-9.14],["Nova York",40.71,-74.01],["Londres",51.51,-0.13],["Reykjavík",64.15,-21.94],["Tóquio",35.68,139.69],["Sydney",-33.87,151.21],["Cidade do Cabo",-33.92,18.42],["Santiago",-33.45,-70.67],["Ushuaia",-54.8,-68.3],["McMurdo (Antártida)",-77.85,166.67]];
+// ---------- Catálogo (d3-celestial / Hipparcos) e planetas ----------
+const CAT={ready:false,n:0,v:null,mag:null,col:[],names:{},cons:[],mw:[]};
+const eqv=(ra,dec)=>[Math.cos(dec*D)*Math.cos(ra*D),Math.cos(dec*D)*Math.sin(ra*D),Math.sin(dec*D)];
+function bvCol(bv){const S=[[155,176,255],[202,215,255],[255,244,234],[255,214,170],[255,184,128]],t=clamp((bv+0.3)/2,0,1)*(S.length-1),i=Math.min(S.length-2,Math.floor(t)),f=t-i;return`rgb(${S[i].map((v,j)=>Math.round(v+(S[i+1][j]-v)*f)).join(",")})`}
+fetch("sky.json").then(r=>r.json()).then(d=>{const n=d.s.length/4;CAT.v=new Float32Array(n*3);CAT.mag=new Float32Array(n);
+ for(let i=0;i<n;i++){CAT.v.set(eqv(d.s[i*4],d.s[i*4+1]),i*3);CAT.mag[i]=d.s[i*4+2];CAT.col.push(bvCol(d.s[i*4+3]))}CAT.n=n;CAT.names=d.n;
+ CAT.cons=d.c.map(([id,name,lr,ld,segs])=>({id,name,lab:eqv(lr,ld),segs:segs.map(s=>{const a=[];for(let k=0;k<s.length;k+=2)a.push(eqv(s[k],s[k+1]));return a})}));
+ CAT.mw=d.mw.map(([lvl,r])=>{const a=[];for(let k=0;k<r.length;k+=2)a.push(eqv(r[k],r[k+1]));return{lvl,a}});CAT.ready=true})
+ .catch(()=>toast("Não foi possível carregar o catálogo de estrelas."));
+const PLE={"mer":[-0.665,0.38709927,0.20563593,7.00497902,252.2503235,77.45779628,48.33076593,3.7e-07,1.906e-05,-0.00594749,149472.67411175,0.16047689,-0.12534081],"ven":[-4.33,0.72333566,0.00677672,3.39467605,181.9790995,131.60246718,76.67984255,3.9e-06,-4.107e-05,-0.0007889,58517.81538729,0.00268329,-0.27769418],"ter":[-3.79,1.00000261,0.01671123,-1.531e-05,100.46457166,102.93768193,0,5.62e-06,-4.392e-05,-0.01294668,35999.37244981,0.32327364,0],"mar":[-1.59,1.52371034,0.0933941,1.84969142,-4.55343205,-23.94362959,49.55953891,1.847e-05,7.882e-05,-0.00813131,19140.30268499,0.44441088,-0.29257343],"jup":[-9.42,5.202887,0.04838624,1.30439695,34.39644051,14.72847983,100.47390909,-0.00011607,-0.00013253,-0.00183714,3034.74612775,0.21252668,0.20469106],"sat":[-8.94,9.53667594,0.05386179,2.48599187,49.95424423,92.59887831,113.66242448,-0.0012506,-0.00050991,0.00193609,1222.49362201,-0.41897216,-0.28867794],"ura":[-7.16,19.18916464,0.04725744,0.77263783,313.23810451,170.9542763,74.01692503,-0.00196176,-4.397e-05,-0.00242939,428.48202785,0.40805281,0.04240589],"nep":[-6.86,30.06992276,0.00859048,1.77004347,-55.12002969,44.96476227,131.78422574,0.00026291,5.105e-05,0.00035372,218.45945325,-0.32241464,-0.00508664]};
+const PLN=[["mer","Mercúrio","#d8c8b4",0.04],["ven","Vênus","#fff3d6",0.02],["mar","Marte","#ff9a6b",0.016],["jup","Júpiter","#f2dcb3",0.005],["sat","Saturno","#ecd79e",0.005],["ura","Urano","#bfe9f0",0],["nep","Netuno","#9db8ff",0]];
+function helio(el,T){let[H,a,e,i,L,W,N,da,de,di,dL,dW,dN]=el;a+=da*T;e+=de*T;i+=di*T;L+=dL*T;W+=dW*T;N+=dN*T;
+ const M=((L-W)%360+360)%360,w=W-N;let E=M+e*R2D*Math.sin(M*D);for(let k=0;k<6;k++)E=E-(E-e*R2D*Math.sin(E*D)-M)/(1-e*Math.cos(E*D));
+ const xp=a*(Math.cos(E*D)-e),yp=a*Math.sqrt(1-e*e)*Math.sin(E*D),cw=Math.cos(w*D),sw=Math.sin(w*D),cO=Math.cos(N*D),sO=Math.sin(N*D),ci=Math.cos(i*D),si=Math.sin(i*D);
+ return[(cw*cO-sw*sO*ci)*xp+(-sw*cO-cw*sO*ci)*yp,(cw*sO+sw*cO*ci)*xp+(-sw*sO+cw*cO*ci)*yp,sw*si*xp+cw*si*yp]}
+function planets(ms,g,o){const T=(jdOf(ms)-2451545)/36525,E=helio(PLE.ter,T),eps=23.43928*D;
+ return PLN.map(([id,name,col,pk])=>{const P=helio(PLE[id],T),x=P[0]-E[0],y=P[1]-E[1],z=P[2]-E[2],ye=y*Math.cos(eps)-z*Math.sin(eps),ze=y*Math.sin(eps)+z*Math.cos(eps);
+  const ra=Math.atan2(ye,x)*R2D,dec=Math.atan2(ze,Math.hypot(x,ye))*R2D,r=Math.hypot(...P),dl=Math.hypot(x,y,z),ph=Math.acos(clamp((r*r+dl*dl-Math.hypot(...E)**2)/(2*r*dl),-1,1))*R2D;
+  const mag=PLE[id][0]+5*Math.log10(r*dl)+pk*ph,sub={lat:dec,lon:norm(ra-g)},al=altOf(o.lat,o.lon,sub),az=azOf(o.lat,o.lon,sub);return{id,name,col,mag,sub,alt:al,az,v:enu(al,az)}})}
+function limMag(a){return a>=0?-3.5:a>-6?1+(-3.5-1)*(a+6)/6:a>-12?3.5+(1-3.5)*(a+12)/6:a>-18?5.6+(3.5-5.6)*(a+18)/6:6.2}
+// Polígono no espaço da câmera, recortado no plano próximo
+function clipProj(pts,C){const P=pts.map(q=>[dot(q,C.r),dot(q,C.u),dot(q,C.f)]),out=[],nz=0.08;
+ for(let i=0;i<P.length;i++){const a=P[i],b=P[(i+1)%P.length],ia=a[2]>=nz,ib=b[2]>=nz;if(ia)out.push(a);if(ia!==ib){const t=(nz-a[2])/(b[2]-a[2]);out.push([a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,nz])}}
+ return out.map(([x,y,z])=>[W/2+F*x/z,Hh/2-F*y/z])}
+
+// ---------- Estado ----------
+const st={t:Date.now(),play:true,speed:1,obs:{name:"São Paulo",lat:-23.55,lon:-46.63},H:5000,yaw:180*D,pitch:25*D,fov:75,
+ L:{obs:true,model:true,lines:true,grid:false},sensors:false,mode:"sky",dg:null,sel:null,hits:[]};
+const sens={alpha:0,beta:90,gamma:0,cal:0,iosOff:null,got:false,abs:false};
+let cam={f:[0,1,0],r:[1,0,0],u:[0,0,1]};
+try{const s=JSON.parse(localStorage.getItem("planetarium")||"null");if(s&&s.obs)st.obs=s.obs;if(s&&s.H)st.H=s.H}catch(e){}
+const save=()=>{try{localStorage.setItem("planetarium",JSON.stringify({obs:st.obs,H:st.H}))}catch(e){}};
+// ---------- Canvas ----------
+const cv=$("sky"),ctx=cv.getContext("2d"),mini=$("mini"),mctx=mini.getContext("2d");let W=0,Hh=0,dpr=1,F=1;
+function resize(){dpr=Math.min(devicePixelRatio||1,2);W=innerWidth;Hh=innerHeight;cv.width=W*dpr;cv.height=Hh*dpr}
+addEventListener("resize",resize);resize();
+// ---------- Câmera ----------
+function camManual(){const cy=Math.cos(st.yaw),sy=Math.sin(st.yaw),cp=Math.cos(st.pitch),sp=Math.sin(st.pitch);return{f:[sy*cp,cy*cp,sp],r:[cy,-sy,0],u:[-sy*sp,-cy*sp,cp]}}
+function camSensor(){const a=(sens.alpha+sens.cal)*D,b=sens.beta*D,g=sens.gamma*D,cX=Math.cos(b),sX=Math.sin(b),cY=Math.cos(g),sY=Math.sin(g),cZ=Math.cos(a),sZ=Math.sin(a);
+ const dx=[cZ*cY-sZ*sX*sY,cY*sZ+cZ*sX*sY,-cX*sY],dy=[-cX*sZ,cZ*cX,sX],dz=[cY*sZ*sX+cZ*sY,sZ*sY-cZ*cY*sX,cX*cY];
+ const th=((screen.orientation&&screen.orientation.angle)||window.orientation||0)*D,c=Math.cos(th),s=Math.sin(th);
+ return{f:[-dz[0],-dz[1],-dz[2]],r:[c*dx[0]-s*dy[0],c*dx[1]-s*dy[1],c*dx[2]-s*dy[2]],u:[s*dx[0]+c*dy[0],s*dx[1]+c*dy[1],s*dx[2]+c*dy[2]]}}
+function updateCam(){const t=st.sensors&&sens.got?camSensor():camManual();
+ if(st.sensors&&sens.got){const k=0.25,mix=(a,b)=>a.map((v,i)=>v+(b[i]-v)*k);let f=nrm(mix(cam.f,t.f)),r=mix(cam.r,t.r);r=nrm(r.map((v,i)=>v-dot(r,f)*f[i]));cam={f,r,u:cross(r,f)}}else cam=t;
+ F=(Math.min(W,Hh)/2)/Math.tan(st.fov*D/2)}
+function proj(v){const z=dot(v,cam.f),x=dot(v,cam.r),y=dot(v,cam.u);return z>0.02?{ok:true,sx:W/2+F*x/z,sy:Hh/2-F*y/z,x,y,z}:{ok:false,x,y,z}}
+const onScreen=p=>p.ok&&p.sx>-40&&p.sx<W+40&&p.sy>-40&&p.sy<Hh+40;
+// ---------- Cálculo dos objetos ----------
+function riseSet(o){const d0=new Date(st.t);d0.setHours(0,0,0,0);let rise=null,set=null,prev=altOf(o.lat,o.lon,sun(+d0));
+ for(let m=5;m<=1440;m+=5){const t=+d0+m*6e4,a=altOf(o.lat,o.lon,sun(t));if((prev<=-0.83)!==(a<=-0.83)){const tt=t-3e5*(1-(-0.83-prev)/(a-prev));if(a>prev)rise=rise||tt;else set=set||tt}prev=a}return{rise,set}}
+function modelDir(sub,o){const O=toDisc(o.lat,o.lon),S=toDisc(sub.lat,sub.lon),dx=(S[0]-O[0])*RKM,dy=(S[1]-O[1])*RKM;
+ const lo=o.lon*D,e=dx*Math.cos(lo)-dy*Math.sin(lo),n=-(dx*Math.sin(lo)+dy*Math.cos(lo)),dist=Math.hypot(e,n);
+ return{v:nrm([e,n,st.H]),alt:Math.atan2(st.H,dist)*R2D,az:(Math.atan2(e,n)*R2D+360)%360,dist}}
+function phaseOf(mo,sp){const el=Math.acos(Math.cos(mo.elat*D)*Math.cos((mo.elon-sp.lam)*D))*R2D,k=(1-Math.cos(el*D))/2,wax=((mo.elon-sp.lam)%360+360)%360<180;
+ const n=k<0.03?"Nova":k>0.97?"Cheia":Math.abs(k-0.5)<0.07?(wax?"Quarto crescente":"Quarto minguante"):k<0.5?(wax?"Crescente":"Minguante"):(wax?"Gibosa crescente":"Gibosa minguante");return{k,wax,n}}
+function compute(){const o=st.obs,sp=sun(st.t),mo=moon(st.t),g=gmst(jdOf(st.t));
+ const sAlt=altOf(o.lat,o.lon,sp),sAz=azOf(o.lat,o.lon,sp);let mAlt=altOf(o.lat,o.lon,mo);const mAz=azOf(o.lat,o.lon,mo);mAlt-=0.95*Math.cos(mAlt*D);
+ const th=(g+o.lon)*D,fi=o.lat*D,cT=Math.cos(th),sT=Math.sin(th),cF=Math.cos(fi),sF=Math.sin(fi),Mq=[[-sT,cT,0],[-sF*cT,-sF*sT,cF],[cF*cT,cF*sT,sF]];
+ const pl=planets(st.t,g,o);
+ return{sp,mo,sun:{alt:sAlt,az:sAz,v:enu(sAlt,sAz)},moon:{alt:mAlt,az:mAz,v:enu(mAlt,mAz)},ms:modelDir(sp,o),mm:modelDir(mo,o),Mq,pl,ph:phaseOf(mo,sp)}}
+// ---------- Cores do céu ----------
+const lerp=(a,b,t)=>a.map((v,i)=>Math.round(v+(b[i]-v)*t));
+const rgb=c=>`rgb(${c[0]},${c[1]},${c[2]})`;
+function skyCols(a){const t1=clamp((a+18)/12,0,1),t2=clamp((a+6)/10,0,1);
+ const zen=t2>0?lerp([20,37,74],[47,111,174],t2):lerp([3,7,15],[20,37,74],t1),hor=t2>0?lerp([196,112,70],[169,203,230],t2):lerp([10,20,36],[196,112,70],t1),gnd=lerp([6,10,10],[34,48,38],t2);return{zen,hor,gnd,dark:1-t2}}
+// ---------- Desenho ----------
+function polyAltAz(alts,azs,style,w,dash){ctx.beginPath();let pen=false;for(let i=0;i<alts.length;i++){const p=proj(enu(alts[i],azs[i]));if(!p.ok||Math.abs(p.sx)>8*W||Math.abs(p.sy)>8*Hh){pen=false;continue}pen?ctx.lineTo(p.sx,p.sy):ctx.moveTo(p.sx,p.sy);pen=true}ctx.strokeStyle=style;ctx.lineWidth=w;ctx.setLineDash(dash||[]);ctx.stroke();ctx.setLineDash([])}
+function glow(x,y,r,c0){const g=ctx.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,c0);g.addColorStop(1,"rgba(0,0,0,0)");ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fill()}
+function text(s,x,y,col,size,weight){ctx.font=`${weight||500} ${size||12}px Inter,sans-serif`;ctx.lineWidth=3;ctx.lineJoin="round";ctx.strokeStyle="rgba(0,0,0,.6)";ctx.strokeText(s,x,y);ctx.fillStyle=col;ctx.fillText(s,x,y)}
+function arrow(p,label,col){let ang=Math.atan2(-p.y,p.x);if(!p.ok&&Math.hypot(p.x,p.y)<1e-3)ang=Math.PI/2;
+ const cx=W/2,cy=Hh/2,mx=W/2-34,my=Hh/2-150,c=Math.cos(ang),s=-Math.sin(ang),k=Math.min(Math.abs(mx/(c||1e-9)),Math.abs(my/(s||1e-9)));const x=cx+c*k,y=cy+s*k;
+ ctx.save();ctx.translate(x,y);ctx.rotate(Math.atan2(s,c));ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(12,0);ctx.lineTo(-6,-8);ctx.lineTo(-6,8);ctx.closePath();ctx.fill();ctx.restore();
+ ctx.textAlign=c>0.3?"right":c<-0.3?"left":"center";text(label,x-c*16,y-s*16+4,col,12,600);ctx.textAlign="left"}
+function moonDisc(x,y,r,ph,sunP){ctx.save();ctx.translate(x,y);let ang=0;if(sunP)ang=sunP.ok?Math.atan2(-(sunP.sy-y),sunP.sx-x):Math.atan2(sunP.y,sunP.x);ctx.rotate(-ang);
+ ctx.fillStyle="#2a3036";ctx.beginPath();ctx.arc(0,0,r,0,7);ctx.fill();ctx.fillStyle="#e7ecee";
+ ctx.beginPath();ctx.arc(0,0,r,-Math.PI/2,Math.PI/2);const ex=r*Math.abs(1-2*ph.k);ctx.ellipse(0,0,ex,r,0,Math.PI/2,-Math.PI/2,ph.k<0.5);ctx.fill();ctx.restore()}
+function draw(o){
+ ctx.setTransform(dpr,0,0,dpr,0,0);const sc=skyCols(o.sun.alt),up=[0,0,1],gr=Math.hypot(cam.r[2],cam.u[2])/F;
+ // céu
+ ctx.fillStyle=rgb(sc.zen);ctx.fillRect(0,0,W,Hh);
+ if(gr>1e-6){const nx=cam.r[2]/F/gr,ny=-cam.u[2]/F/gr,s0=-cam.f[2]/gr,hx=W/2+nx*s0,hy=Hh/2+ny*s0;
+  const g=ctx.createLinearGradient(hx,hy,hx+nx*Hh*0.7,hy+ny*Hh*0.7);g.addColorStop(0,rgb(sc.hor));g.addColorStop(1,rgb(sc.zen));ctx.fillStyle=g;ctx.fillRect(0,0,W,Hh)}
+ if(o.sun.alt>-12){const p=proj(o.sun.v);if(p.ok)glow(p.sx,p.sy,Math.min(W,Hh)*0.6,`rgba(255,214,150,${0.35*clamp((o.sun.alt+12)/14,0,1)})`)}
+ // céu profundo: Via Láctea, estrelas, constelações e planetas
+ const lim=limMag(o.sun.alt)+clamp((75-st.fov)/50,0,0.6),Mq=o.Mq,toEq=w=>[w[0]*Mq[0][0]+w[1]*Mq[1][0]+w[2]*Mq[2][0],w[0]*Mq[0][1]+w[1]*Mq[1][1]+w[2]*Mq[2][1],w[0]*Mq[0][2]+w[1]*Mq[1][2]+w[2]*Mq[2][2]];
+ const C={r:toEq(cam.r),u:toEq(cam.u),f:toEq(cam.f)},upE=Mq[2],night=clamp((-o.sun.alt-8)/10,0,1);
+ const pq=q=>{const z=dot(q,C.f);if(z<=0.02)return null;const x=W/2+F*dot(q,C.r)/z,y=Hh/2-F*dot(q,C.u)/z;return x>-60&&x<W+60&&y>-60&&y<Hh+60?[x,y]:null};
+ if(st.L.obs&&CAT.ready){
+  if(night>0.02){for(const m of CAT.mw){const pts=clipProj(m.a,C);if(pts.length<3)continue;ctx.fillStyle=`rgba(190,205,255,${0.035*night})`;ctx.beginPath();pts.forEach(([x,y],k)=>k?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fill()}}
+  if(st.L.lines&&lim>1.5){const la=clamp((lim-1.5)/2,0,1);ctx.strokeStyle=`rgba(108,195,182,${0.42*la})`;ctx.lineWidth=1;ctx.beginPath();
+   for(const c of CAT.cons)for(const seg of c.segs){let prev=null;for(const q of seg){const z=dot(q,C.f);const p=z>0.05?[W/2+F*dot(q,C.r)/z,Hh/2-F*dot(q,C.u)/z]:null;if(p&&prev){ctx.moveTo(prev[0],prev[1]);ctx.lineTo(p[0],p[1])}prev=p}}ctx.stroke();
+   ctx.textAlign="center";for(const c of CAT.cons){if(dot(c.lab,upE)<0.05)continue;const p=pq(c.lab);if(p)text(c.name,p[0],p[1],`rgba(143,216,204,${0.8*la})`,12,500)}ctx.textAlign="left"}
+  const zs=Math.pow(75/st.fov,0.35),lab=1.4+(75-st.fov)/22;
+  for(let i=0;i<CAT.n;i++){const m=CAT.mag[i];if(m>lim)continue;const q=[CAT.v[i*3],CAT.v[i*3+1],CAT.v[i*3+2]];if(dot(q,upE)<0)continue;const p=pq(q);if(!p)continue;
+   const a=clamp((lim-m)/1.4,0.08,1),r=Math.max(0.55,(2.9-0.5*m)*zs);ctx.globalAlpha=a;ctx.fillStyle=CAT.col[i];
+   if(r<1.2)ctx.fillRect(p[0]-r,p[1]-r,r*2,r*2);else{if(m<1.5){ctx.globalAlpha=a*0.25;ctx.beginPath();ctx.arc(p[0],p[1],r*3,0,7);ctx.fill();ctx.globalAlpha=a}ctx.beginPath();ctx.arc(p[0],p[1],r,0,7);ctx.fill()}
+   ctx.globalAlpha=1;const nm=CAT.names[i];if(nm&&m<lab)text(nm,p[0]+r+4,p[1]+4,`rgba(215,222,235,${0.9*a})`,11);if(m<4.5)st.hits.push({x:p[0],y:p[1],kind:"star",i})}
+  for(const P of o.pl){if(P.alt<0)continue;const vis=P.mag<lim+0.6||(o.sun.alt<-8&&P.mag<8.5);if(!vis)continue;const p=proj(P.v);if(!onScreen(p))continue;const r=Math.max(2.2,(3.6-0.45*P.mag)*zs);
+   glow(p.sx,p.sy,r*4,"rgba(255,240,210,.25)");ctx.fillStyle=P.col;ctx.beginPath();ctx.arc(p.sx,p.sy,r,0,7);ctx.fill();text(P.name,p.sx+r+5,p.sy+4,P.col,12,600);st.hits.push({x:p.sx,y:p.sy,kind:"planet",id:P.id})}}
+ // chão
+ const corners=[[0,0],[W,0],[W,Hh],[0,Hh]],gfun=([x,y])=>cam.f[2]+(x-W/2)/F*cam.r[2]-(y-Hh/2)/F*cam.u[2],poly=[];
+ for(let i=0;i<4;i++){const a=corners[i],b=corners[(i+1)%4],ga=gfun(a),gb=gfun(b);if(ga<0)poly.push(a);if((ga<0)!==(gb<0)){const t=ga/(ga-gb);poly.push([a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t])}}
+ if(poly.length>2){ctx.fillStyle=rgb(sc.gnd);ctx.beginPath();poly.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fill()}
+ const azs=[...Array(181).keys()].map(i=>i*2);polyAltAz(azs.map(()=>0),azs,"rgba(238,240,234,.7)",1.3);
+ if(st.L.grid){for(const a of[30,60])polyAltAz(azs.map(()=>a),azs,"rgba(238,240,234,.22)",1,[3,5]);for(let z=0;z<360;z+=45){const al=[...Array(18).keys()].map(i=>i*5);polyAltAz(al,al.map(()=>z),"rgba(238,240,234,.18)",1,[3,5])}}
+ const CARD=["N","NE","L","SE","S","SO","O","NO"];CARD.forEach((c,i)=>{const p=proj(enu(1.2,i*45));if(onScreen(p)){ctx.textAlign="center";text(c,p.sx,p.sy-6,i===0?"#ff9f80":"#eef0ea",i%2?12:16,600);ctx.textAlign="left"}});
+ // Lua e Sol observados
+ const pS=proj(o.sun.v);
+ if(st.L.obs){const pm=proj(o.moon.v);if(o.moon.alt>-1&&onScreen(pm)){const r=Math.max(9,F*Math.tan(0.26*D));glow(pm.sx,pm.sy,r*4,`rgba(220,230,240,${0.25})`);moonDisc(pm.sx,pm.sy,r,o.ph,pS);text("Lua",pm.sx+r+6,pm.sy+4,"#e7ecee",12,600);st.hits.push({x:pm.sx,y:pm.sy,kind:"moon"})}
+  if(o.sun.alt>-1&&onScreen(pS)){const r=Math.max(11,F*Math.tan(0.27*D));glow(pS.sx,pS.sy,r*5,"rgba(255,220,140,.55)");ctx.fillStyle="#fff2c9";ctx.beginPath();ctx.arc(pS.sx,pS.sy,r,0,7);ctx.fill();text("Sol",pS.sx+r+6,pS.sy+4,"#ffcf73",13,600);st.hits.push({x:pS.sx,y:pS.sy,kind:"sun"})}}
+ // Modelo do disco
+ if(st.L.model){const draws=[[o.ms,"Sol · modelo","msun",12],[o.mm,"Lua · modelo","mmoon",9]];
+  for(const[m,lab,kind,r]of draws){const p=proj(m.v);if(!onScreen(p))continue;ctx.strokeStyle="#ff8f6b";ctx.lineWidth=2;ctx.setLineDash([4,3]);ctx.beginPath();ctx.arc(p.sx,p.sy,r,0,7);ctx.stroke();ctx.setLineDash([]);
+   ctx.beginPath();ctx.moveTo(p.sx-r-6,p.sy);ctx.lineTo(p.sx-r+2,p.sy);ctx.moveTo(p.sx+r-2,p.sy);ctx.lineTo(p.sx+r+6,p.sy);ctx.stroke();text(lab,p.sx+r+8,p.sy-8,"#ff8f6b",12,600);st.hits.push({x:p.sx,y:p.sy,kind})}
+  if(st.L.obs){const a=proj(o.sun.v),b=proj(o.ms.v);if(o.sun.alt>-1&&a.ok&&b.ok&&(onScreen(a)||onScreen(b))){ctx.strokeStyle="rgba(255,143,107,.45)";ctx.setLineDash([2,4]);ctx.beginPath();ctx.moveTo(a.sx,a.sy);ctx.lineTo(b.sx,b.sy);ctx.stroke();ctx.setLineDash([])}}}
+ // setas para o que está fora da tela
+ if(st.L.obs&&o.sun.alt>-1&&!onScreen(pS))arrow(pS,"Sol","#ffcf73");
+ if(st.L.obs){const pm=proj(o.moon.v);if(o.moon.alt>-1&&!onScreen(pm))arrow(pm,"Lua","#e7ecee")}
+ if(st.L.model){const p=proj(o.ms.v);if(!onScreen(p))arrow(p,"Sol modelo","#ff8f6b")}
+ if(st.sel){const h=st.hits.find(h=>h.kind===st.sel.kind&&(h.kind!=="star"||h.i===st.sel.i)&&(h.kind!=="planet"||h.id===st.sel.id));if(h){ctx.strokeStyle="rgba(255,255,255,.8)";ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(h.x,h.y,22,0,7);ctx.stroke()}}
+}
+function drawMini(o){const c=mctx,S=192,R=88;c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,S,S);c.translate(S/2,S/2);
+ c.strokeStyle="rgba(238,240,234,.75)";c.lineWidth=2;c.beginPath();c.arc(0,0,R,0,7);c.stroke();
+ for(const[lat,col]of[[23.44,"rgba(108,195,182,.6)"],[0,"rgba(238,240,234,.5)"],[-23.44,"rgba(108,195,182,.6)"]]){c.strokeStyle=col;c.lineWidth=1.5;c.beginPath();c.arc(0,0,R*(90-lat)/180,0,7);c.stroke()}
+ const P=(la,lo)=>{const d=toDisc(la,lo);return[d[0]*R,d[1]*R]},ob=P(st.obs.lat,st.obs.lon),s=P(o.sp.lat,o.sp.lon),m=P(o.mo.lat,o.mo.lon);
+ const lo=st.obs.lon*D,east=[Math.cos(lo),-Math.sin(lo)],north=[-Math.sin(lo),-Math.cos(lo)],az=Math.atan2(cam.f[0],cam.f[1]),dir=[Math.sin(az)*east[0]+Math.cos(az)*north[0],Math.sin(az)*east[1]+Math.cos(az)*north[1]];
+ c.fillStyle="rgba(255,255,255,.14)";c.beginPath();c.moveTo(ob[0],ob[1]);const half=st.fov*D/2;for(const k of[-half,half]){const a=az+k;c.lineTo(ob[0]+(Math.sin(a)*east[0]+Math.cos(a)*north[0])*44,ob[1]+(Math.sin(a)*east[1]+Math.cos(a)*north[1])*44)}c.closePath();c.fill();
+ c.fillStyle="#e7ecee";c.beginPath();c.arc(m[0],m[1],5,0,7);c.fill();c.fillStyle="#ffcf73";c.beginPath();c.arc(s[0],s[1],7,0,7);c.fill();
+ c.strokeStyle="#ff8f6b";c.lineWidth=3;c.beginPath();c.arc(ob[0],ob[1],6,0,7);c.stroke();c.fillStyle="#eef0ea";c.beginPath();c.arc(0,0,2.5,0,7);c.fill()}
+const LAND=[
+[[-168,66],[-162,70],[-156,71.3],[-141,69.6],[-128,70],[-115,68.5],[-95,72],[-87,68],[-86,66.5],[-90,64],[-94,59],[-92,57],[-82,55],[-79,51.5],[-77,56],[-78,62.5],[-72,61],[-65,60],[-61,56],[-56,52],[-59,47.5],[-66,45],[-70,43.5],[-70,41.7],[-74,40.5],[-76,37],[-75.5,35.2],[-81,31.5],[-80,27],[-80.4,25.2],[-82,26.5],[-83,29],[-85,29.8],[-89,30.2],[-94,29.5],[-97.3,27.5],[-97.7,22],[-96,19],[-94.5,18.2],[-91,18.8],[-90.4,21],[-87,21.5],[-88,16],[-83.5,15],[-83.6,11],[-81.5,9],[-79,9.5],[-77.4,8.6],[-78.3,7.5],[-80,7.4],[-81.6,7.8],[-85.6,9.9],[-86,11.5],[-87.6,13],[-91.5,14],[-94,16],[-96.5,15.7],[-101.5,17.5],[-105.5,20.5],[-105.5,22.8],[-109,26.5],[-112.8,31.5],[-114.7,31.3],[-112,26],[-109.5,23],[-110.5,24.2],[-113.5,28],[-114.5,30.5],[-117,32.5],[-120.6,34.5],[-122.5,37.5],[-124.2,40.5],[-124,46],[-124.7,48.4],[-127.5,50.5],[-130.5,54.5],[-134,58],[-140,59.8],[-146,60.8],[-152,59],[-157,57],[-163.5,54.7],[-158,58.5],[-162,59.7],[-165,62.5],[-164.5,63.5],[-161,64.5],[-166,65.3]],
+[[-73,78.5],[-60,82],[-40,83.5],[-20,82.5],[-18,77],[-20,70],[-26,68.5],[-35,65.5],[-43,60],[-48,61],[-52,64.5],[-54,68],[-55,71],[-60,76],[-68,77]],
+[[-80,73.5],[-68,70.5],[-62,67],[-65,62.5],[-72,64],[-78,64.5],[-74,67.5],[-81,69.5],[-89,71]],
+[[-90,77],[-80,76.3],[-75,79],[-62,82.2],[-70,83],[-90,81],[-95,78]],
+[[-118,70],[-110,68.5],[-101,69],[-101,72.5],[-110,73],[-117,73]],
+[[-125,71.5],[-120,71],[-117,74],[-124,74.3]],
+[[-77.4,8.6],[-76,9.5],[-75,11],[-72,12],[-71,10.5],[-68,10.6],[-64,10.6],[-61,10.5],[-60,8.5],[-57,6],[-53,5.5],[-51,4],[-50,0],[-48,-1],[-44,-2.5],[-40,-3],[-37,-4.8],[-35,-7],[-35,-9],[-37,-11],[-38.9,-13.5],[-39,-17.5],[-40,-20],[-41,-22],[-43,-23],[-45,-23.8],[-48,-25.5],[-48.5,-28.5],[-50.5,-31],[-52.5,-33.5],[-54,-34.8],[-56.5,-34.9],[-57.5,-36.5],[-57,-38.5],[-62,-39],[-62.5,-41],[-64.5,-42.5],[-65.5,-45],[-67.5,-46.5],[-66,-48],[-68.3,-50.5],[-69,-52.3],[-68.5,-54.5],[-67,-55],[-71,-55],[-74,-53],[-75.5,-50],[-75,-46],[-73.5,-42],[-73.5,-38],[-72.5,-35],[-71.5,-31],[-71.3,-28],[-70.5,-24],[-70.2,-18.5],[-72,-17],[-76,-14.2],[-77,-12],[-79,-8],[-81,-6],[-80.5,-3.5],[-80,-1],[-80.5,0.5],[-79,1.5],[-77.6,4],[-77.4,7]],
+[[-17,21],[-17,14.7],[-16.7,12.5],[-15,11],[-13.3,9],[-11,7],[-7.5,4.4],[-4,5.2],[0,5.6],[2.5,6.3],[4.5,6.2],[6,4.3],[8.5,4.6],[9.7,3.5],[9.5,1],[9,-1],[11.7,-4.5],[12.2,-6],[13.4,-9],[13.2,-12.5],[11.8,-16],[11.8,-17.5],[14.5,-22.5],[15.2,-27],[17,-29],[18.4,-34],[20,-34.8],[22.5,-34],[25.7,-34],[28,-32.6],[30.8,-30],[32.5,-28.5],[32.8,-26],[35.5,-24],[35.3,-22],[34.7,-20],[36.5,-18.6],[39,-17],[40.5,-15],[40.5,-10.5],[39.3,-8],[39.2,-5],[40.2,-2.6],[41.8,-1],[43.6,1.9],[46.5,5.6],[49,9.5],[51.2,11.8],[48,11.2],[44,10.5],[43.2,12.7],[41,14.8],[39.2,16],[37.3,19.5],[36,22.5],[35,25.5],[33.6,27.5],[32.4,29.9],[32.3,31.2],[29,30.9],[25,31.8],[20,30.8],[19.6,32],[15.5,32.3],[11.5,33.2],[10,34.3],[11,36.8],[9.8,37.3],[6,37],[2,36.5],[-1.5,35.2],[-5.9,35.8],[-6.5,34],[-9.5,32.5],[-9.8,30],[-13,27.8],[-14.5,26],[-16.5,23.5]],
+[[44.3,-25],[47,-25.1],[48.5,-20],[50.3,-15.5],[49.3,-12],[47,-15],[44,-17],[43.3,-22]],
+[[-9.3,38.7],[-9,43],[-1.5,43.5],[-1.2,46],[-4.5,48],[-1.7,49.7],[1.5,50.9],[4,51.5],[6,53.5],[8.6,53.9],[8.6,57.1],[10.5,57.7],[10.8,54],[14,54],[18.5,54.7],[21.2,55.2],[21,57],[23.5,57.5],[24.3,59.4],[29.5,60],[22.9,59.8],[21.5,61],[21.2,63.5],[25.3,65],[22.3,65.8],[19,63.5],[17.5,61],[18.9,59.6],[16.5,57],[13,55.4],[11,58.7],[7,58],[5,59],[5,62],[8.5,63.5],[12.5,66],[15,68.5],[19,70],[25,71],[31,70],[33,69.3],[41,67.4],[37,65.5],[44,66.3],[44,68.5],[53.5,68.2],[58,68.8],[60.5,69.8],[66,69.2],[68.5,72.5],[72,72.8],[73.5,68.5],[78.5,72.4],[83,70.6],[87,74],[98,76],[104,77.7],[113,75.8],[113.5,73.4],[127,73.5],[131,70.9],[139.5,72.3],[150,71.6],[160,69.6],[170,70],[180,69],[180,65],[178.5,64.5],[173,61],[163.5,60],[162.5,56.3],[156.7,51],[156,57.5],[163,61.7],[159,61.6],[152,59],[143,59.3],[137.6,54],[141.4,52.2],[140.5,48],[135,43.5],[131,42.7],[129.5,41],[128.5,38.5],[129.4,35.4],[126.6,34.4],[126.2,37.7],[124.7,39.8],[121.6,40.8],[121.8,39],[118,39.2],[119.5,37.1],[122.5,36.9],[119.2,34.9],[121.3,31.8],[122,30],[119.5,25.5],[116.5,22.9],[113.5,22.2],[110.5,21],[108.5,21.6],[106.5,20.2],[105.8,19],[108.8,15.4],[109.2,11.5],[105,8.6],[105.3,10.5],[103.5,10.6],[100.8,12.8],[100,13],[99.2,10],[100.4,7.3],[102,6.2],[103.4,3.8],[104.2,1.4],[101.3,2.9],[98.5,8],[98.2,11.5],[97.6,16.5],[94.4,16],[94.3,18.8],[92.4,20.7],[91.5,22.5],[90,21.9],[88.2,21.6],[86.9,20.5],[85,19.5],[82.2,16.6],[80.3,15.8],[80.2,13],[79.8,10.3],[78.2,8.9],[77.5,8.1],[76.6,8.9],[75.7,11.5],[74.4,14.5],[72.9,19],[72.6,21.4],[70.5,20.8],[68.8,22.8],[67.4,24],[66.5,25.4],[61.6,25.2],[57.3,25.8],[56.3,27.1],[54.7,26.5],[51.5,27.9],[50.1,30.2],[48,29.9],[50,26.7],[51.6,24.3],[54,24.2],[56.4,26.4],[56.5,24.6],[58.7,23.5],[59.8,22.4],[57.6,18.9],[55.3,17.3],[52.2,15.6],[49.6,14.7],[45,12.8],[43.4,12.6],[42.7,16],[41.2,19],[39.2,21.5],[38.5,24],[35.2,28],[34.6,28.1],[34.3,31.2],[35,33],[35.9,35.5],[36,36.8],[33.5,36.2],[30.6,36.7],[27.5,37],[26.3,39.2],[26.2,40.1],[29,41.1],[31.1,41.1],[34.7,42],[38.3,40.9],[41.6,41.5],[39.8,43.4],[37.6,45],[39,47],[35,46.2],[33.5,44.6],[32.5,45.3],[30.7,46.6],[29.6,45.3],[28.6,43.5],[28,41.6],[26.4,40.9],[23,40.5],[22.6,40.2],[24,38],[23,36.5],[21.6,37],[21,38.4],[19.4,40.4],[19.4,41.9],[16.3,43.4],[13.6,45.1],[12.3,45.4],[12.6,44],[13.9,42.5],[16.1,41.4],[18.5,40.1],[16.6,38.9],[15.7,38],[15.9,39.5],[14.6,40.5],[12.4,41.6],[10.5,42.9],[10.2,44],[8.9,44.4],[7.5,43.8],[5,43.3],[3.1,43.1],[3.2,41.9],[0.8,41],[0,39.9],[-0.3,38.4],[-1.4,37.5],[-2.1,36.7],[-4.4,36.7],[-5.6,36],[-6.4,36.8],[-7.5,37.2],[-8.9,37],[-8.8,38.5]],
+[[130,31],[131.5,31.5],[132,33.8],[135,33.5],[136.8,34.3],[139.8,35],[140.8,36],[141,38.3],[142,39.6],[141.4,41.4],[140,40.5],[139.8,38.5],[138.5,37.4],[136.7,37.3],[136,35.6],[133,35.5],[131,34.4],[129.6,33.3]],
+[[140,41.5],[141.6,42.6],[143.3,42],[145.6,43.3],[144,44.2],[141.7,45.4],[141.2,43.2]],
+[[120.1,23],[120.7,22],[121.6,23.5],[121.9,25],[121,25]],
+[[120,18.5],[122.3,18.5],[122,16],[124,13],[120.6,14.2],[119.8,16.3]],
+[[122,7],[126.6,7],[126.2,9.5],[123.5,8.6]],
+[[79.8,6],[81.9,7.5],[80.2,9.8]],
+[[109,1.5],[110.5,-2.8],[114.5,-3.8],[116.5,-3.5],[118,1],[119,5],[116.8,7],[115,5],[111,1.6]],
+[[95.3,5.6],[98,4],[103.8,-1],[106,-5.8],[104.5,-5.9],[101,-2.5],[98.8,1.5]],
+[[105.2,-6.8],[108,-6.3],[111,-6.4],[114.5,-7.8],[110,-8.2],[106.5,-7.4]],
+[[119.4,-5.5],[120.5,-2],[121.5,0.5],[124.9,1.5],[120,0.7],[119,-3]],
+[[131,-1.2],[134,-0.9],[138,-1.6],[144.5,-3.8],[147.5,-6],[150.5,-10.5],[147,-10],[143.5,-9],[141,-9.1],[138,-8.3],[137.6,-5.2],[133,-4]],
+[[113.5,-22],[114,-26.5],[115,-30],[115,-34.3],[118,-35],[123,-33.9],[126,-32.3],[131,-31.5],[134,-32.6],[136,-35],[138,-34.4],[139.5,-36],[140.8,-38],[144,-38.4],[146.5,-39],[150,-37.5],[150.8,-34.5],[153.1,-30.5],[153.5,-28],[153,-25],[150.8,-22.5],[149,-20.5],[146.3,-19],[145.4,-15],[143.5,-14],[142.5,-10.7],[141.5,-13],[141.6,-17],[139.5,-17.5],[136.6,-15.8],[135.5,-14.8],[136.7,-12.2],[133,-11.3],[130.3,-12.4],[129,-14.8],[127,-14],[125,-15],[122.2,-17.5],[121,-19.5],[117,-20.6]],
+[[144.6,-40.7],[148.3,-41],[147.9,-43.2],[146,-43.5]],
+[[172.7,-34.4],[174.5,-36],[176,-37.6],[178.5,-37.7],[177,-39.3],[175.3,-41.6],[174.6,-39.8],[173.8,-39.2],[174.6,-37.5]],
+[[172.7,-40.5],[174.2,-41.7],[173,-43.8],[171.2,-44.5],[169,-46.6],[166.5,-46],[168.4,-44],[171.5,-41.7]],
+[[-5.7,50],[1.4,51.2],[1.7,52.7],[0,53.5],[-1.6,55.6],[-2,57.6],[-3.2,58.6],[-5,58.6],[-6.2,57.5],[-5.6,56],[-4.9,54.8],[-3,53.4],[-4.7,52.8],[-5.3,51.7],[-3,51.2]],
+[[-6,52.2],[-6,54],[-7.3,55.3],[-8.5,54.6],[-10.2,53.5],[-10.3,51.8],[-8,51.6]],
+[[-22.6,63.9],[-21.8,65.5],[-24,65.6],[-22,66.4],[-16,66.5],[-13.6,65],[-18.8,63.4]],
+[[-84.9,21.9],[-80.5,23.1],[-77,21.5],[-74.2,20.2],[-77.7,19.9],[-81,21.7]],
+[[-74.4,18.5],[-72.8,19.9],[-70,19.8],[-68.4,18.6],[-71,18.2]],
+[[11,78.5],[18,80.5],[27,80],[22,78],[16,76.5]],
+[[52,71.5],[56,71],[60,74.5],[68,76.8],[62,76.5],[54,73.5]]
+];
+const WATER=[[[47,45],[51,47],[53.5,45],[51,42],[53,40],[54,37],[51,36.6],[49,38.5],[49.5,40.5],[47.5,43]]];
+const box=p=>{let a=180,b=-180,c=90,d=-90;for(const[x,y]of p){a=Math.min(a,x);b=Math.max(b,x);c=Math.min(c,y);d=Math.max(d,y)}return[a,b,c,d]};
+const LB=LAND.map(box),WB=WATER.map(box);
+function pip(x,y,p){let c=false;for(let i=0,j=p.length-1;i<p.length;j=i++){const[xi,yi]=p[i],[xj,yj]=p[j];if((yi>y)!==(yj>y)&&x<(xj-xi)*(y-yi)/(yj-yi)+xi)c=!c}return c}
+function antarctic(lon,lat){let e=-69;if(lon>-66&&lon<-57)e=-63.5;else if(lon>=-57&&lon<-20)e=-75.5;else if(lon>160||lon<-150)e=-77.5;else if(lon>=-120&&lon<-66)e=-73;return lat<e}
+function inAny(lon,lat,P,B){for(let i=0;i<P.length;i++){const b=B[i];if(lon<b[0]||lon>b[1]||lat<b[2]||lat>b[3])continue;if(pip(lon,lat,P[i]))return true}return false}
+const isLand=(lon,lat)=>antarctic(lon,lat)||(inAny(lon,lat,LAND,LB)&&!inAny(lon,lat,WATER,WB));
+
+// ---------- Vista do disco (de fora) ----------
+const fromDisc=(u,v)=>[90-180*Math.hypot(u,v),Math.atan2(u,v)*R2D];
+function dest(lat,lon,dist,brg){const p=lat*D,dd=dist*D,b=brg*D;const p2=Math.asin(Math.sin(p)*Math.cos(dd)+Math.cos(p)*Math.sin(dd)*Math.cos(b));
+ return[p2*R2D,norm(lon+Math.atan2(Math.sin(b)*Math.sin(dd)*Math.cos(p),Math.cos(dd)-Math.sin(p)*Math.sin(p2))*R2D)]}
+const dv={tilt:1,tiltT:1,rot:0,light:true,dots:null,off:null,octx:null,img:null,OP:null,N:118,OS:150};
+function discInit(){if(dv.dots)return;const N=dv.N,dots=[];for(let j=0;j<=N;j++)for(let i=0;i<=N;i++){const u=-1+2*i/N,v=-1+2*j/N;if(u*u+v*v>1)continue;const[la,lo]=fromDisc(u,v);const land=isLand(lo,la);if(land||(i%2===0&&j%2===0))dots.push({u,v,la,lo,land})}dv.dots=dots;
+ dv.off=document.createElement("canvas");dv.off.width=dv.off.height=dv.OS;dv.octx=dv.off.getContext("2d");dv.img=dv.octx.createImageData(dv.OS,dv.OS);dv.OP=[];
+ for(let y=0;y<dv.OS;y++)for(let x=0;x<dv.OS;x++){const u=(x+.5)/dv.OS*2-1,v=(y+.5)/dv.OS*2-1;dv.OP.push(u*u+v*v<=1?fromDisc(u,v):null)}}
+function dgeom(){const top=140,bot=150,avail=Math.max(200,Hh-top-bot),lf=Math.sqrt(Math.max(0,1-dv.tilt*dv.tilt)),R=Math.min(W*0.46,avail/(2*dv.tilt+0.9*lf)),cx=W/2,cy=top+avail/2+R*lf*0.2,c=Math.cos(dv.rot),s=Math.sin(dv.rot);
+ return{R,cx,cy,c,s,a:R*c,b:R*dv.tilt*s,cc:-R*s,d:R*dv.tilt*c}}
+const DS=(g,u,v)=>[g.cx+g.a*u+g.cc*v,g.cy+g.b*u+g.d*v];
+const dM=g=>ctx.setTransform(dpr*g.a,dpr*g.b,dpr*g.cc,dpr*g.d,dpr*g.cx,dpr*g.cy),dS=()=>ctx.setTransform(dpr,0,0,dpr,0,0);
+function dCircle(g,lat,px,col,dash){dM(g);ctx.beginPath();ctx.arc(0,0,(90-lat)/180,0,7);dS();ctx.lineWidth=px;ctx.strokeStyle=col;ctx.setLineDash(dash||[]);ctx.stroke();ctx.setLineDash([])}
+function dLabel(g,lat,txt,col){const r=(90-lat)/180,x=r*Math.sin(50*D),y=r*Math.cos(50*D),u=g.c*x+g.s*y,v=-g.s*x+g.c*y,[sx,sy]=DS(g,u,v);text(txt,sx+5,sy-3,col,11,600)}
+function drawDisc(o){discInit();dv.tilt+=(dv.tiltT-dv.tilt)*0.12;if(Math.abs(dv.tiltT-dv.tilt)<0.002)dv.tilt=dv.tiltT;
+ const g=dgeom(),sp=o.sp,mo=o.mo,lift=Math.sqrt(Math.max(0,1-dv.tilt*dv.tilt));dS();
+ const bg=ctx.createRadialGradient(W/2,g.cy,0,W/2,g.cy,Math.max(W,Hh)*0.7);bg.addColorStop(0,"#0e2228");bg.addColorStop(1,"#03070f");ctx.fillStyle=bg;ctx.fillRect(0,0,W,Hh);
+ if(lift>0.05){ctx.strokeStyle=`rgba(108,195,182,${0.35*lift})`;ctx.setLineDash([2,5]);ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(g.cx,g.cy,g.R*1.02,g.R*0.95*lift,0,Math.PI,2*Math.PI);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle="#0a191d";ctx.beginPath();ctx.ellipse(g.cx,g.cy+g.R*0.05*lift,g.R*1.02,g.R*1.02*dv.tilt,0,0,7);ctx.fill()}
+ dM(g);ctx.fillStyle="#0b1d22";ctx.beginPath();ctx.arc(0,0,1,0,7);ctx.fill();
+ if(dv.light){const dt=dv.img.data;for(let k=0;k<dv.OP.length;k++){const p=dv.OP[k],q=k*4;if(!p){dt[q+3]=0;continue}const a=altOf(p[0],p[1],sp),f=a>0?1:a>-18?(1+a/18)**2*0.8:0;dt[q]=255;dt[q+1]=196;dt[q+2]=120;dt[q+3]=f*58}
+  dv.octx.putImageData(dv.img,0,0);dM(g);ctx.imageSmoothingEnabled=true;ctx.drawImage(dv.off,-1,-1,2,2)}
+ const B=[[],[],[],[],[],[],[]];for(const p of dv.dots){const a=dv.light?altOf(p.la,p.lo,sp):1;B[p.land?(a>-0.83?0:a>-6?1:a>-12?2:a>-18?3:4):(a>-0.83?5:6)].push(p)}
+ const cols=["#f4e8c4","#c7b48a","#8a8066","#566059","#34444a","rgba(244,232,196,.16)","rgba(130,165,170,.16)"],sz=0.62*2/dv.N;dM(g);
+ B.forEach((arr,b)=>{ctx.fillStyle=cols[b];ctx.beginPath();const z=b>4?sz*0.7:sz;for(const p of arr)ctx.rect(p.u-z/2,p.v-z/2,z,z);ctx.fill()});
+ dM(g);ctx.beginPath();ctx.arc(0,0,1,0,7);dS();ctx.strokeStyle="#dfe9ea";ctx.lineWidth=2;ctx.stroke();
+ dCircle(g,66.56,1,"rgba(108,195,182,.35)",[3,5]);dCircle(g,23.44,1.2,"rgba(108,195,182,.8)",[5,4]);dCircle(g,0,1.4,"rgba(238,240,234,.75)");dCircle(g,-23.44,1.2,"rgba(108,195,182,.8)",[5,4]);
+ if(dv.tilt>0.8){dLabel(g,23.44,"CÂNCER","#8fd8cc");dLabel(g,0,"EQUADOR","#eef0ea");dLabel(g,-23.44,"CAPRICÓRNIO","#8fd8cc")}
+ dCircle(g,sp.lat,1.4,"rgba(255,207,115,.55)",[1,4]);
+ if(dv.light){dM(g);ctx.beginPath();let prev=null;for(let b=0;b<=360;b+=2){const[la,lo]=dest(sp.lat,sp.lon,90.83,b),q=toDisc(la,lo);if(!prev||Math.hypot(q[0]-prev[0],q[1]-prev[1])>0.25)ctx.moveTo(q[0],q[1]);else ctx.lineTo(q[0],q[1]);prev=q}dS();ctx.strokeStyle="rgba(255,226,170,.85)";ctx.lineWidth=1.3;ctx.stroke()}
+ const[nx,ny]=DS(g,0,0);ctx.fillStyle="#eef0ea";ctx.beginPath();ctx.arc(nx,ny,2.2,0,7);ctx.fill();text("N",nx+5,ny-4,"#eef0ea",12,600);
+ const od=toDisc(st.obs.lat,st.obs.lon),[ox,oy]=DS(g,od[0],od[1]),sd=toDisc(sp.lat,sp.lon),[gx,gy]=DS(g,sd[0],sd[1]);
+ ctx.strokeStyle="rgba(255,143,107,.6)";ctx.setLineDash([3,4]);ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(gx,gy);ctx.stroke();ctx.setLineDash([]);
+ ctx.strokeStyle="#ff8f6b";ctx.lineWidth=2;ctx.beginPath();ctx.arc(ox,oy,7,0,7);ctx.stroke();ctx.beginPath();ctx.moveTo(ox-11,oy);ctx.lineTo(ox+11,oy);ctx.moveTo(ox,oy-11);ctx.lineTo(ox,oy+11);ctx.stroke();
+ const hpx=g.R*(st.H/RKM)*lift*1.6;
+ const put=(b,col,gl,rad,h)=>{const q=toDisc(b.lat,b.lon),[x,y]=DS(g,q[0],q[1]);if(lift>0.05){ctx.strokeStyle="rgba(255,220,150,.35)";ctx.setLineDash([2,3]);ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y-h);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=col;ctx.beginPath();ctx.ellipse(x,y,3,3*dv.tilt,0,0,7);ctx.fill()}glow(x,y-h,rad*4,gl);ctx.fillStyle=col;ctx.beginPath();ctx.arc(x,y-h,rad,0,7);ctx.fill();return[x,y-h]};
+ const[mx,my]=put(mo,"#d6dde0","rgba(200,215,225,.35)",6,hpx*0.96);text("Lua",mx+10,my+4,"#d6dde0",12,600);
+ for(const P of o.pl){if(P.id==="ura"||P.id==="nep")continue;const q=toDisc(P.sub.lat,P.sub.lon),[x,y]=DS(g,q[0],q[1]),h=hpx*1.05;ctx.fillStyle=P.col;ctx.beginPath();ctx.arc(x,y-h,3.5,0,7);ctx.fill();text(P.name,x+6,y-h+4,P.col,11,500)}
+ const[sx,sy]=put(sp,"#ffe2a0","rgba(255,200,100,.55)",9,hpx);text("Sol",sx+12,sy+4,"#ffcf73",13,600);
+ st.dg=g}
+function discTap(x,y){const g=st.dg;if(!g)return;const p=(x-g.cx)/g.R,q=(y-g.cy)/(g.R*dv.tilt),u=g.c*p+g.s*q,v=-g.s*p+g.c*q;if(u*u+v*v>1)return;const[la,lo]=fromDisc(u,v);
+ st.obs={name:"Ponto no disco",lat:la,lon:lo};save();st.sel={kind:"sun"};toast("Observador movido. Toque em “Céu” para ver o céu deste ponto.")}
+
+function nearestCon(q){let best=null,bd=-2;for(const c of CAT.cons)for(const seg of c.segs)for(const v of seg){const d=dot(v,q);if(d>bd){bd=d;best=c.name}}return bd>Math.cos(12*D)?best:null}
+// ---------- Textos ----------
+const fmt=new Intl.DateTimeFormat("pt-BR",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"}),fmtH=new Intl.DateTimeFormat("pt-BR",{hour:"2-digit",minute:"2-digit"});
+const nf=(x,d=1)=>x.toLocaleString("pt-BR",{minimumFractionDigits:d,maximumFractionDigits:d});
+const latT=l=>`${nf(Math.abs(l),2)}°${l>=0?"N":"S"}`,lonT=l=>`${nf(Math.abs(l),2)}°${l>=0?"L":"O"}`;
+const CARDN=["N","NNE","NE","LNE","L","LSE","SE","SSE","S","SSO","SO","OSO","O","ONO","NO","NNO"],dirT=a=>CARDN[Math.round(a/22.5)%16];
+function info(o){const s=st.sel;if(!s){$("info").hidden=true;return}$("info").hidden=false;let h="",rows=[],note="";
+ if(s.kind==="sun"||s.kind==="msun"){const rs=riseSet(st.obs);h="Sol";rows=[["Observado",`${nf(o.sun.alt)}° de altura · ${Math.round(o.sun.az)}° ${dirT(o.sun.az)}`],["Nascer / pôr",`${rs.rise?fmtH.format(rs.rise):"—"} / ${rs.set?fmtH.format(rs.set):"—"}`],["Modelo do disco",`${nf(o.ms.alt)}° · ${Math.round(o.ms.az)}° ${dirT(o.ms.az)}`],["Distância no disco",`${Math.round(o.ms.dist).toLocaleString("pt-BR")} km`]];
+  const sep=Math.acos(clamp(dot(o.sun.v,o.ms.v),-1,1))*R2D;note=o.sun.alt<-0.83?`Observado: o Sol está abaixo do horizonte. No modelo, ele estaria a ${nf(o.ms.alt)}° de altura.`:`O marcador do modelo está a ${nf(sep)}° do Sol observado.`}
+ else if(s.kind==="moon"||s.kind==="mmoon"){h="Lua";rows=[["Fase",`${o.ph.n} · ${Math.round(o.ph.k*100)}%`],["Observada",`${nf(o.moon.alt)}° · ${Math.round(o.moon.az)}° ${dirT(o.moon.az)}`],["Modelo do disco",`${nf(o.mm.alt)}° · ${Math.round(o.mm.az)}° ${dirT(o.mm.az)}`],["Distância no disco",`${Math.round(o.mm.dist).toLocaleString("pt-BR")} km`]];
+  const sep=Math.acos(clamp(dot(o.moon.v,o.mm.v),-1,1))*R2D;note=o.moon.alt<-0.5?`Observado: a Lua está abaixo do horizonte. No modelo, ela estaria a ${nf(o.mm.alt)}° de altura.`:`O marcador do modelo está a ${nf(sep)}° da Lua observada.`}
+ else if(s.kind==="planet"){const P=o.pl.find(p=>p.id===s.id);h=P.name;rows=[["Brilho aproximado",`magnitude ${nf(P.mag)}`],["Posição",`${nf(P.alt)}° de altura · ${Math.round(P.az)}° ${dirT(P.az)}`],["Ponto abaixo dele",`${latT(P.sub.lat)} · ${lonT(P.sub.lon)}`]]}
+ else if(CAT.ready){const i=s.i,q=[CAT.v[i*3],CAT.v[i*3+1],CAT.v[i*3+2]],E=[dot(o.Mq[0],q),dot(o.Mq[1],q),dot(o.Mq[2],q)],al=Math.asin(clamp(E[2],-1,1))*R2D,az=(Math.atan2(E[0],E[1])*R2D+360)%360;
+  h=CAT.names[i]||"Estrela";const con=nearestCon(q);rows=[["Brilho (magnitude)",nf(CAT.mag[i],2)],["Posição",`${nf(al)}° de altura · ${Math.round(az)}° ${dirT(az)}`]];if(con)rows.push(["Constelação",con])}
+ $("infoBody").innerHTML=`<h3>${h}</h3><dl>${rows.map(([a,b])=>`<dt>${a}</dt><dd>${b}</dd>`).join("")}</dl>${note?`<p class="note">${note}</p>`:""}`}
+function hud(){$("place").textContent=`${st.obs.name} · ${latT(st.obs.lat)} ${lonT(st.obs.lon)}`;$("clock").textContent=fmt.format(new Date(st.t))+(st.speed!==1||!st.play||Math.abs(st.t-Date.now())>9e4?" · simulado":" · ao vivo");
+ const az=(Math.atan2(cam.f[0],cam.f[1])*R2D+360)%360,al=Math.asin(clamp(cam.f[2],-1,1))*R2D;$("aim").textContent=`${Math.round(az)}° ${dirT(az)} · ${nf(al,0)}° de altura`;
+ $("bPlay").textContent=st.play?"Pausar":"Rodar";$("bSpeed").textContent="Tempo "+({1:"1×",60:"1 min/s",600:"10 min/s",3600:"1 h/s"})[st.speed];
+ $("bSens").setAttribute("aria-pressed",st.sensors&&sens.got);$("hVal").textContent=st.H.toLocaleString("pt-BR")+" km"}
+let toastT;function toast(m){const t=$("toast");t.textContent=m;t.classList.add("on");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("on"),4200)}
+// ---------- Sensores e GPS ----------
+function onOri(e){if(e.alpha==null)return;if(e.webkitCompassHeading!=null){const d=norm(360-e.webkitCompassHeading-e.alpha);sens.iosOff=sens.iosOff==null?d:sens.iosOff+norm(d-sens.iosOff)*0.05;sens.alpha=e.alpha+sens.iosOff}else if(e.absolute||e.type==="deviceorientationabsolute"){sens.abs=true;sens.alpha=e.alpha}else if(!sens.abs)sens.alpha=e.alpha;else return;
+ sens.beta=e.beta;sens.gamma=e.gamma;sens.got=true}
+async function enableSensors(){try{if(typeof DeviceOrientationEvent!=="undefined"&&typeof DeviceOrientationEvent.requestPermission==="function"){const r=await DeviceOrientationEvent.requestPermission();if(r!=="granted"){toast("Permissão dos sensores negada. Arraste para olhar em volta.");return}}}catch(e){toast("Os sensores não puderam ser ativados aqui. Arraste para olhar em volta.");return}
+ addEventListener("deviceorientationabsolute",onOri,true);addEventListener("deviceorientation",onOri,true);st.sensors=true;
+ setTimeout(()=>{if(!sens.got){st.sensors=false;toast("Sensores indisponíveis nesta página. Arraste para olhar em volta; no app instalado o celular guia a tela.")}else toast(sens.abs||sens.iosOff!=null?"Sensores ativos. Se o norte estiver deslocado, arraste para o lado para calibrar.":"Sensores ativos sem bússola. Arraste para o lado para alinhar o norte.")},1500)}
+function gps(){const msg=$("gpsMsg");if(!navigator.geolocation){msg.textContent="Este navegador não oferece localização.";return}msg.textContent="Buscando sua posição…";
+ navigator.geolocation.getCurrentPosition(p=>{st.obs={name:"Minha localização",lat:p.coords.latitude,lon:p.coords.longitude};syncLoc();save();msg.textContent=`Posição obtida com precisão de ${Math.round(p.coords.accuracy)} m.`;toast("Localização real aplicada.")},
+  ()=>{msg.textContent="Não foi possível obter a localização aqui. Escolha uma cidade ou digite as coordenadas.";toast("Localização indisponível. Usando "+st.obs.name+".")},{enableHighAccuracy:true,timeout:12000,maximumAge:60000})}
+// ---------- Controles ----------
+$("city").innerHTML=`<option value="">Escolher…</option>`+CITIES.map((c,i)=>`<option value="${i}">${c[0]}</option>`).join("");
+function syncLoc(){$("lat").value=st.obs.lat.toFixed(4);$("lon").value=st.obs.lon.toFixed(4);const i=CITIES.findIndex(c=>c[0]===st.obs.name);$("city").value=i>=0?i:""}
+$("city").onchange=e=>{const c=CITIES[+e.target.value];if(e.target.value!==""&&c){st.obs={name:c[0],lat:c[1],lon:c[2]};syncLoc();save()}};
+const manualLoc=()=>{const la=parseFloat($("lat").value),lo=parseFloat($("lon").value);if(isFinite(la)&&isFinite(lo)&&Math.abs(la)<=90&&Math.abs(lo)<=180){st.obs={name:"Ponto escolhido",lat:la,lon:lo};$("city").value="";save()}};
+$("lat").onchange=manualLoc;$("lon").onchange=manualLoc;
+$("height").oninput=e=>{st.H=+e.target.value;save()};$("gps").onclick=gps;
+$("bLoc").onclick=()=>{syncLoc();$("height").value=st.H;$("sheet").classList.add("open")};$("sheetClose").onclick=()=>$("sheet").classList.remove("open");
+$("bBack").onclick=()=>{st.t-=36e5};$("bFwd").onclick=()=>{st.t+=36e5};$("bNow").onclick=()=>{st.t=Date.now();st.speed=1;st.play=true};
+$("bPlay").onclick=()=>{st.play=!st.play};$("bSpeed").onclick=()=>{const L=[1,60,600,3600];st.speed=L[(L.indexOf(st.speed)+1)%L.length];st.play=true};
+const tog=(id,k)=>{$(id).onclick=()=>{st.L[k]=!st.L[k];$(id).setAttribute("aria-pressed",st.L[k])}};tog("lObs","obs");tog("lModel","model");tog("lLines","lines");tog("lGrid","grid");
+$("bSens").onclick=()=>{if(st.sensors){st.sensors=false;sens.got=false;const a=Math.atan2(cam.f[0],cam.f[1]);st.yaw=a;st.pitch=Math.asin(clamp(cam.f[2],-1,1))}else enableSensors()};
+$("infoX").onclick=()=>{st.sel=null};
+function setMode(m){st.mode=m;$("mSky").setAttribute("aria-pressed",m==="sky");$("mDisc").setAttribute("aria-pressed",m==="disc");
+ document.querySelectorAll(".chip.s").forEach(b=>b.hidden=m!=="sky");document.querySelectorAll(".chip.d").forEach(b=>b.hidden=m!=="disc");
+ document.querySelector(".reticle").hidden=m!=="sky";$("mini").style.visibility=m==="sky"?"visible":"hidden";if(m==="disc")discInit()}
+$("mSky").onclick=()=>setMode("sky");$("mDisc").onclick=()=>setMode("disc");$("mini").onclick=()=>setMode("disc");
+$("dTilt").onclick=()=>{dv.tiltT=dv.tiltT===1?0.42:1;$("dTilt").setAttribute("aria-pressed",dv.tiltT!==1)};
+$("dLight").onclick=()=>{dv.light=!dv.light;$("dLight").setAttribute("aria-pressed",dv.light)};
+const begin=()=>{$("welcome").hidden=true;const o=compute();if(o.sun.alt>0){st.yaw=o.sun.az*D;st.pitch=clamp(o.sun.alt,5,60)*D}else{st.yaw=(st.obs.lat<0?180:0)*D;st.pitch=30*D}};
+$("start").onclick=()=>{begin();enableSensors();gps()};$("startManual").onclick=()=>{begin();toast("Arraste para olhar em volta. Use dois dedos para aproximar.")};
+// arrastar, aproximar e tocar
+const pts=new Map();let gest=null;const app=$("app");
+app.addEventListener("pointerdown",e=>{if(e.target.closest("button,.card,.sheet,select,input,#mini"))return;pts.set(e.pointerId,{x:e.clientX,y:e.clientY});app.setPointerCapture(e.pointerId);
+ gest={rot:dv.rot,x:e.clientX,y:e.clientY,yaw:st.yaw,pitch:st.pitch,cal:sens.cal,moved:false,fov:st.fov,d0:pts.size===2?dist2():0}});
+const dist2=()=>{const[a,b]=[...pts.values()];return Math.hypot(a.x-b.x,a.y-b.y)};
+app.addEventListener("pointermove",e=>{if(!gest||!pts.has(e.pointerId))return;pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+ if(pts.size===2&&st.mode==="sky"){if(!gest.d0)gest.d0=dist2();st.fov=clamp(gest.fov*gest.d0/dist2(),20,110);gest.moved=true;return}
+ const dx=e.clientX-gest.x,dy=e.clientY-gest.y;if(Math.hypot(dx,dy)>6)gest.moved=true;if(!gest.moved)return;const k=1/F;
+ if(st.mode==="disc"){dv.rot=gest.rot+dx*0.008;return}
+ if(st.sensors&&sens.got)sens.cal=gest.cal+dx*k*R2D;else{st.yaw=gest.yaw-dx*k;st.pitch=clamp(gest.pitch+dy*k,-80*D,89*D)}});
+const end=e=>{if(gest&&!gest.moved&&pts.size===1&&st.mode==="disc"){discTap(e.clientX,e.clientY)}else if(gest&&!gest.moved&&pts.size===1){let best=null,bd=34;for(const h of st.hits){const d=Math.hypot(h.x-e.clientX,h.y-e.clientY);if(d<bd){bd=d;best=h}}st.sel=best?{kind:best.kind,i:best.i,id:best.id}:null}
+ pts.delete(e.pointerId);if(!pts.size)gest=null;else gest={...gest,d0:0,fov:st.fov}};
+app.addEventListener("pointerup",end);app.addEventListener("pointercancel",end);
+app.addEventListener("wheel",e=>{e.preventDefault();st.fov=clamp(st.fov*(1+e.deltaY*0.001),20,110)},{passive:false});
+addEventListener("keydown",e=>{const k=3*D;if(e.key==="ArrowLeft")st.yaw-=k;if(e.key==="ArrowRight")st.yaw+=k;if(e.key==="ArrowUp")st.pitch=Math.min(st.pitch+k,89*D);if(e.key==="ArrowDown")st.pitch=Math.max(st.pitch-k,-80*D)});
+// ---------- Laço ----------
+let last=performance.now(),lastI=0;
+function loop(now){const dt=Math.min(now-last,100);last=now;if(st.play)st.t+=dt*st.speed;updateCam();const o=compute();st.hits=[];if(st.mode==="disc")drawDisc(o);else{draw(o);drawMini(o)}if(now-lastI>200){hud();info(o);lastI=now}requestAnimationFrame(loop)}
+syncLoc();requestAnimationFrame(loop);
+if("serviceWorker"in navigator&&location.protocol==="https:"&&!/claude/.test(location.hostname)){try{navigator.serviceWorker.register("sw.js").catch(()=>{})}catch(e){}}
+}
+</script>
+</body>
+</html>
