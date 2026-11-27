@@ -157,6 +157,7 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
       <p class="small" id="airMsg"></p>
     </details>
     <button class="btn" id="sheetClose">Fechar</button>
+    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-2</p>
   </div>
   <div class="welcome" id="welcome">
     <div>
@@ -735,7 +736,9 @@ const ROSE_T=[...document.querySelectorAll("#rose text")];
 let last=performance.now(),lastI=0;
 function loop(now){const dt=Math.min(now-last,100);last=now;if(st.play)st.t+=dt*st.speed;updateCam();const o=compute();satUpdate(o);st.hits=[];if(st.mode==="disc"){drawDisc(o);drawMiniSky(o)}else{draw(o);drawMini(o);const az=Math.atan2(cam.f[0],cam.f[1])*R2D;$("ret").style.top=RY+"px";$("rose").setAttribute("transform",`rotate(${(-az).toFixed(1)} 32 32)`);for(const t of ROSE_T)t.setAttribute("transform",`rotate(${az.toFixed(1)} ${t.getAttribute("x")} ${+t.getAttribute("y")-3})`)}if(now-lastI>200){hud();info(o);lastI=now}requestAnimationFrame(loop)}
 syncLoc();requestAnimationFrame(loop);
-if("serviceWorker"in navigator&&location.protocol==="https:"&&!/claude/.test(location.hostname)){try{navigator.serviceWorker.register("sw.js").catch(()=>{})}catch(e){}}
+if("serviceWorker"in navigator&&location.protocol==="https:"&&!/claude/.test(location.hostname)){try{const had=!!navigator.serviceWorker.controller;let reloaded=false;
+ navigator.serviceWorker.addEventListener("controllerchange",()=>{if(had&&!reloaded){reloaded=true;location.reload()}});
+ navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).then(r=>{r.update();document.addEventListener("visibilitychange",()=>{if(!document.hidden)r.update()})}).catch(()=>{})}catch(e){}}
 }
 </script>
 </body>
