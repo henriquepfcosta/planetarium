@@ -108,7 +108,6 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
   <div class="sheet" id="pMenu" role="dialog" aria-label="Camadas e ações">
     <div class="tiles">
       <button class="tile s" id="lObs" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.5 6.7 19.4l1.2-6L3.4 9.3l6-.7Z"/></svg><span>Céu observado</span></button>
-      <button class="tile s m" id="lMStars" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17a9 9 0 0 1 18 0"/><path d="M2 17h20"/><path d="m8 9 .6 1.3 1.4.2-1 1 .2 1.4L8 12.2l-1.2.7.2-1.4-1-1 1.4-.2Z"/><circle cx="15" cy="10" r=".9"/><circle cx="12" cy="13" r=".9"/></svg><span>Estrelas no modelo</span></button>
       <button class="tile s m" id="lModel" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="15" rx="9" ry="4"/><circle cx="12" cy="6" r="2.2"/><path d="M12 8.5v5"/></svg><span>Modelo do disco</span></button>
       <button class="tile s" id="lLines" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="17" r="1.6"/><circle cx="10" cy="8" r="1.6"/><circle cx="17" cy="11" r="1.6"/><circle cx="19" cy="4" r="1.6"/><path d="m6 15.6 3.2-6M11.6 8.6l3.8 1.8M17.6 9.4l.9-3.6"/></svg><span>Constelações</span></button>
       <button class="tile s" id="lArt" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19c3-1 4-4 7-5s5 1 9-3"/><path d="M14 5c2 0 4 2 3 4"/><circle cx="8" cy="8" r="2"/></svg><span>Desenhos</span></button>
@@ -150,7 +149,6 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
       <label class="f">Latitude<input type="number" id="lat" step="0.01" min="-90" max="90"></label>
       <label class="f">Longitude<input type="number" id="lon" step="0.01" min="-180" max="180"></label>
     </div>
-    <label class="f"><span>Altura do domo das estrelas: <b id="hsVal" style="color:var(--ink)">8.000 km</b></span><input type="range" id="heightS" min="500" max="30000" step="100" value="8000"></label>
     <label class="f"><span>Altura do Sol e da Lua no modelo: <b id="hVal" style="color:var(--ink)">5.000 km</b></span><input type="range" id="height" min="500" max="20000" step="100" value="5000"></label>
     <p class="small">Os marcadores coral mostram onde um Sol e uma Lua locais, nessa altura acima do disco, apareceriam do seu ponto. Os dourados e brancos são o céu observado.</p>
     <details class="adv"><summary>Radar de aviões (avançado)</summary>
@@ -236,13 +234,13 @@ function clipProj(pts,C){const P=pts.map(q=>[dot(q,C.r),dot(q,C.u),dot(q,C.f)]),
  return out.map(([x,y,z])=>[W/2+F*x/z,PY-F*y/z])}
 
 // ---------- Estado ----------
-const st={t:Date.now(),play:true,speed:1,obs:{name:"São Paulo",lat:-23.55,lon:-46.63},H:5000,HS:8000,yaw:180*D,pitch:25*D,fov:90,
- L:{mstars:false,obs:true,model:true,lines:true,grid:false,art:true,land:true,sat:true,starlink:false,air:false},sensors:false,mode:"sky",dg:null,sel:null,hits:[]};
+const st={t:Date.now(),play:true,speed:1,obs:{name:"São Paulo",lat:-23.55,lon:-46.63},H:5000,yaw:180*D,pitch:25*D,fov:90,
+ L:{obs:true,model:true,lines:true,grid:false,art:true,land:true,sat:true,starlink:false,air:false},sensors:false,mode:"sky",dg:null,sel:null,hits:[]};
 const sens={alpha:0,beta:90,gamma:0,cal:0,off:null,samp:[],got:false,rel:false,raw:null};
 let cam={f:[0,1,0],r:[1,0,0],u:[0,0,1]};
 st.home={...st.obs};st.pend=null;
-try{const s=JSON.parse(localStorage.getItem("planetarium")||"null");if(s&&s.obs)st.obs=s.obs;if(s&&s.home)st.home=s.home;else if(s&&s.obs)st.home={...s.obs};if(s&&s.H)st.H=s.H;if(s&&s.HS)st.HS=s.HS}catch(e){}
-const save=()=>{try{localStorage.setItem("planetarium",JSON.stringify({obs:st.obs,home:st.home,H:st.H,HS:st.HS}))}catch(e){}};
+try{const s=JSON.parse(localStorage.getItem("planetarium")||"null");if(s&&s.obs)st.obs=s.obs;if(s&&s.home)st.home=s.home;else if(s&&s.obs)st.home={...s.obs};if(s&&s.H)st.H=s.H}catch(e){}
+const save=()=>{try{localStorage.setItem("planetarium",JSON.stringify({obs:st.obs,home:st.home,H:st.H}))}catch(e){}};
 const setHome=()=>{st.home={name:st.obs.name,lat:st.obs.lat,lon:st.obs.lon};save()};
 const away=()=>Math.abs(st.obs.lat-st.home.lat)>0.01||Math.abs(st.obs.lon-st.home.lon)>0.01;
 function goHome(){st.obs={...st.home};st.pend=null;save();syncLoc();toast(`De volta a ${st.home.name}`);st.sel=null}
@@ -265,12 +263,9 @@ const onScreen=p=>p.ok&&p.sx>-40&&p.sx<W+40&&p.sy>-40&&p.sy<Hh+40;
 // ---------- Cálculo dos objetos ----------
 function riseSet(o){const d0=new Date(st.t);d0.setHours(0,0,0,0);let rise=null,set=null,prev=altOf(o.lat,o.lon,sun(+d0));
  for(let m=5;m<=1440;m+=5){const t=+d0+m*6e4,a=altOf(o.lat,o.lon,sun(t));if((prev<=-0.83)!==(a<=-0.83)){const tt=t-3e5*(1-(-0.83-prev)/(a-prev));if(a>prev)rise=rise||tt;else set=set||tt}prev=a}return{rise,set}}
-function modelDir(sub,o,H=st.H){const O=toDisc(o.lat,o.lon),S=toDisc(sub.lat,sub.lon),dx=(S[0]-O[0])*RKM,dy=(S[1]-O[1])*RKM;
+function modelDir(sub,o){const O=toDisc(o.lat,o.lon),S=toDisc(sub.lat,sub.lon),dx=(S[0]-O[0])*RKM,dy=(S[1]-O[1])*RKM;
  const lo=o.lon*D,e=dx*Math.cos(lo)-dy*Math.sin(lo),n=-(dx*Math.sin(lo)+dy*Math.cos(lo)),dist=Math.hypot(e,n);
- return{v:nrm([e,n,H]),alt:Math.atan2(H,dist)*R2D,az:(Math.atan2(e,n)*R2D+360)%360,dist}}
-// Estrela no modelo do disco: fica no domo, a uma altura HS, sobre o ponto do disco abaixo dela
-const subOf=(q,gm)=>({lat:Math.asin(clamp(q[2],-1,1))*R2D,lon:norm(Math.atan2(q[1],q[0])*R2D-gm)});
-const starModel=(q,gm)=>modelDir(subOf(q,gm),st.obs,st.HS);
+ return{v:nrm([e,n,st.H]),alt:Math.atan2(st.H,dist)*R2D,az:(Math.atan2(e,n)*R2D+360)%360,dist}}
 function phaseOf(mo,sp){const el=Math.acos(Math.cos(mo.elat*D)*Math.cos((mo.elon-sp.lam)*D))*R2D,k=(1-Math.cos(el*D))/2,wax=((mo.elon-sp.lam)%360+360)%360<180;
  const n=k<0.03?"Nova":k>0.97?"Cheia":Math.abs(k-0.5)<0.07?(wax?"Quarto crescente":"Quarto minguante"):k<0.5?(wax?"Crescente":"Minguante"):(wax?"Gibosa crescente":"Gibosa minguante");return{k,wax,n}}
 function compute(){const o=st.obs,sp=sun(st.t),mo=moon(st.t),g=gmst(jdOf(st.t));
@@ -363,11 +358,6 @@ function draw(o){
    ctx.globalAlpha=1;const nm=CAT.names[i];if(nm&&m<lab)LB.push({t:nm,x:p[0]+r+4,y:p[1]+4,c:`rgba(215,222,235,${0.8*a})`,s:10.5,w:400,pr:1+m/10});st.hits.push({x:p[0],y:p[1],kind:"star",i,m})}
   for(const P of o.pl){if(P.alt<0&&st.L.land)continue;const vis=P.mag<lim+0.6||(o.sun.alt<-8&&P.mag<8.5);if(!vis)continue;const p=proj(P.v);if(!onScreen(p))continue;const r=Math.max(1.6,(2.8-0.35*P.mag)*zs);
    glow(p.sx,p.sy,r*3,"rgba(255,240,210,.14)");ctx.fillStyle=P.col;ctx.beginPath();ctx.arc(p.sx,p.sy,r,0,7);ctx.fill();LB.push({t:P.name,x:p.sx+r+5,y:p.sy+4,c:P.col,s:11,w:500,pr:0});st.hits.push({x:p.sx,y:p.sy,kind:"planet",id:P.id})}
-  if(st.L.mstars){const gm=gmst(jdOf(st.t)),lm=Math.min(lim,4.6),MS="255,143,107";
-   if(st.L.lines){ctx.strokeStyle=`rgba(${MS},.42)`;ctx.lineWidth=0.9;ctx.beginPath();for(const c of CAT.cons)for(const seg of c.segs){let prev=null;for(const q of seg){const p=proj(starModel(q,gm).v),pt=p.ok?[p.sx,p.sy]:null;if(pt&&prev&&Math.abs(pt[0]-prev[0])<W&&Math.abs(pt[1]-prev[1])<Hh){ctx.moveTo(prev[0],prev[1]);ctx.lineTo(pt[0],pt[1])}prev=pt}}ctx.stroke();
-    for(const c of CAT.cons){const p=proj(starModel(c.lab,gm).v);if(onScreen(p))LB.push({t:c.name.toUpperCase(),x:p.sx,y:p.sy+14,c:`rgba(${MS},.75)`,s:9.5,w:500,pr:2.5,ctr:1})}}
-   for(let i=0;i<CAT.n;i++){const m=CAT.mag[i];if(m>lm)continue;const p=proj(starModel([CAT.v[i*3],CAT.v[i*3+1],CAT.v[i*3+2]],gm).v);if(!onScreen(p))continue;const r=Math.max(0.9,(2.3-0.4*m)*zs);
-    ctx.fillStyle=`rgba(${MS},${clamp((lm-m)/1.6,0.35,1)})`;ctx.beginPath();ctx.arc(p.sx,p.sy,r,0,7);ctx.fill();const nm=CAT.names[i];if(nm&&m<lab-0.3)LB.push({t:nm,x:p.sx+r+4,y:p.sy+4,c:`rgba(${MS},.9)`,s:10,w:400,pr:1.5+m/10});st.hits.push({x:p.sx,y:p.sy,kind:"star",i,m:m+0.5})}}
   LB.sort((a,b)=>a.pr-b.pr);const used=[];for(const L of LB){ctx.font=`${L.w} ${L.s}px Inter,sans-serif`;const w=ctx.measureText(L.t).width,x=L.ctr?L.x-w/2:L.x,y=L.y-L.s;
    if(used.some(b=>x<b[2]+4&&x+w+4>b[0]&&y<b[3]&&y+L.s+4>b[1]))continue;used.push([x,y,x+w,y+L.s+2]);text(L.t,x,L.y,L.c,L.s,L.w)}}
  drawSatsSky(o);drawAirSky();
@@ -632,10 +622,7 @@ function info(o){const s=st.sel;if(!s){$("info").hidden=true;return}$("info").hi
   if(cH<-1)rs="Sempre acima do horizonte aqui";else if(cH>1)rs="Não nasce neste local";else{const H0=Math.acos(cH)*R2D,tr=st.t+norm(ra-(g+st.obs.lon))/15.0411*36e5;rs=`${fmtH.format(tr-H0/15.0411*36e5)} / ${fmtH.format(tr+H0/15.0411*36e5)}`}
   const rh=ra/15,rm=Math.round((rh%1)*60);h=CAT.names[i]||ds||`HIP ${CAT.hip[i]}`;
   rows=[["Designação",[ds,CAT.hip[i]?`HIP ${CAT.hip[i]}`:""].filter(Boolean).join(" · ")],["Constelação",con||"—"],["Brilho",`magnitude ${nf(CAT.mag[i],2)}`],["Cor",`${cor} · cerca de ${T.toLocaleString("pt-BR")} K`],
-   ["Posição agora",al>-1?`${nf(al)}° de altura · ${Math.round(az)}° ${dirT(az)}`:"abaixo do horizonte"],["Nasce / se põe",rs],["Coordenadas celestes",`AR ${Math.floor(rh)}h${String(rm%60).padStart(2,"0")}m · Dec ${dec>=0?"+":"−"}${nf(Math.abs(dec))}°`],["Ponto abaixo dela",`${latT(dec)} · ${lonT(norm(ra-g))}`]];
-  const M=starModel(q,g),sep=Math.acos(clamp(dot(M.v,[Math.sin(az*D)*Math.cos(al*D),Math.cos(az*D)*Math.cos(al*D),Math.sin(al*D)]),-1,1))*R2D;
-  rows.splice(5,0,["Pelo modelo do disco",`${nf(M.alt)}° de altura · ${Math.round(M.az)}° ${dirT(M.az)}`]);
-  note=al>-0.5?`O modelo (domo a ${st.HS.toLocaleString("pt-BR")} km) coloca esta estrela a ${nf(sep)}° de onde ela é observada.`:`Observado: esta estrela está abaixo do horizonte agora. No modelo do disco, ela estaria a ${nf(M.alt)}° de altura.`}
+   ["Posição agora",al>-1?`${nf(al)}° de altura · ${Math.round(az)}° ${dirT(az)}`:"abaixo do horizonte"],["Nasce / se põe",rs],["Coordenadas celestes",`AR ${Math.floor(rh)}h${String(rm%60).padStart(2,"0")}m · Dec ${dec>=0?"+":"−"}${nf(Math.abs(dec))}°`],["Ponto abaixo dela",`${latT(dec)} · ${lonT(norm(ra-g))}`]]}
  $("infoBody").innerHTML=`<h3>${h}</h3><dl>${rows.map(([a,b])=>`<dt>${a}</dt><dd>${b}</dd>`).join("")}</dl>${note?`<p class="note">${note}</p>`:""}${acts.length?`<div class="acts">${acts.map(([k,t,pr])=>`<button class="btn${pr?" p":""}" data-act="${k}">${t}</button>`).join("")}</div>`:""}`}
 const fmtD=new Intl.DateTimeFormat("pt-BR",{day:"2-digit",month:"short",year:"numeric"}),SPN={60:"1 min/s",600:"10 min/s",3600:"1 h/s",86400:"1 dia/s"};
 const toLocalInput=d=>{const z=n=>String(n).padStart(2,"0");return`${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}T${z(d.getHours())}:${z(d.getMinutes())}`};
@@ -644,7 +631,7 @@ function hud(){const d=new Date(st.t),live=st.speed===1&&st.play&&Math.abs(st.t-
  $("tNow").textContent=fmtH.format(d);$("tState").textContent=live?"ao vivo":!st.play?"pausado":st.speed===1?"simulado":SPN[st.speed];
  const tv=(PY-RY)/F,av=nrm(cam.f.map((v,i)=>v+cam.u[i]*tv)),az=(Math.atan2(av[0],av[1])*R2D+360)%360,al=Math.asin(clamp(av[2],-1,1))*R2D;$("aim").textContent=`${Math.round(az)}° ${dirT(az)} · ${nf(al,0)}°`;
  $("bPlay").textContent=st.play?"Pausar":"Rodar";document.querySelectorAll("[data-sp]").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.sp===st.speed&&st.play));
- $("bHome").hidden=!away();$("bHome").textContent=`Voltar para ${st.home.name}`;const on=!!(st.sensors&&sens.got);$("bSens").setAttribute("aria-pressed",on);$("bRecal").hidden=!on||st.mode!=="sky";$("sensTag").hidden=!on;$("bComp").classList.toggle("on",on);$("hVal").textContent=st.H.toLocaleString("pt-BR")+" km";$("hsVal").textContent=st.HS.toLocaleString("pt-BR")+" km";
+ $("bHome").hidden=!away();$("bHome").textContent=`Voltar para ${st.home.name}`;const on=!!(st.sensors&&sens.got);$("bSens").setAttribute("aria-pressed",on);$("bRecal").hidden=!on||st.mode!=="sky";$("sensTag").hidden=!on;$("bComp").classList.toggle("on",on);$("hVal").textContent=st.H.toLocaleString("pt-BR")+" km";
  if(document.activeElement!==$("dt"))$("dt").value=toLocalInput(d)}
 let toastT;function toast(m){const t=$("toast");t.textContent=m;t.classList.add("on");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("on"),4200)}
 // ---------- Sensores e GPS ----------
@@ -692,16 +679,16 @@ $("proxy").value=AIR.proxy;$("proxy").onchange=e=>{const v=e.target.value.trim()
 $("q").oninput=e=>{clearTimeout(qT);qT=setTimeout(()=>search(e.target.value),280)};
 const manualLoc=()=>{const la=parseFloat($("lat").value),lo=parseFloat($("lon").value);if(isFinite(la)&&isFinite(lo)&&Math.abs(la)<=90&&Math.abs(lo)<=180){st.obs={name:"Ponto escolhido",lat:la,lon:lo};setHome();placeName(la,lo,"Ponto escolhido").then(n=>{if(st.obs.lat===la&&st.obs.lon===lo){st.obs.name=n;setHome()}})}};
 $("lat").onchange=manualLoc;$("lon").onchange=manualLoc;
-$("height").oninput=e=>{st.H=+e.target.value;save()};$("heightS").oninput=e=>{st.HS=+e.target.value;save()};$("gps").onclick=gps;
+$("height").oninput=e=>{st.H=+e.target.value;save()};$("gps").onclick=gps;
 function panel(id){["pMenu","pTime","sheet"].forEach(k=>$(k).classList.toggle("open",k===id));$("scrim").hidden=!id}
 $("scrim").onclick=()=>panel(null);$("bMenu").onclick=()=>panel($("pMenu").classList.contains("open")?null:"pMenu");$("bTime").onclick=()=>panel($("pTime").classList.contains("open")?null:"pTime");
-$("bLoc").onclick=()=>{syncLoc();$("height").value=st.H;$("heightS").value=st.HS;$("q").value="";suggest();panel("sheet")};$("sheetClose").onclick=()=>panel(null);
+$("bLoc").onclick=()=>{syncLoc();$("height").value=st.H;$("q").value="";suggest();panel("sheet")};$("sheetClose").onclick=()=>panel(null);
 $("bComp").onclick=()=>$("bSens").click();
 $("dt").onchange=e=>{const t=new Date(e.target.value).getTime();if(isFinite(t)){st.t=t;if(st.speed===1)st.play=false}};
 document.querySelectorAll("[data-sp]").forEach(b=>b.onclick=()=>{st.speed=+b.dataset.sp;st.play=true});
 $("bBack").onclick=()=>{st.t-=36e5};$("bFwd").onclick=()=>{st.t+=36e5};$("bNow").onclick=()=>{st.t=Date.now();st.speed=1;st.play=true};
 $("bPlay").onclick=()=>{st.play=!st.play};
-const tog=(id,k)=>{$(id).onclick=()=>{st.L[k]=!st.L[k];$(id).setAttribute("aria-pressed",st.L[k])}};tog("lObs","obs");tog("lModel","model");tog("lLines","lines");tog("lGrid","grid");tog("lArt","art");tog("lMStars","mstars");$("lMStars").addEventListener("click",()=>{if(st.L.mstars)toast("Coral: onde as estrelas apareceriam no domo do disco. Branco: onde elas são observadas. Toque numa estrela para ver a diferença.")});tog("lLand","land");tog("lSat","sat");tog("lStarlink","starlink");tog("lAir","air");
+const tog=(id,k)=>{$(id).onclick=()=>{st.L[k]=!st.L[k];$(id).setAttribute("aria-pressed",st.L[k])}};tog("lObs","obs");tog("lModel","model");tog("lLines","lines");tog("lGrid","grid");tog("lArt","art");tog("lLand","land");tog("lSat","sat");tog("lStarlink","starlink");tog("lAir","air");
 $("lSat").addEventListener("click",()=>{if(st.L.sat){loadTLE("stations").then(()=>loadTLE("visual"))}});$("lStarlink").addEventListener("click",()=>{if(st.L.starlink){toast("Carregando os satélites Starlink…");loadTLE("starlink")}});
 $("lAir").addEventListener("click",()=>{if(st.L.air){AIR.err=0;AIR.first=false;airFetch(true)}else AIR.list=[]});
 setTimeout(()=>{if(st.L.sat)loadTLE("stations").then(()=>loadTLE("visual"))},1500);
