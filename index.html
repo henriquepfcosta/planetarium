@@ -199,6 +199,7 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
       <button class="tile" id="lPolar" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 1.6 4.4 4.6.2-3.6 2.9 1.3 4.5L12 12.4 8.1 15l1.3-4.5L5.8 7.6l4.6-.2Z"/><path d="M12 15v6"/></svg><span>Estrela Polar</span></button>
       <button class="tile" id="bEclT"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="12" r="6"/><path d="M14 6.6a6 6 0 1 1 0 10.8"/></svg><span>Eclipses</span></button>
       <button class="tile" id="lTide" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 15c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2"/><path d="M2 19c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2"/><path d="M12 3v7M9 7l3 3 3-3"/></svg><span>Marés</span></button>
+      <button class="tile" id="bCurve"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 16c4-6 14-6 18 0"/><path d="M12 3v4M10 5l2-2 2 2"/><circle cx="12" cy="11" r="1.2"/></svg><span>Teste da curvatura</span></button>
       <button class="tile" id="bTide"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17c3 0 3-8 6-8s3 8 6 8 3-6 6-6"/><path d="M3 21h18"/></svg><span>Tábua de marés</span></button>
       <button class="tile" id="bWx"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 16h9a3.5 3.5 0 0 0 .4-7 5 5 0 0 0-9.6 1.3A2.9 2.9 0 0 0 8 16Z"/><path d="M9 19l-1 2M13 19l-1 2M17 19l-1 2"/></svg><span>Previsão do tempo</span></button>
       <div class="mh">Ao vivo</div>
@@ -215,6 +216,21 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
       <button class="btn ic" id="bSens" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2.5" width="10" height="19" rx="2.2"/><path d="M11 18.5h2"/><path d="M2.5 9a7 7 0 0 1 2-4M21.5 9a7 7 0 0 0-2-4"/></svg>Sensores</button>
       <button class="btn ic" id="bLoc"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Local e modelo</button>
     </div>
+  </div>
+  <div class="sheet" id="pCurve" role="dialog" aria-label="Teste da curvatura">
+    <h2><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 16c4-6 14-6 18 0"/><path d="M12 3v4M10 5l2-2 2 2"/></svg>Teste da curvatura</h2>
+    <p class="small" style="margin:0">Se o chão se curva, o horizonte de cada lugar se inclina e os polos do céu mudam de altura. Compare o que se observa em várias cidades com o que cada curvatura prevê.</p>
+    <canvas id="cvCurve" style="width:100%;height:190px;border-radius:12px;background:#0b1820" aria-label="Perfil do disco em corte, do polo norte à borda sul"></canvas>
+    <label class="f"><span>Curvatura: <b id="cvVal" style="color:var(--ink)">100%</b> do valor medido <span id="cvKm"></span></span><input type="range" id="cvK" min="0" max="150" step="1" value="100"></label>
+    <div class="seg" id="cvDist"><button data-d="far" aria-pressed="true">Estrelas muito distantes</button><button data-d="dome" aria-pressed="false">Estrelas no domo</button></div>
+    <div class="two"><button class="btn" id="cvReset">Usar o valor medido</button><button class="btn" id="cvFit">Melhor ajuste</button></div>
+    <p style="margin:0" id="cvSum"></p>
+    <div class="res" id="cvList" style="max-height:none"></div>
+    <details class="adv"><summary>De onde vem o valor medido</summary>
+      <p class="small">A altura do polo celeste muda cerca de 1° a cada 111,2 km andados de norte a sul (é a definição prática de latitude). Isso foi medido por Aristóteles (Canopus visível no Egito e não na Grécia), Eratóstenes (sombras em Siena e Alexandria), al-Biruni (horizonte visto de uma montanha), pelas expedições à Lapônia e ao Peru (anos 1730), por Lacaille no sul da África (anos 1750) e pelo Arco Geodésico de Struve (1816–1855). Hoje o GPS confirma diariamente.</p>
+      <p class="small">Com 100% e estrelas muito distantes, o perfil se fecha num círculo de 6.371 km de raio. A Polaris fica a 0,7° do polo norte celeste; a tabela usa os próprios polos celestes.</p>
+    </details>
+    <button class="btn" id="cvClose">Fechar</button>
   </div>
   <div class="sheet" id="pWx" role="dialog" aria-label="Previsão do tempo">
     <h2><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18h10a4 4 0 0 0 .5-8 6 6 0 0 0-11.4 1.6A3.3 3.3 0 0 0 7 18Z"/></svg><span id="wxTitle">Tempo</span></h2>
@@ -270,7 +286,7 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
       <p class="small" id="airMsg"></p>
     </details>
     <button class="btn" id="sheetClose">Fechar</button>
-    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-17</p>
+    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-18</p>
   </div>
   <div class="welcome" id="welcome">
     <div>
@@ -927,7 +943,7 @@ $("q").oninput=e=>{clearTimeout(qT);qT=setTimeout(()=>search(e.target.value),280
 const manualLoc=()=>{const la=parseFloat($("lat").value),lo=parseFloat($("lon").value);if(isFinite(la)&&isFinite(lo)&&Math.abs(la)<=90&&Math.abs(lo)<=180){st.obs={name:"Ponto escolhido",lat:la,lon:lo};setHome();placeName(la,lo,"Ponto escolhido").then(n=>{if(st.obs.lat===la&&st.obs.lon===lo){st.obs.name=n;setHome()}})}};
 $("lat").onchange=manualLoc;$("lon").onchange=manualLoc;
 $("height").oninput=e=>{st.H=+e.target.value;save()};$("gps").onclick=gps;
-function panel(id){["pMenu","pTime","sheet","pEcl","pTide","pWx"].forEach(k=>$(k).classList.toggle("open",k===id));$("scrim").hidden=!id;$("scrim").classList.toggle("clear",id==="pMenu"||LSC())}
+function panel(id){["pMenu","pTime","sheet","pEcl","pTide","pWx","pCurve"].forEach(k=>$(k).classList.toggle("open",k===id));$("scrim").hidden=!id;$("scrim").classList.toggle("clear",id==="pMenu"||LSC())}
 $("scrim").onclick=()=>panel(null);$("bMenu").onclick=()=>panel($("pMenu").classList.contains("open")?null:"pMenu");$("bTime").onclick=()=>{$("sim").hidden=!$("sim").hidden};$("sCal").onclick=()=>panel("pTime");
 $("sPlay").onclick=()=>{st.play=!st.play};
 new ResizeObserver(()=>{const e=$("sim");SIMH=e.hidden?0:e.offsetHeight+10}).observe($("sim"));
@@ -1122,6 +1138,41 @@ function drawCities(projFn){if(!st.L.city)return;loadCW();if(!CW.L)return;let n=
   const dk=gcDist(st.obs.lat,st.obs.lon,c.lat,c.lon),own=dk<6;if(own)continue;const lab=zz>=6.2&&dk<2500?`${c.n} · ${dk<100?Math.round(dk):Math.round(dk/10)*10} km`:c.n;
   ctx.fillStyle=c.cap?"#fff":"rgba(255,236,210,.95)";ctx.strokeStyle="rgba(0,0,0,.5)";ctx.lineWidth=1;ctx.beginPath();if(c.cap)ctx.rect(p[0]-2.5,p[1]-2.5,5,5);else ctx.arc(p[0],p[1],2,0,7);ctx.fill();ctx.stroke();
   text(lab,p[0]+5,p[1]-4,c.cap?"#ffffff":"rgba(255,236,210,.95)",c.cap?11:10,c.cap?600:500,4+c.z*0.5);if(++n>180)break}}
+
+// ---------- Teste da curvatura (perfil norte–sul do disco) ----------
+const CV={k:1,dist:"far"};try{const c=JSON.parse(localStorage.getItem("planetarium-curva")||"null");if(c){CV.k=+c.k;CV.dist=c.dist||"far"}}catch(e){}
+const KMDEG=RKM/180,RE=RKM/Math.PI;
+const CVC=[["Reykjavík",64.15],["Londres",51.51],["Cairo",30.04],["Macapá (equador)",0.03],["Buenos Aires",-34.6],["Cidade do Cabo",-33.92],["Sydney",-33.87],["Ushuaia",-54.8]];
+// posição e normal no corte (km), polo norte na origem; s = distância ao polo ao longo do chão
+function cvPos(sk,k){if(k<1e-4)return{p:[sk,0],n:[0,1],t:[-1,0]};const rho=RE/k,f=sk/rho;return{p:[rho*Math.sin(f),rho*(Math.cos(f)-1)],n:[Math.sin(f),Math.cos(f)],t:[-Math.cos(f),Math.sin(f)]}}
+// altura prevista do polo norte (e sul) celeste para uma latitude, curvatura k e distância das estrelas
+function cvPred(lat,k,dist){const P=cvPos((90-lat)*KMDEG,k),Hd=dv.HD*RKM;let dN;if(dist==="far")dN=[0,1];else{const d=[-P.p[0],Hd-P.p[1]],l=Math.hypot(d[0],d[1]);dN=[d[0]/l,d[1]/l]}
+ const altN=Math.atan2(dot2(dN,P.n),Math.max(1e-9,dot2(dN,P.t)))*R2D,altS=dist==="far"?Math.asin(clamp(-P.n[1],-1,1))*R2D:null;return{altN:altN>90?180-altN:altN,altS}}
+const dot2=(a,b)=>a[0]*b[0]+a[1]*b[1];
+function cvRows(){const L=CVC.map(([n,lat])=>({n,lat}));const me=st.obs;if(!L.some(c=>Math.abs(c.lat-me.lat)<0.2))L.push({n:me.name,lat:me.lat,me:1});return L.sort((a,b)=>b.lat-a.lat)}
+function cvErr(k,dist){let s=0,n=0;for(const c of cvRows()){const p=cvPred(c.lat,k,dist);s+=Math.abs(p.altN-c.lat);n++;if(p.altS!=null){s+=Math.abs(p.altS+c.lat);n++}}return s/n}
+function cvOpen(){cvRender();panel("pCurve")}
+function cvRender(){const k=CV.k,dist=CV.dist;$("cvK").value=Math.round(k*100);$("cvVal").textContent=Math.round(k*100)+"%";$("cvKm").textContent=k>0?`(1° a cada ${Math.round(KMDEG/k).toLocaleString("pt-BR")} km)`:"(disco plano)";
+ document.querySelectorAll("#cvDist button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.d===dist));
+ const rows=cvRows(),fmt=a=>a==null?"—":`${a>=0?"+":"−"}${nf(Math.abs(a),1)}°`;
+ $("cvList").innerHTML=rows.map(c=>{const p=cvPred(c.lat,k,dist),oN=c.lat,oS=-c.lat,eN=Math.abs(p.altN-oN),eS=p.altS==null?null:Math.abs(p.altS-oS),ok=e=>e==null?"var(--mute)":e<=1?"#7dffb0":e<=5?"#ffd27a":"#ff9f80";
+  return`<div class="ri" style="cursor:default;display:grid;gap:3px;justify-content:stretch"><b${c.me?' style="color:#ffb39b"':""}>${c.n} · ${latT(c.lat)}</b><span style="text-align:left">Polo norte (Polaris): observado ${fmt(oN)} · previsto <b style="color:${ok(eN)}">${fmt(p.altN)}</b></span><span style="text-align:left">Polo sul (Cruzeiro do Sul aponta): observado ${fmt(oS)} · previsto <b style="color:${ok(eS)}">${p.altS==null?"não definido no domo":fmt(p.altS)}</b></span></div>`}).join("");
+ const e=cvErr(k,dist);$("cvSum").innerHTML=`Diferença média entre previsto e observado: <b style="color:${e<=1?"#7dffb0":e<=5?"#ffd27a":"#ff9f80"}">${nf(e,1)}°</b>`+(dist==="dome"?" (o polo sul celeste não tem posição no modelo do domo; só o polo norte entra na média).":"");
+ const c=$("cvCurve"),r=c.getBoundingClientRect(),w=Math.max(260,r.width||320),h=190,dp=devicePixelRatio||1;c.width=w*dp;c.height=h*dp;const x=c.getContext("2d");x.setTransform(dp,0,0,dp,0,0);x.clearRect(0,0,w,h);
+ const N=120,pts=[];for(let i=0;i<=N;i++)pts.push(cvPos(i/N*RKM,k).p);const Hd=dv.HD*RKM;let x0=-200,x1=Math.max(...pts.map(p=>p[0]))+200,y0=Math.min(...pts.map(p=>p[1]))-200,y1=dist==="dome"?Hd+600:1800;
+ const sc=Math.min((w-24)/(x1-x0),(h-24)/(y1-y0)),ox=12-x0*sc+((w-24)-(x1-x0)*sc)/2,oy=h-12+y0*sc-((h-24)-(y1-y0)*sc)/2,X=p=>[ox+p[0]*sc,oy-p[1]*sc];
+ x.strokeStyle="#6cb8ff";x.lineWidth=2.5;x.beginPath();pts.forEach((p,i)=>{const q=X(p);i?x.lineTo(q[0],q[1]):x.moveTo(q[0],q[1])});x.stroke();x.fillStyle="#cfe9ff";x.font="600 10px Inter,sans-serif";const qN=X([0,0]);x.fillText("Polo Norte",qN[0]+4,qN[1]+12);const qS=X(pts[N]);x.fillText("borda sul",qS[0]-48,qS[1]+(k>0.6?-6:12));
+ if(dist==="dome"){const qP=X([0,Hd]);x.fillStyle="#bfe6ff";x.beginPath();x.arc(qP[0],qP[1],3.5,0,7);x.fill();x.fillText("Polaris no domo",qP[0]+6,qP[1]+4)}
+ for(const c2 of rows){const P=cvPos((90-c2.lat)*KMDEG,k),q=X(P.p),L=26;x.strokeStyle="rgba(255,255,255,.55)";x.lineWidth=1;x.beginPath();x.moveTo(q[0]-P.t[0]*L*0.6,q[1]+P.t[1]*L*0.6);x.lineTo(q[0]+P.t[0]*L*0.6,q[1]-P.t[1]*L*0.6);x.stroke();
+  let d=dist==="far"?[0,1]:(()=>{const v=[-P.p[0],Hd-P.p[1]],l=Math.hypot(v[0],v[1]);return[v[0]/l,v[1]/l]})();x.strokeStyle=c2.me?"#ffb39b":"rgba(255,210,122,.8)";x.lineWidth=1.4;x.beginPath();x.moveTo(q[0],q[1]);x.lineTo(q[0]+d[0]*L,q[1]-d[1]*L);x.stroke();
+  x.fillStyle=c2.me?"#ff8f6b":"#ffd27a";x.beginPath();x.arc(q[0],q[1],3,0,7);x.fill()}
+ x.fillStyle="rgba(169,180,182,.9)";x.font="500 9.5px Inter,sans-serif";x.fillText("seta: direção do polo norte celeste em cada cidade",8,12);x.fillText("o horizonte de cada uma é a reta que toca a curva",8,24)}
+function cvSave(){try{localStorage.setItem("planetarium-curva",JSON.stringify({k:CV.k,dist:CV.dist}))}catch(e){}}
+$("bCurve").onclick=cvOpen;$("cvClose").onclick=()=>panel(null);
+$("cvK").oninput=e=>{CV.k=+e.target.value/100;cvSave();cvRender()};
+$("cvDist").addEventListener("click",e=>{const b=e.target.closest("[data-d]");if(!b)return;CV.dist=b.dataset.d;cvSave();cvRender()});
+$("cvReset").onclick=()=>{CV.k=1;cvSave();cvRender()};
+$("cvFit").onclick=()=>{let best=0,be=1e9;for(let i=0;i<=150;i++){const e=cvErr(i/100,CV.dist);if(e<be){be=e;best=i/100}}CV.k=best;cvSave();cvRender();toast(`Melhor ajuste com ${CV.dist==="far"?"estrelas muito distantes":"estrelas no domo"}: ${Math.round(best*100)}% da curvatura medida, diferença média de ${nf(be,1)}°.`)};
 // ---------- Zodíaco, eclíptica e caminhos do dia ----------
 const EPS=23.4393*D,SIGNS=[["♈","Áries"],["♉","Touro"],["♊","Gêmeos"],["♋","Câncer"],["♌","Leão"],["♍","Virgem"],["♎","Libra"],["♏","Escorpião"],["♐","Sagitário"],["♑","Capricórnio"],["♒","Aquário"],["♓","Peixes"]];
 const signT=l=>{const L=((l%360)+360)%360,k=Math.floor(L/30);return`${SIGNS[k][1]} (${nf(L-k*30,0)}° do signo)`};
@@ -1293,7 +1344,7 @@ function loop(now){const dt=Math.min(now-last,100);last=now;
   ctx.fillStyle="rgba(238,240,234,.35)";if(R.port)ctx.fillRect(0,Math.round(R.S.y*dpr)-1,cv.width,2);else ctx.fillRect(Math.round(R.S.x*dpr)-1,0,2,cv.height);
   $("ret").style.top=(R.S.y+RY)+"px";$("ret").style.left=(R.S.x+R.S.w/2)+"px";const az=Math.atan2(cam.f[0],cam.f[1])*R2D;$("rose").setAttribute("transform",`rotate(${(-az).toFixed(1)} 32 32)`);for(const t of ROSE_T)t.setAttribute("transform",`rotate(${az.toFixed(1)} ${t.getAttribute("x")} ${+t.getAttribute("y")-3})`);
   recFrame();if(now-lastI>200){hud();info(o);simLbl(o);moonIcon(o);lastI=now}requestAnimationFrame(loop);return}
- {let tg=0;if(st.mode==="disc"){if($("pMenu").classList.contains("open"))tg=Math.min(300,W*0.84)/2;else if(LSC()){if(["pTime","sheet","pEcl","pTide","pWx"].some(k=>$(k).classList.contains("open")))tg=-Math.min(420,W*0.56)/2;else if(!$("sim").hidden)tg=-160}}MOFF+=(tg-MOFF)*Math.min(1,dt/70);if(Math.abs(tg-MOFF)<0.5)MOFF=tg;DMG=Hh<W&&Hh<560?{top:58,bot:66}:{top:Math.max(100,HDRB),bot:110+(!$("sim").hidden?SIMH:0)}}
+ {let tg=0;if(st.mode==="disc"){if($("pMenu").classList.contains("open"))tg=Math.min(300,W*0.84)/2;else if(LSC()){if(["pTime","sheet","pEcl","pTide","pWx","pCurve"].some(k=>$(k).classList.contains("open")))tg=-Math.min(420,W*0.56)/2;else if(!$("sim").hidden)tg=-160}}MOFF+=(tg-MOFF)*Math.min(1,dt/70);if(Math.abs(tg-MOFF)<0.5)MOFF=tg;DMG=Hh<W&&Hh<560?{top:58,bot:66}:{top:Math.max(100,HDRB),bot:110+(!$("sim").hidden?SIMH:0)}}
  updateCam();const o=compute();satUpdate(o);trPush(o);st.hits=[];if(st.mode==="disc"){drawDisc(o);drawMiniSky(o)}else if(st.mode==="fly"){drawFly(o,dt);if(st.mode==="fly"){const up=FL.anim!=null?FL.anim>=FLTOP:FL.h<=100;if(up)drawMiniSky(o);else drawMini(o)}}else{draw(o);drawMini(o);const az=Math.atan2(cam.f[0],cam.f[1])*R2D;$("ret").style.top=RY+"px";$("rose").setAttribute("transform",`rotate(${(-az).toFixed(1)} 32 32)`);for(const t of ROSE_T)t.setAttribute("transform",`rotate(${az.toFixed(1)} ${t.getAttribute("x")} ${+t.getAttribute("y")-3})`)}xfDraw();recFrame();if(now-lastI>200){hud();info(o);simLbl(o);moonIcon(o);lastI=now}requestAnimationFrame(loop)}
 syncLoc();requestAnimationFrame(loop);
 if("serviceWorker"in navigator&&location.protocol==="https:"&&!/claude/.test(location.hostname)){try{const had=!!navigator.serviceWorker.controller;let reloaded=false;

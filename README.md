@@ -59,6 +59,11 @@ Toque no relógio para abrir a barra de simulação: tocar/pausar, régua das 24
 - **Nuvens do tempo real:** no Imersivo, nuvens desenhadas conforme a cobertura prevista para o local e a hora simulada, andando com o vento (dados Open-Meteo, CC BY 4.0). O formato das nuvens é ilustrativo; a quantidade, a altura (baixas, médias, altas) e o vento vêm da previsão.
 - **Previsão do tempo:** condições na hora simulada, nuvens das próximas 48 horas e as próximas noites boas para observar.
 
+## Teste da curvatura
+
+- **Teste da curvatura** (menu, nos dois modos): um controle de curvatura do disco, começando no valor medido (1° a cada 111,2 km, das medições de Eratóstenes, al-Biruni, das expedições do século XVIII e do Arco de Struve até o GPS) e ajustável de 0% (plano) a 150%.
+- Mostra o perfil norte–sul em corte e, para várias cidades (de Reykjavík a Ushuaia, mais o seu local), a altura observada dos polos celestes comparada com a prevista; escolha entre estrelas muito distantes ou no domo. **Melhor ajuste** procura a curvatura que mais se aproxima do observado.
+
 ## Marés
 
 - **Marés** (menu, nos dois modos): calcula a maré astronômica de equilíbrio pelas posições reais da Lua e do Sol. No Disco 3D, o oceano fica azul onde a água se acumula (maré alta) e cor de areia onde baixa, com as duas regiões de maré alta marcadas: sob a Lua e do lado oposto.
