@@ -1,4 +1,4 @@
-const VERSION = "2026.11.27-8";
+const VERSION = "2026.11.27-9";
 const CACHE = "planetarium-" + VERSION;
 const CORE = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png", "sky.json", "art.json", "cidades-br.json", "terra/mapa.jpg", "terra/gleason.jpg", "terra/dia.jpg", "terra/noite.jpg", "terra/lua.webp", "lib/satellite.min.js"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE.map(u => new Request(u, { cache: "reload" }))))); self.skipWaiting(); });

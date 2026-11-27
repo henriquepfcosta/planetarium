@@ -17,6 +17,13 @@ Toque no relógio para abrir a barra de simulação: tocar/pausar, régua das 24
 - **Estrela Polar:** marcada no centro do domo do Disco 3D e no céu do Imersivo; abaixo do horizonte, o app mostra quantos graus.
 - **Anel de horas (inspirado no mapa de Gleason, 1892):** horas solares em algarismos romanos em volta do disco, girando com o Sol (XII dourado = meio-dia); graus de latitude e longitude na grade e escala de distância ao longo dos meridianos. Estilo de mapa “Gleason 1892” gerado por `tools/gleason.py`.
 
+## Alinhamento com o céu real
+
+- **Norte verdadeiro:** a bússola do celular aponta para o norte magnético. O app corrige a declinação magnética do seu local com o modelo WMM2025 da NOAA (em Muriaé, cerca de 23° para oeste).
+- **Modo alinhado:** com os sensores ligados, o centro da tela é exatamente para onde o celular aponta, com campo de visão próximo ao da câmera.
+- **Calibrar pelo céu** (menu, modo Imersivo): abre a câmera com o céu desenhado por cima. Ponha o Sol, a Lua, Vênus ou uma estrela brilhante no centro e toque em Alinhar; com o Sol e a Lua, o app tenta encontrá-los sozinho na imagem. A correção fica salva e pode ser desfeita.
+- **Câmera ao fundo:** mostra a imagem da câmera atrás do céu desenhado.
+
 ## Marés
 
 - **Marés** (menu, nos dois modos): calcula a maré astronômica de equilíbrio pelas posições reais da Lua e do Sol. No Disco 3D, o oceano fica azul onde a água se acumula (maré alta) e cor de areia onde baixa, com as duas regiões de maré alta marcadas: sob a Lua e do lado oposto.
