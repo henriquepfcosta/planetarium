@@ -327,7 +327,7 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
       <p class="small" id="airMsg"></p>
     </details>
     <button class="btn" id="sheetClose">Fechar</button>
-    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-37</p>
+    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-38</p>
   </div>
   <div class="welcome" id="welcome">
     <div>
@@ -999,7 +999,7 @@ $("q").oninput=e=>{clearTimeout(qT);qT=setTimeout(()=>search(e.target.value),280
 const manualLoc=()=>{const la=parseFloat($("lat").value),lo=parseFloat($("lon").value);if(isFinite(la)&&isFinite(lo)&&Math.abs(la)<=90&&Math.abs(lo)<=180){st.obs={name:"Ponto escolhido",lat:la,lon:lo};setHome();placeName(la,lo,"Ponto escolhido").then(n=>{if(st.obs.lat===la&&st.obs.lon===lo){st.obs.name=n;setHome()}})}};
 $("lat").onchange=manualLoc;$("lon").onchange=manualLoc;
 $("height").oninput=e=>{st.H=+e.target.value;save()};$("gps").onclick=gps;
-function panel(id){if(id)$("mpHint").hidden=true;["pMenu","pTime","sheet","pEcl","pTide","pWx","pCurve","sim"].forEach(k=>$(k).classList.toggle("open",k===id));$("scrim").hidden=!id;$("scrim").classList.toggle("clear",id==="pMenu"||id==="sim"||LSC())}
+function panel(id){if(id)$("mpHint").hidden=true;["pMenu","pTime","sheet","pEcl","pTide","pWx","pCurve","sim"].forEach(k=>$(k).classList.toggle("open",k===id));$("scrim").hidden=!id;$("scrim").classList.toggle("clear",id==="pMenu"||id==="sim"||LSC());mTogSync()}
 $("scrim").onclick=()=>panel(null);$("bMenu").onclick=()=>panel($("pMenu").classList.contains("open")?null:"pMenu");const simOpen=()=>$("sim").classList.contains("open");const simToggle=()=>panel(simOpen()?null:"sim");$("bTime").onclick=simToggle;$("mpMore").onclick=simToggle;$("sClose").onclick=()=>panel(null);
 const SPDS=[1,60,600,3600,86400];
 {let seen=false;try{seen=localStorage.getItem("planetarium-simhint")==="1"}catch(e){}const done=()=>{$("mpHint").hidden=true;$("mp").classList.remove("pulse");try{localStorage.setItem("planetarium-simhint","1")}catch(e){}};
@@ -1287,8 +1287,8 @@ function cvRender(){const S=shapeT(),dist=CV.dist;cvSliders();$("cvVal").textCon
  x.fillStyle="rgba(169,180,182,.9)";x.font="500 9.5px Inter,sans-serif";x.fillText("seta: direção do polo norte celeste em cada cidade",8,12);x.fillText("o horizonte de cada uma é a reta que toca a curva",8,24)}
 function cvSave(){try{localStorage.setItem("planetarium-curva",JSON.stringify({mode:CV.mode,k:CV.k,hc:CV.hc,dist:CV.dist}))}catch(e){}}
 function cvSetMode(m){if(m===CV.mode)return;if(st.mode==="disc"||st.split)xfSnap();CV.mode=m;cvSave();cvRender();mTogSync();applyLayout();if(m==="globe"){SV.anim=null;SV.yaw=null;SV.lg=Math.log(SV.real?2.6:5.4);SV.pitch=38*D}else if(st.mode==="disc"){dv.tiltT=0.5}}
-function mTogSync(){{const f=$("svFoc"),on=st.mode==="disc"&&MODEL()==="globe"&&!st.split&&G3.ok!==false;f.hidden=!on;if(on)f.style.top=((HDRB||110)+2)+"px";
- const c=$("clTog"),cOn=(st.mode==="disc"||st.mode==="sky")&&!st.split;c.hidden=!cOn;if(cOn){c.style.top=((HDRB||110)+2+(on?40:0))+"px";c.setAttribute("aria-pressed",!!st.L.wx)}}$("mDual").setAttribute("aria-pressed",!!st.split&&st.pair==="dg");document.querySelectorAll("#mTog [data-mm]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.mm===CV.mode));$("mini").setAttribute("aria-label",st.mode==="sky"?(CV.mode==="globe"?"Ir para o Globo":"Ir para o Disco"):"Ir para o céu")}
+function mTogSync(){{const cov=!!document.querySelector(".sheet.open")||!$("welcome").hidden,f=$("svFoc"),on=!cov&&st.mode==="disc"&&MODEL()==="globe"&&!st.split&&G3.ok!==false;f.hidden=!on;if(on)f.style.top=((HDRB||110)+2)+"px";
+ const c=$("clTog"),cOn=!cov&&(st.mode==="disc"||st.mode==="sky")&&!st.split;c.hidden=!cOn;if(cOn){c.style.top=((HDRB||110)+2+(on?40:0))+"px";c.setAttribute("aria-pressed",!!st.L.wx)}}$("mDual").setAttribute("aria-pressed",!!st.split&&st.pair==="dg");document.querySelectorAll("#mTog [data-mm]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.mm===CV.mode));$("mini").setAttribute("aria-label",st.mode==="sky"?(CV.mode==="globe"?"Ir para o Globo":"Ir para o Disco"):"Ir para o céu")}
 $("clTog").onclick=()=>{$("lWx").click();$("clTog").setAttribute("aria-pressed",!!st.L.wx);if(!st.L.wx)toast("Nuvens desligadas.")};
 $("svFoc").addEventListener("click",e=>{const b=e.target.closest("[data-f]");if(b)svFocus(b.dataset.f,true)});
 $("mDual").onclick=()=>{const on=st.split&&st.pair==="dg";setSplit(on?"off":"dg");mTogSync();if(!on)toast("Disco e Globo lado a lado, no mesmo relógio. Use Simular para acelerar o tempo nos dois.")};
