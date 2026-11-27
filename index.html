@@ -30,6 +30,17 @@ html,body{margin:0;height:100%;background:#03070f;color:var(--ink);font:15px/1.4
 .reticle i{display:block;width:20px;height:20px;margin:0 auto;border:1px solid rgba(255,255,255,.45);border-radius:50%}
 .reticle span{display:block;margin-top:5px;font-size:11px;color:var(--mute);text-shadow:0 1px 3px #000;font-variant-numeric:tabular-nums;white-space:nowrap}
 .bottom{position:absolute;left:0;right:0;bottom:0;padding:0 14px calc(env(safe-area-inset-bottom) + 12px);display:grid;gap:10px;pointer-events:none}
+.sim{pointer-events:auto;display:grid;gap:6px;background:rgba(4,10,16,.78);border:1px solid var(--line);border-radius:16px;padding:9px 10px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);max-width:620px;width:100%;justify-self:center}
+.srow{display:grid;grid-template-columns:38px minmax(0,1fr) 38px;gap:8px;align-items:center}
+.sp{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:#12232c;color:var(--ink);display:grid;place-items:center;cursor:pointer}
+.sp svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linejoin:round;stroke-linecap:round}#sPlay svg{fill:currentColor}
+#sDay{accent-color:var(--sun);height:32px;width:100%}
+.seg.sm button{min-height:34px;font-size:13px;padding:0 9px}
+.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}.chips::-webkit-scrollbar{display:none}
+.chips button{flex:none;min-height:34px;padding:0 11px;border-radius:999px;border:1px solid var(--line);background:#0f1d25;color:var(--ink);font:500 13px Inter,sans-serif;cursor:pointer;white-space:nowrap}
+.chips button[aria-pressed=true]{background:var(--teal);border-color:var(--teal);color:#06201c}
+.chips button[data-sp][aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:#08121a}.sep{flex:none;width:1px;margin:4px 2px;background:var(--line)}
+.slbl{margin:0;font-size:11.5px;line-height:1.3;color:var(--mute);text-align:center;font-variant-numeric:tabular-nums}
 .dock{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;pointer-events:none}
 .ib,.tb,.compass{pointer-events:auto;cursor:pointer;color:var(--ink);background:none;border:0;padding:0}
 .ib{justify-self:start;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:rgba(4,10,16,.45);border:1px solid var(--line)}
@@ -97,6 +108,11 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
   <div class="scrim" id="scrim" hidden></div>
   <div class="bottom">
     <div class="card" id="info" hidden><button class="x" id="infoX" aria-label="Fechar">×</button><div id="infoBody"></div></div>
+    <div class="sim" id="sim" hidden>
+      <div class="srow"><button class="sp" id="sPlay" aria-label="Rodar ou pausar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7Z"/></svg></button><input type="range" id="sDay" min="0" max="1439" step="1" aria-label="Hora do dia"><button class="sp" id="sCal" aria-label="Escolher data"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></button></div>
+      <div class="chips"><button data-sp="1">1×</button><button data-sp="60">1 min/s</button><button data-sp="600">10 min/s</button><button data-sp="3600">1 h/s</button><button data-sp="86400">1 dia/s</button><i class="sep"></i><button data-go="rise">Nascer do Sol</button><button data-go="noon">Meio-dia</button><button data-go="set">Pôr do Sol</button><button data-go="mid">Meia-noite</button><i class="sep"></i><button data-go="day">Um dia</button><button data-go="night">Uma noite</button><button data-go="year">Um ano</button><i class="sep"></i><button id="sTrail" aria-pressed="false">Rastros</button><button id="sSplit" aria-pressed="false">Tela dividida</button></div>
+      <p class="slbl" id="sLbl">—</p>
+    </div>
     <div class="dock">
       <button class="ib" id="bMenu" aria-label="Camadas e ações"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="m3 12 9 5 9-5"/><path d="m3 16 9 5 9-5"/></svg></button>
       <button class="compass" id="bComp" aria-label="Bússola. Toque para ligar ou desligar os sensores">
@@ -113,7 +129,7 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
       <button class="tile s" id="lArt" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19c3-1 4-4 7-5s5 1 9-3"/><path d="M14 5c2 0 4 2 3 4"/><circle cx="8" cy="8" r="2"/></svg><span>Desenhos</span></button>
       <button class="tile s" id="lLand" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 19h20"/><path d="m3 19 5-7 4 5 3-3 6 5"/><circle cx="17" cy="7" r="2.5"/></svg><span>Paisagem</span></button>
       <button class="tile s" id="lGrid" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18c5-6 13-6 18 0"/><path d="M6 20c2-9 10-9 12 0"/><path d="M12 6v14M3 13h18"/></svg><span>Grade</span></button>
-      <button class="tile d" id="dReal" aria-pressed="true" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M5 9c3 1 4-2 7-1s3 4 6 3M7 17c2-2 5-1 6-3"/></svg><span>Foto de satélite</span></button>
+      <button class="tile d" id="dReal" aria-pressed="true" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M5 9c3 1 4-2 7-1s3 4 6 3M7 17c2-2 5-1 6-3"/></svg><span id="dRealL">Estilo: mapa</span></button>
       <button class="tile d" id="dLight" aria-pressed="true" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span>Luz do Sol</span></button>
       <button class="tile d" id="dStars" aria-pressed="true" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 15a9 9 0 0 1 18 0"/><path d="M2 15h20"/><path d="m8 8 .6 1.3 1.4.2-1 1 .2 1.4L8 11.2l-1.2.7.2-1.4-1-1 1.4-.2Z"/><circle cx="15" cy="8" r=".8"/><circle cx="12" cy="11" r=".8"/></svg><span>Estrelas no domo</span></button>
       <button class="tile d" id="dCons" aria-pressed="true" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 15a9 9 0 0 1 18 0"/><path d="M2 15h20"/><path d="m7 11 4-3 3 2 3-1"/><circle cx="7" cy="11" r="1"/><circle cx="11" cy="8" r="1"/><circle cx="14" cy="10" r="1"/><circle cx="17" cy="9" r="1"/></svg><span>Constelações no domo</span></button>
@@ -157,7 +173,7 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
       <p class="small" id="airMsg"></p>
     </details>
     <button class="btn" id="sheetClose">Fechar</button>
-    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-3</p>
+    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-4</p>
   </div>
   <div class="welcome" id="welcome">
     <div>
@@ -236,7 +252,7 @@ function clipProj(pts,C){const P=pts.map(q=>[dot(q,C.r),dot(q,C.u),dot(q,C.f)]),
 
 // ---------- Estado ----------
 const st={t:Date.now(),play:true,speed:1,obs:{name:"São Paulo",lat:-23.55,lon:-46.63},H:5000,yaw:180*D,pitch:25*D,fov:90,
- L:{obs:true,model:true,lines:true,grid:false,art:true,land:true,sat:true,starlink:false,air:false},sensors:false,mode:"sky",dg:null,sel:null,hits:[]};
+ L:{trail:false,obs:true,model:true,lines:true,grid:false,art:true,land:true,sat:true,starlink:false,air:false},sensors:false,mode:"sky",dg:null,sel:null,hits:[]};
 const sens={alpha:0,beta:90,gamma:0,cal:0,off:null,samp:[],got:false,rel:false,raw:null};
 let cam={f:[0,1,0],r:[1,0,0],u:[0,0,1]};
 st.home={...st.obs};st.pend=null;
@@ -246,7 +262,8 @@ const setHome=()=>{st.home={name:st.obs.name,lat:st.obs.lat,lon:st.obs.lon};save
 const away=()=>Math.abs(st.obs.lat-st.home.lat)>0.01||Math.abs(st.obs.lon-st.home.lon)>0.01;
 function goHome(){st.obs={...st.home};st.pend=null;save();syncLoc();toast(`De volta a ${st.home.name}`);st.sel=null}
 // ---------- Canvas ----------
-const cv=$("sky"),ctx=cv.getContext("2d"),mini=$("mini"),mctx=mini.getContext("2d");let W=0,Hh=0,dpr=1,F=1,PY=0,RY=0;
+let ctx;const cv=$("sky"),ctx0=cv.getContext("2d"),mini=$("mini"),mctx=mini.getContext("2d");let W=0,Hh=0,dpr=1,F=1,PY=0,RY=0,SIMH=0;
+ctx=ctx0;const cD=document.createElement("canvas"),xD=cD.getContext("2d"),cS=document.createElement("canvas"),xS=cS.getContext("2d");
 function resize(){dpr=Math.min(devicePixelRatio||1,2);W=innerWidth;Hh=innerHeight;cv.width=W*dpr;cv.height=Hh*dpr}
 addEventListener("resize",resize);resize();
 // ---------- Câmera ----------
@@ -258,7 +275,7 @@ function camSensor(){const a=(sens.alpha+sens.cal)*D,b=sens.beta*D,g=sens.gamma*
 function updateCam(){const t=st.sensors&&sens.got?camSensor():camManual();
  if(st.sensors&&sens.got){const k=0.2,mix=(a,b)=>a.map((v,i)=>v+(b[i]-v)*k);let f=nrm(mix(cam.f,t.f)),r=mix(cam.r,t.r);r=nrm(r.map((v,i)=>v-dot(r,f)*f[i]));let u=cross(r,f);
   if(f[2]<0&&u[2]>0.05){const a=Math.atan2(-f[2],u[2]),c=Math.cos(a),sn=Math.sin(a),f2=f.map((v,i)=>v*c+u[i]*sn);u=u.map((v,i)=>v*c-f[i]*sn);f=f2}cam={f,r,u}}else cam=t;
- F=(Math.max(W,Hh)/2)/Math.tan(st.fov*D/2);PY=Hh-Math.max(Hh>W?150:118,Hh*(Hh>W?0.17:0.13));RY=Math.round(Hh*0.46)}
+ F=(Math.max(W,Hh)/2)/Math.tan(st.fov*D/2);PY=Hh-Math.max(Hh>W?150:118,Hh*(Hh>W?0.17:0.13))-SIMH;RY=Math.round(Math.min(Hh*0.46,PY*0.62))}
 function proj(v){const z=dot(v,cam.f),x=dot(v,cam.r),y=dot(v,cam.u);return z>0.02?{ok:true,sx:W/2+F*x/z,sy:PY-F*y/z,x,y,z}:{ok:false,x,y,z}}
 const onScreen=p=>p.ok&&p.sx>-40&&p.sx<W+40&&p.sy>-40&&p.sy<Hh+40;
 // ---------- Cálculo dos objetos ----------
@@ -362,7 +379,7 @@ function draw(o){
    glow(p.sx,p.sy,r*3,"rgba(255,240,210,.14)");ctx.fillStyle=P.col;ctx.beginPath();ctx.arc(p.sx,p.sy,r,0,7);ctx.fill();LB.push({t:P.name,x:p.sx+r+5,y:p.sy+4,c:P.col,s:11,w:500,pr:0});st.hits.push({x:p.sx,y:p.sy,kind:"planet",id:P.id})}
   LB.sort((a,b)=>a.pr-b.pr);const used=[];for(const L of LB){ctx.font=`${L.w} ${L.s}px Inter,sans-serif`;const w=ctx.measureText(L.t).width,x=L.ctr?L.x-w/2:L.x,y=L.y-L.s;
    if(used.some(b=>x<b[2]+4&&x+w+4>b[0]&&y<b[3]&&y+L.s+4>b[1]))continue;used.push([x,y,x+w,y+L.s+2]);text(L.t,x,L.y,L.c,L.s,L.w)}}
- drawSatsSky(o);drawAirSky();
+ drawTrailSky(o);drawSatsSky(o);drawAirSky();
  // Sol e Lua observados (antes da paisagem, para as árvores ficarem na frente)
  const pS=proj(o.sun.v),south=st.obs.lat<0;
  if(st.L.obs){const pm=proj(o.moon.v);if(o.moon.alt>-2&&onScreen(pm)){const r=Math.max(7,F*Math.tan(0.26*D));drawMoon(pm.sx,pm.sy,r,o.ph,pS,south);text("Lua",pm.sx+r+6,pm.sy+4,"#e7ecee",11,500);st.hits.push({x:pm.sx,y:pm.sy,kind:"moon"})}
@@ -453,10 +470,10 @@ const isLand=(lon,lat)=>antarctic(lon,lat)||(inAny(lon,lat,LAND,LB)&&!inAny(lon,
 const fromDisc=(u,v)=>[90-180*Math.hypot(u,v),Math.atan2(u,v)*R2D];
 function dest(lat,lon,dist,brg){const p=lat*D,dd=dist*D,b=brg*D;const p2=Math.asin(Math.sin(p)*Math.cos(dd)+Math.cos(p)*Math.sin(dd)*Math.cos(b));
  return[p2*R2D,norm(lon+Math.atan2(Math.sin(b)*Math.sin(dd)*Math.cos(p),Math.cos(dd)-Math.sin(p)*Math.sin(p2))*R2D)]}
-const dv={real:true,imgDay:null,imgNight:null,nl:null,nlx:null,mask:null,mctx2:null,mimg:null,fr:0,tilt:0.5,tiltT:null,rot:0,zoom:1,px:0,py:0,light:true,stars:true,cons:true,dots:null,off:null,octx:null,img:null,OP:null,N:118,OS:160,dome:null,HD:0.78,seen:false};
+const dv={style:"mapa",real:true,imgDay:null,imgNight:null,nl:null,nlx:null,mask:null,mctx2:null,mimg:null,fr:0,tilt:0.5,tiltT:null,rot:0,zoom:1,px:0,py:0,light:true,stars:true,cons:true,dots:null,off:null,octx:null,img:null,OP:null,N:118,OS:160,dome:null,HD:0.78,seen:false};
 const DESERT=(la,lo)=>(la>15&&la<32&&lo>-15&&lo<35)||(la>15&&la<31&&lo>35&&lo<58)||(la>-31&&la<-19&&lo>119&&lo<142)||(la>-28&&la<-19&&lo>14&&lo<25)||(la>36&&la<46&&lo>78&&lo<110)||(la>-28&&la<-18&&lo>-71&&lo<-68)||(la>28&&la<38&&lo>-118&&lo<-108);
 const ICEZ=(la,lo,land)=>la<-60||(land&&la>64&&lo>-74&&lo<-11)||(land&&la>77);
-function loadEarth(){if(dv.imgDay)return;const L=src=>{const im=new Image();im.decoding="async";im.src=src;return im};dv.imgDay=L("terra/dia.jpg");dv.imgNight=L("terra/noite.jpg");
+function loadEarth(){if(dv.imgDay)return;const L=src=>{const im=new Image();im.decoding="async";im.src=src;return im};dv.imgDay=L("terra/dia.jpg");dv.imgMap=L("terra/mapa.jpg");dv.imgNight=L("terra/noite.jpg");
  dv.nl=document.createElement("canvas");dv.nl.width=dv.nl.height=1024;dv.nlx=dv.nl.getContext("2d");dv.mask=document.createElement("canvas");dv.mask.width=dv.mask.height=160;dv.mctx2=dv.mask.getContext("2d");dv.mimg=dv.mctx2.createImageData(160,160)}
 const ready=im=>im&&im.complete&&im.naturalWidth>0;
 function discInit(){loadEarth();if(dv.dots)return;const N=dv.N,dots=[];for(let j=0;j<=N;j++)for(let i=0;i<=N;i++){const u=-1+2*i/N,v=-1+2*j/N;if(u*u+v*v>1)continue;const[la,lo]=fromDisc(u,v),land=isLand(lo,la),ice=ICEZ(la,lo,land);
@@ -469,7 +486,8 @@ function domeInit(){if(dv.dome||!CAT.ready)return;const S=[];for(let i=0;i<CAT.n
  const uv=d=>[d.r*Math.sin(d.ra*D),d.r*Math.cos(d.ra*D)],slerp=(a,b,t)=>nrm([a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t]);
  const sub=(a,b,out,dep)=>{const A=toDome(a),B=toDome(b),pa=uv(A),pb=uv(B);if(dep<10&&Math.hypot(pa[0]-pb[0],pa[1]-pb[1])>0.02){const m=slerp(a,b,0.5);sub(a,m,out,dep+1);sub(m,b,out,dep+1)}else out.push(B)};
  dv.dome={S,L:CAT.cons.map(c=>({name:c.name,lab:toDome(c.lab),segs:c.segs.map(sg=>{const out=[toDome(sg[0])];for(let k=1;k<sg.length;k++)sub(sg[k-1],sg[k],out,0);return out})}))}}
-function dgeom(){const top=100,bot=110,avail=Math.max(200,Hh-top-bot),lf=Math.sqrt(Math.max(0,1-dv.tilt*dv.tilt)),R0=Math.min(W*0.46,avail/(2*dv.tilt+dv.HD*lf)),R=R0*dv.zoom,
+let DMG={top:100,bot:110};
+function dgeom(){const top=DMG.top,bot=DMG.bot,avail=Math.max(200,Hh-top-bot),lf=Math.sqrt(Math.max(0,1-dv.tilt*dv.tilt)),R0=Math.min(W*0.46,avail/(2*dv.tilt+dv.HD*lf)),R=R0*dv.zoom,
  cx=W/2+dv.px,cy=top+avail/2+R0*dv.HD*lf*0.5+dv.py,c=Math.cos(dv.rot),s=Math.sin(dv.rot);return{R,cx,cy,c,s,lf,a:R*c,b:R*dv.tilt*s,cc:-R*s,d:R*dv.tilt*c}}
 const DS=(g,u,v)=>[g.cx+g.a*u+g.cc*v,g.cy+g.b*u+g.d*v];
 const dM=g=>ctx.setTransform(dpr*g.a,dpr*g.b,dpr*g.cc,dpr*g.d,dpr*g.cx,dpr*g.cy),dS=()=>ctx.setTransform(dpr,0,0,dpr,0,0);
@@ -482,8 +500,8 @@ function drawDisc(o){discInit();domeInit();if(dv.tiltT!=null){dv.tilt+=(dv.tiltT
  // espessura do disco
  if(lift>0.05){ctx.fillStyle="#08141a";ctx.beginPath();ctx.ellipse(g.cx,g.cy+g.R*0.05*lift,g.R,g.R*dv.tilt,dv.rot*0,0,7);ctx.fill()}
  // oceano, terra, desertos e gelo
- const photo=dv.real&&ready(dv.imgDay);
- if(photo){dM(g);ctx.save();ctx.beginPath();ctx.arc(0,0,1,0,7);ctx.clip();ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality="high";ctx.drawImage(dv.imgDay,-1,-1,2,2);ctx.restore()}
+ const SIMG=dv.style==="mapa"?dv.imgMap:dv.style==="foto"?dv.imgDay:null,photo=!!SIMG&&ready(SIMG);
+ if(photo){dM(g);ctx.save();ctx.beginPath();ctx.arc(0,0,1,0,7);ctx.clip();ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality="high";ctx.drawImage(SIMG,-1,-1,2,2);ctx.restore()}
  else{dM(g);const oc=ctx.createRadialGradient(0,0,0,0,0,1);oc.addColorStop(0,"#164f78");oc.addColorStop(1,"#0c3350");ctx.fillStyle=oc;ctx.beginPath();ctx.arc(0,0,1,0,7);ctx.fill();
  const COL=["rgba(150,200,240,.2)","#5aa865","#eef6f8","#cdb57e"],B=[[],[],[],[]],sz=0.9*2/dv.N;for(const p of dv.dots)B[p.t].push(p);
  B.forEach((arr,t)=>{ctx.fillStyle=COL[t];ctx.beginPath();const z=t?sz:sz*0.45;for(const p of arr)ctx.rect(p.u-z/2,p.v-z/2,z,z);ctx.fill()})}
@@ -493,6 +511,9 @@ function drawDisc(o){discInit();domeInit();if(dv.tiltT!=null){dv.tilt+=(dv.tiltT
   dv.octx.putImageData(dv.img,0,0);dM(g);ctx.save();ctx.beginPath();ctx.arc(0,0,1,0,7);ctx.clip();ctx.imageSmoothingEnabled=true;if(photo)ctx.globalCompositeOperation="multiply";ctx.drawImage(dv.off,-1,-1,2,2);ctx.restore();
   if(photo&&ready(dv.imgNight)){if(dv.fr++%3===0){dv.mctx2.putImageData(dv.mimg,0,0);const x=dv.nlx;x.globalCompositeOperation="source-over";x.clearRect(0,0,1024,1024);x.drawImage(dv.imgNight,0,0,1024,1024);x.globalCompositeOperation="destination-in";x.imageSmoothingEnabled=true;x.drawImage(dv.mask,0,0,1024,1024)}
    dM(g);ctx.save();ctx.globalCompositeOperation="lighter";ctx.globalAlpha=0.85;ctx.drawImage(dv.nl,-1,-1,2,2);ctx.restore()}}
+ if(dv.style==="mapa"&&photo){dS();ctx.strokeStyle="rgba(235,245,255,.16)";ctx.lineWidth=0.7;ctx.beginPath();
+  for(let la=75;la>=-75;la-=15){if(la===0||Math.abs(la)===15&&false)continue;const r=(90-la)/180;let first=true;for(let b=0;b<=360;b+=4){const[x,y]=DS(g,r*Math.sin(b*D),r*Math.cos(b*D));first?ctx.moveTo(x,y):ctx.lineTo(x,y);first=false}}
+  for(let lo=0;lo<360;lo+=15){const r0=lo%90===0?0:1/12,[x0,y0]=DS(g,r0*Math.sin(lo*D),r0*Math.cos(lo*D)),[x1,y1]=DS(g,Math.sin(lo*D),Math.cos(lo*D));ctx.moveTo(x0,y0);ctx.lineTo(x1,y1)}ctx.stroke()}
  // borda de gelo
  dM(g);ctx.beginPath();ctx.arc(0,0,1,0,7);dS();ctx.strokeStyle="rgba(240,248,250,.95)";ctx.lineWidth=2.5;ctx.stroke();
  const lk=photo?0.55:1;dCircle(g,66.56,0.7,`rgba(160,230,220,${0.3*lk})`,[3,5]);dCircle(g,23.44,0.9,`rgba(160,230,220,${0.7*lk})`,[5,4]);dCircle(g,0,1,`rgba(255,255,255,${0.65*lk})`);dCircle(g,-23.44,0.9,`rgba(160,230,220,${0.7*lk})`,[5,4]);
@@ -517,7 +538,7 @@ function drawDisc(o){discInit();domeInit();if(dv.tiltT!=null){dv.tilt+=(dv.tiltT
  const put=(b,col,gl,rad,h)=>{const q=toDisc(b.lat,b.lon),[x,y]=DS(g,q[0],q[1]);if(lift>0.05){ctx.strokeStyle="rgba(255,220,150,.35)";ctx.setLineDash([2,3]);ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y-h);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=col;ctx.beginPath();ctx.ellipse(x,y,3,3*dv.tilt,0,0,7);ctx.fill()}glow(x,y-h,rad*4,gl);ctx.fillStyle=col;ctx.beginPath();ctx.arc(x,y-h,rad,0,7);ctx.fill();return[x,y-h]};
  st.hits.push({x:ox,y:oy,kind:"obs",m:-9});const[mx,my]=put(mo,"rgba(0,0,0,0)","rgba(200,215,225,.25)",6,hpx*0.96);{const sq=toDisc(sp.lat,sp.lon),[ssx,ssy]=DS(g,sq[0],sq[1]);drawMoon(mx,my,Math.max(6,7*Math.sqrt(dv.zoom)),o.ph,{ok:true,sx:ssx,sy:ssy-hpx},st.obs.lat<0)}text("Lua",mx+9,my+4,"#e2e8ea",11,500);st.hits.push({x:mx,y:my,kind:"moon",m:-12});
  for(const P of o.pl){if(P.id==="ura"||P.id==="nep")continue;const q=toDisc(P.sub.lat,P.sub.lon),[x,y]=DS(g,q[0],q[1]),h=hpx*1.05;ctx.fillStyle=P.col;ctx.beginPath();ctx.arc(x,y-h,2.6,0,7);ctx.fill();text(P.name,x+5,y-h+4,P.col,10,500);st.hits.push({x,y:y-h,kind:"planet",id:P.id,m:P.mag})}
- const[sx,sy]=put(sp,"#ffe2a0","rgba(255,200,100,.55)",8,hpx);text("Sol",sx+11,sy+4,"#ffcf73",11,600);st.hits.push({x:sx,y:sy,kind:"sun",m:-27});
+ drawTrailDisc(g,hpx);const[sx,sy]=put(sp,"#ffe2a0","rgba(255,200,100,.55)",8,hpx);text("Sol",sx+11,sy+4,"#ffcf73",11,600);st.hits.push({x:sx,y:sy,kind:"sun",m:-27});
  if(st.sel){const h=st.sel.kind==="loc"?null:st.hits.find(h=>h.kind===st.sel.kind&&h.i===st.sel.i&&h.id===st.sel.id);if(h){ctx.strokeStyle="rgba(255,255,255,.85)";ctx.lineWidth=1.3;ctx.beginPath();ctx.arc(h.x,h.y,14,0,7);ctx.stroke()}}
  if(st.pend){const q=toDisc(st.pend.lat,st.pend.lon),[x,y]=DS(g,q[0],q[1]);ctx.strokeStyle="#bff0e8";ctx.lineWidth=1.6;ctx.setLineDash([3,3]);ctx.beginPath();ctx.arc(x,y,9,0,7);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle="#bff0e8";ctx.beginPath();ctx.arc(x,y,2.5,0,7);ctx.fill()}
  st.dg=g}
@@ -544,7 +565,7 @@ async function loadTLE(g){if(SAT.loaded[g])return;SAT.loaded[g]="loading";let tx
  SAT.loaded[g]=true;SAT.ts=0;if(g!=="starlink")toast(`${SAT.list.filter(s=>s.g!=="starlink").length} satélites carregados.`)}
 function satAt(s,t){const pv=satellite.propagate(s.rec,new Date(t));if(!pv||!pv.position||typeof pv.position!=="object")return null;const gm=satellite.gstime(new Date(t)),geo=satellite.eciToGeodetic(pv.position,gm);
  return{p:pv.position,v:pv.velocity?Math.hypot(pv.velocity.x,pv.velocity.y,pv.velocity.z):0,la:geo.latitude*R2D,lo:norm(geo.longitude*R2D),h:geo.height}}
-function satUpdate(o){if(!(st.L.sat||st.L.starlink)){SAT.cache=[];SAT.path=null;return}if(!SAT.list.length||typeof satellite==="undefined")return;const now=performance.now();if(now-SAT.ts<350&&Math.abs(st.t-SAT.tt)<2e4)return;SAT.ts=now;SAT.tt=st.t;
+function satUpdate(o){if(!(st.L.sat||st.L.starlink)||st.year||(st.play&&st.speed>=86400)){SAT.cache=[];SAT.path=null;return}if(!SAT.list.length||typeof satellite==="undefined")return;const now=performance.now();if(now-SAT.ts<350&&Math.abs(st.t-SAT.tt)<2e4)return;SAT.ts=now;SAT.tt=st.t;
  const ra=o.sp.lon+gmst(jdOf(st.t)),sv=eqv(ra,o.sp.lat);SAT.cache=[];
  for(const s of SAT.list){if(s.g==="starlink"?!st.L.starlink:!st.L.sat)continue;const a=satAt(s,st.t);if(!a)continue;const pp=a.p.x*sv[0]+a.p.y*sv[1]+a.p.z*sv[2],perp=Math.hypot(a.p.x-pp*sv[0],a.p.y-pp*sv[1],a.p.z-pp*sv[2]);
   SAT.cache.push({s,...a,lit:!(pp<0&&perp<EARTH_R),look:lookFrom(a.la,a.lo,a.h)})}
@@ -586,10 +607,10 @@ function plane(x,y,ang,col,sel,k=1){ctx.save();ctx.translate(x,y);ctx.rotate(ang
  ctx.fillStyle=col;ctx.shadowColor="rgba(0,0,0,.6)";ctx.shadowBlur=3;ctx.fill();ctx.shadowBlur=0;ctx.strokeStyle=sel?"#fff":"rgba(0,0,0,.35)";ctx.lineWidth=sel?1.4/k:0.8/k;ctx.stroke();ctx.restore()}
 function satIcon(x,y,col,k=1,lit=true){ctx.save();ctx.translate(x,y);ctx.rotate(-0.5);ctx.scale(k,k);ctx.strokeStyle=col;ctx.lineWidth=0.9;ctx.beginPath();ctx.moveTo(-7,0);ctx.lineTo(7,0);ctx.stroke();
  ctx.fillStyle=lit?"rgba(110,170,255,.95)":"rgba(90,110,140,.8)";ctx.fillRect(-11,-2.6,5.2,5.2);ctx.fillRect(5.8,-2.6,5.2,5.2);ctx.fillStyle=col;ctx.fillRect(-2.6,-2.6,5.2,5.2);ctx.restore()}
-function drawAirSky(){if(!st.L.air||!AIR.list.length)return;for(const a of AIR.list){const[la,lo]=airNow(a),h=a.alt*0.0003048,L=lookFrom(la,lo,h);if(L.alt<0)continue;const p=proj(L.v);if(!onScreen(p))continue;
+function drawAirSky(){if(!st.L.air||!AIR.list.length||Math.abs(st.t-Date.now())>3e5)return;for(const a of AIR.list){const[la,lo]=airNow(a),h=a.alt*0.0003048,L=lookFrom(la,lo,h);if(L.alt<0)continue;const p=proj(L.v);if(!onScreen(p))continue;
   const[la2,lo2]=dest(la,lo,0.02,a.trk),q=proj(lookFrom(la2,lo2,h).v),ang=q.ok?Math.atan2(q.sy-p.sy,q.sx-p.sx):0,sel=st.sel&&st.sel.kind==="air"&&st.sel.id===a.hex;
   plane(p.sx,p.sy,ang,"#ffc178",sel,1.1);if(sel||L.alt>6)text(a.cs||a.reg||a.hex,p.sx+12,p.sy+4,"#ffd2a1",10,500);st.hits.push({x:p.sx,y:p.sy,kind:"air",id:a.hex,m:1})}}
-function drawAirDisc(g){if(!st.L.air||!AIR.list.length)return;const sel=st.sel&&st.sel.kind==="air"?st.sel.id:null;
+function drawAirDisc(g){if(!st.L.air||!AIR.list.length||Math.abs(st.t-Date.now())>3e5)return;const sel=st.sel&&st.sel.kind==="air"?st.sel.id:null;
  if(sel&&AIR.trail[sel]){ctx.strokeStyle="rgba(255,184,107,.8)";ctx.lineWidth=1.2;ctx.beginPath();AIR.trail[sel].forEach(([la,lo],k)=>{const d=toDisc(la,lo),[x,y]=DS(g,d[0],d[1]);k?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke()}
  for(const a of AIR.list){const[la,lo]=airNow(a),d=toDisc(la,lo),[x,yg]=DS(g,d[0],d[1]),y=yg-g.R*(st.H/RKM)*1.6*g.lf*0.12*Math.min(1,a.alt/35000+0.2);if(g.lf>0.1){ctx.fillStyle="rgba(0,0,0,.35)";ctx.beginPath();ctx.ellipse(x,yg,3,3*dv.tilt,0,0,7);ctx.fill()}if(x<-10||x>W+10||y<-10||y>Hh+10)continue;const[la2,lo2]=dest(la,lo,0.3,a.trk),d2=toDisc(la2,lo2),[x2,y2]=DS(g,d2[0],d2[1]);
   plane(x,y,Math.atan2(y2-yg,x2-x),"#ffc178",a.hex===sel,Math.min(1.3,0.75+dv.zoom*0.1));if(a.hex===sel||dv.zoom>3)text(a.cs||a.reg||a.hex,x+7,y+4,"#ffd2a1",9.5,500);st.hits.push({x,y,kind:"air",id:a.hex,m:2})}}
@@ -602,6 +623,29 @@ function liveInfo(o,s){if(s.kind==="sat"){const c=SAT.cache.find(c=>c.s.id===s.i
    ["Do seu local",`${nf(L.alt)}° de altura · ${Math.round(L.az)}° ${dirT(L.az)} · ${Math.round(L.dist)} km`],["Posição",`${latT(la)} · ${lonT(lo)}`]],note:`Dados ao vivo de radar ADS-B (${AIR.src}), atualizados a cada 10 segundos.`}}
  return null}
 
+// ---------- Rastros do Sol, da Lua e das estrelas ----------
+const TR={pts:[],lastT:null,key:""};
+function trClear(){TR.pts=[];TR.lastT=null}
+function trPush(o){if(!st.L.trail)return;const key=st.obs.lat.toFixed(3)+","+st.obs.lon.toFixed(3);if(key!==TR.key){TR.key=key;trClear()}
+ if(TR.lastT!=null&&Math.abs(st.t-TR.lastT)<(st.year?864e5*0.9:4*6e4))return;TR.lastT=st.t;
+ TR.pts.push({sl:o.sp.lat,so:o.sp.lon,sa:o.sun.alt,sz:o.sun.az,ml:o.mo.lat,mo:o.mo.lon,ma:o.moon.alt,mz:o.moon.az});if(TR.pts.length>900)TR.pts.shift()}
+function drawTrailSky(o){if(!st.L.trail)return;const n=TR.pts.length;
+ for(let i=0;i<n;i++){const q=TR.pts[i],a=0.25+0.6*i/n;if(q.sa>-1){const p=proj(enu(q.sa,q.sz));if(onScreen(p)){ctx.fillStyle=`rgba(255,207,115,${a})`;ctx.beginPath();ctx.arc(p.sx,p.sy,1.8,0,7);ctx.fill()}}
+  if(q.ma>-1){const p=proj(enu(q.ma,q.mz));if(onScreen(p)){ctx.fillStyle=`rgba(220,230,240,${a*0.8})`;ctx.beginPath();ctx.arc(p.sx,p.sy,1.4,0,7);ctx.fill()}}}
+ if(!CAT.ready||o.sun.alt>-6)return;const fi=st.obs.lat*D,cF=Math.cos(fi),sF=Math.sin(fi),th0=(gmst(jdOf(st.t))+st.obs.lon)*D;ctx.lineWidth=1;
+ for(let i=0;i<CAT.n;i++){if(CAT.mag[i]>2.3)continue;const x=CAT.v[i*3],y=CAT.v[i*3+1],z=CAT.v[i*3+2];ctx.beginPath();let pen=false;
+  for(let k=0;k<=16;k++){const th=th0-k*0.0327,cT=Math.cos(th),sT=Math.sin(th),e=-sT*x+cT*y,nn=-sF*cT*x-sF*sT*y+cF*z,u=cF*cT*x+cF*sT*y+sF*z;if(u<0){pen=false;continue}const p=proj([e,nn,u]);if(!p.ok){pen=false;continue}pen?ctx.lineTo(p.sx,p.sy):ctx.moveTo(p.sx,p.sy);pen=true}
+  ctx.strokeStyle=CAT.col[i].replace("rgb(","rgba(").replace(")",",.28)");ctx.stroke()}}
+function drawTrailDisc(g,hpx){if(!st.L.trail||!TR.pts.length)return;const n=TR.pts.length;
+ for(let i=0;i<n;i++){const q=TR.pts[i],a=0.3+0.6*i/n;let d=toDisc(q.sl,q.so),[x,y]=DS(g,d[0],d[1]);ctx.fillStyle=`rgba(255,207,115,${a})`;ctx.beginPath();ctx.arc(x,y-hpx,1.8,0,7);ctx.fill();
+  d=toDisc(q.ml,q.mo);[x,y]=DS(g,d[0],d[1]);ctx.fillStyle=`rgba(220,230,240,${a*0.7})`;ctx.beginPath();ctx.arc(x,y-hpx*0.96,1.3,0,7);ctx.fill()}}
+// ---------- Próximas fases da Lua (calendário real) ----------
+const PH={t:0,list:[]};
+const elong=t=>((moon(t).elon-sun(t).lam)%360+360)%360;
+function nextPhases(){if(Math.abs(st.t-PH.t)<36e5)return PH.list;PH.t=st.t;const out=[],N=[["Lua nova",0],["Quarto crescente",90],["Lua cheia",180],["Quarto minguante",270]];let t=st.t,e0=elong(t);
+ for(let k=0;k<240&&out.length<4;k++){const t1=t+3*36e5,e1=elong(t1);for(const[nm,tg]of N){const a=((tg-e0)%360+360)%360,b=((tg-e1)%360+360)%360;if(b>a&&a<20&&!out.some(x=>x[0]===nm)){const f=a/(a+(360-b)||1);out.push([nm,t+f*3*36e5])}}t=t1;e0=e1}
+ PH.list=out.sort((a,b)=>a[1]-b[1]);return PH.list}
+function simLbl(o){if($("sim").hidden)return;const T=riseSet(st.obs);$("sLbl").textContent=`Lua: ${o.ph.n.toLowerCase()} (${Math.round(o.ph.k*100)}%) · Sol nasce ${T.rise?fmtH.format(T.rise):"—"} e se põe ${T.set?fmtH.format(T.set):"—"}`}
 // ---------- Textos ----------
 const fmt=new Intl.DateTimeFormat("pt-BR",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"}),fmtH=new Intl.DateTimeFormat("pt-BR",{hour:"2-digit",minute:"2-digit"});
 const nf=(x,d=1)=>x.toLocaleString("pt-BR",{minimumFractionDigits:d,maximumFractionDigits:d});
@@ -610,7 +654,7 @@ const CARDN=["N","NNE","NE","LNE","L","LSE","SE","SSE","S","SSO","SO","OSO","O",
 function info(o){const s=st.sel;if(!s){$("info").hidden=true;return}$("info").hidden=false;let h="",rows=[],note="",acts=[];
  if(s.kind==="sun"||s.kind==="msun"){const rs=riseSet(st.obs);h="Sol";rows=[["Observado",`${nf(o.sun.alt)}° de altura · ${Math.round(o.sun.az)}° ${dirT(o.sun.az)}`],["Nascer / pôr",`${rs.rise?fmtH.format(rs.rise):"—"} / ${rs.set?fmtH.format(rs.set):"—"}`],["Modelo do disco",`${nf(o.ms.alt)}° · ${Math.round(o.ms.az)}° ${dirT(o.ms.az)}`],["Distância no disco",`${Math.round(o.ms.dist).toLocaleString("pt-BR")} km`]];
   const sep=Math.acos(clamp(dot(o.sun.v,o.ms.v),-1,1))*R2D;note=o.sun.alt<-0.83?`Observado: o Sol está abaixo do horizonte. No modelo, ele estaria a ${nf(o.ms.alt)}° de altura.`:`O marcador do modelo está a ${nf(sep)}° do Sol observado.`}
- else if(s.kind==="moon"||s.kind==="mmoon"){h="Lua";rows=[["Fase",`${o.ph.n} · ${Math.round(o.ph.k*100)}%`],["Observada",`${nf(o.moon.alt)}° · ${Math.round(o.moon.az)}° ${dirT(o.moon.az)}`],["Modelo do disco",`${nf(o.mm.alt)}° · ${Math.round(o.mm.az)}° ${dirT(o.mm.az)}`],["Distância no disco",`${Math.round(o.mm.dist).toLocaleString("pt-BR")} km`]];
+ else if(s.kind==="moon"||s.kind==="mmoon"){h="Lua";rows=[["Fase",`${o.ph.n} · ${Math.round(o.ph.k*100)}% iluminada`],...nextPhases().map(([n,t])=>[n,`${fmtD.format(new Date(t))} às ${fmtH.format(new Date(t))}`]),["Observada",`${nf(o.moon.alt)}° · ${Math.round(o.moon.az)}° ${dirT(o.moon.az)}`],["Modelo do disco",`${nf(o.mm.alt)}° · ${Math.round(o.mm.az)}° ${dirT(o.mm.az)}`],["Distância no disco",`${Math.round(o.mm.dist).toLocaleString("pt-BR")} km`]];
   const sep=Math.acos(clamp(dot(o.moon.v,o.mm.v),-1,1))*R2D;note=o.moon.alt<-0.5?`Observado: a Lua está abaixo do horizonte. No modelo, ela estaria a ${nf(o.mm.alt)}° de altura.`:`O marcador do modelo está a ${nf(sep)}° da Lua observada.`}
  else if(s.kind==="planet"){const P=o.pl.find(p=>p.id===s.id);h=P.name;rows=[["Brilho aproximado",`magnitude ${nf(P.mag)}`],["Posição",`${nf(P.alt)}° de altura · ${Math.round(P.az)}° ${dirT(P.az)}`],["Ponto abaixo dele",`${latT(P.sub.lat)} · ${lonT(P.sub.lon)}`]]}
  else if(s.kind==="sat"||s.kind==="air"){const r=liveInfo(o,s);if(!r){st.sel=null;$("info").hidden=true;return}h=r.h;rows=r.rows;note=r.note}
@@ -627,13 +671,15 @@ function info(o){const s=st.sel;if(!s){$("info").hidden=true;return}$("info").hi
   rows=[["Designação",[ds,CAT.hip[i]?`HIP ${CAT.hip[i]}`:""].filter(Boolean).join(" · ")],["Constelação",con||"—"],["Brilho",`magnitude ${nf(CAT.mag[i],2)}`],["Cor",`${cor} · cerca de ${T.toLocaleString("pt-BR")} K`],
    ["Posição agora",al>-1?`${nf(al)}° de altura · ${Math.round(az)}° ${dirT(az)}`:"abaixo do horizonte"],["Nasce / se põe",rs],["Coordenadas celestes",`AR ${Math.floor(rh)}h${String(rm%60).padStart(2,"0")}m · Dec ${dec>=0?"+":"−"}${nf(Math.abs(dec))}°`],["Ponto abaixo dela",`${latT(dec)} · ${lonT(norm(ra-g))}`]]}
  $("infoBody").innerHTML=`<h3>${h}</h3><dl>${rows.map(([a,b])=>`<dt>${a}</dt><dd>${b}</dd>`).join("")}</dl>${note?`<p class="note">${note}</p>`:""}${acts.length?`<div class="acts">${acts.map(([k,t,pr])=>`<button class="btn${pr?" p":""}" data-act="${k}">${t}</button>`).join("")}</div>`:""}`}
-const fmtD=new Intl.DateTimeFormat("pt-BR",{day:"2-digit",month:"short",year:"numeric"}),SPN={60:"1 min/s",600:"10 min/s",3600:"1 h/s",86400:"1 dia/s"};
+const fmtD=new Intl.DateTimeFormat("pt-BR",{day:"2-digit",month:"short",year:"numeric"}),SPN={60:"1 min/s",600:"10 min/s",1800:"30 min/s",3600:"1 h/s",86400:"1 dia/s"};
 const toLocalInput=d=>{const z=n=>String(n).padStart(2,"0");return`${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}T${z(d.getHours())}:${z(d.getMinutes())}`};
 function hud(){const d=new Date(st.t),live=st.speed===1&&st.play&&Math.abs(st.t-Date.now())<9e4;
  $("place").textContent=st.obs.name;$("clock").textContent=`${latT(st.obs.lat)} ${lonT(st.obs.lon)} · ${fmtD.format(d)}`;
- $("tNow").textContent=fmtH.format(d);$("tState").textContent=live?"ao vivo":!st.play?"pausado":st.speed===1?"simulado":SPN[st.speed];
+ $("tNow").textContent=fmtH.format(d);$("tState").textContent=live?"ao vivo":!st.play?"pausado":st.year?"15 dias/s":st.speed===1?"simulado":SPN[st.speed];
+ $("sPlay").innerHTML=st.play?'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7Z"/></svg>';
+ if(!st.simDrag)$("sDay").value=Math.round((st.t-dayStart(st.t))/6e4);
  const tv=(PY-RY)/F,av=nrm(cam.f.map((v,i)=>v+cam.u[i]*tv)),az=(Math.atan2(av[0],av[1])*R2D+360)%360,al=Math.asin(clamp(av[2],-1,1))*R2D;$("aim").textContent=`${Math.round(az)}° ${dirT(az)} · ${nf(al,0)}°`;
- $("bPlay").textContent=st.play?"Pausar":"Rodar";document.querySelectorAll("[data-sp]").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.sp===st.speed&&st.play));
+ $("bPlay").textContent=st.play?"Pausar":"Rodar";document.querySelectorAll("[data-sp]").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.sp===st.speed&&st.play&&!st.year));
  $("bHome").hidden=!away();$("bHome").textContent=`Voltar para ${st.home.name}`;const on=!!(st.sensors&&sens.got);$("bSens").setAttribute("aria-pressed",on);$("bRecal").hidden=!on||st.mode!=="sky";$("sensTag").hidden=!on;$("bComp").classList.toggle("on",on);$("hVal").textContent=st.H.toLocaleString("pt-BR")+" km";
  if(document.activeElement!==$("dt"))$("dt").value=toLocalInput(d)}
 let toastT;function toast(m){const t=$("toast");t.textContent=m;t.classList.add("on");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("on"),4200)}
@@ -684,12 +730,26 @@ const manualLoc=()=>{const la=parseFloat($("lat").value),lo=parseFloat($("lon").
 $("lat").onchange=manualLoc;$("lon").onchange=manualLoc;
 $("height").oninput=e=>{st.H=+e.target.value;save()};$("gps").onclick=gps;
 function panel(id){["pMenu","pTime","sheet"].forEach(k=>$(k).classList.toggle("open",k===id));$("scrim").hidden=!id}
-$("scrim").onclick=()=>panel(null);$("bMenu").onclick=()=>panel($("pMenu").classList.contains("open")?null:"pMenu");$("bTime").onclick=()=>panel($("pTime").classList.contains("open")?null:"pTime");
+$("scrim").onclick=()=>panel(null);$("bMenu").onclick=()=>panel($("pMenu").classList.contains("open")?null:"pMenu");$("bTime").onclick=()=>{$("sim").hidden=!$("sim").hidden};$("sCal").onclick=()=>panel("pTime");
+$("sPlay").onclick=()=>{st.play=!st.play};
+new ResizeObserver(()=>{const e=$("sim");SIMH=e.hidden?0:e.offsetHeight+10}).observe($("sim"));
+const dayStart=t=>{const d=new Date(t);d.setHours(0,0,0,0);return+d};
+$("sDay").addEventListener("input",e=>{st.simDrag=true;st.year=false;st.t=dayStart(st.t)+ +e.target.value*6e4;st.play=false;trClear()});$("sDay").addEventListener("change",()=>{st.simDrag=false});
+function solarTimes(){const rs=riseSet(st.obs),d0=dayStart(st.t);let noon=rs.rise&&rs.set&&rs.set>rs.rise?(rs.rise+rs.set)/2:null;if(!noon){let best=-99,bt=d0;for(let m=0;m<1440;m+=10){const a=altOf(st.obs.lat,st.obs.lon,sun(d0+m*6e4));if(a>best){best=a;bt=d0+m*6e4}}noon=bt}return{rise:rs.rise,set:rs.set,noon,mid:noon+12*36e5>d0+864e5?noon-12*36e5:noon+12*36e5}}
+document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{const k=b.dataset.go,T=solarTimes();st.year=false;trClear();
+ if(k==="rise"||k==="set"){const v=T[k];if(!v){toast(k==="rise"?"O Sol não nasce neste dia aqui.":"O Sol não se põe neste dia aqui.");return}st.t=v;st.play=false}
+ else if(k==="noon"){st.t=T.noon;st.play=false}else if(k==="mid"){st.t=T.mid;st.play=false}
+ else if(k==="day"){st.t=dayStart(st.t);st.speed=3600;st.play=true;setTrail(true);toast("Um dia inteiro em 24 segundos.")}
+ else if(k==="night"){st.t=(T.set||dayStart(st.t)+18*36e5)-30*6e4;st.speed=1800;st.play=true;setTrail(true);toast("Do pôr ao nascer do Sol: veja as constelações nascendo e se pondo.")}
+ else if(k==="year"){st.year=true;st.yAcc=0;st.play=true;setTrail(true);toast("Um ano, sempre neste mesmo horário: 15 dias por segundo.")}});
+function setTrail(v){st.L.trail=v;$("sTrail").setAttribute("aria-pressed",v);if(!v)trClear()}
+$("sTrail").onclick=()=>setTrail(!st.L.trail);
+$("sSplit").onclick=()=>{st.split=!st.split;$("sSplit").setAttribute("aria-pressed",st.split);applyLayout();if(st.split)discInit()};
 $("bLoc").onclick=()=>{syncLoc();$("height").value=st.H;$("q").value="";suggest();panel("sheet")};$("sheetClose").onclick=()=>panel(null);
 $("bComp").onclick=()=>$("bSens").click();
-$("dt").onchange=e=>{const t=new Date(e.target.value).getTime();if(isFinite(t)){st.t=t;if(st.speed===1)st.play=false}};
-document.querySelectorAll("[data-sp]").forEach(b=>b.onclick=()=>{st.speed=+b.dataset.sp;st.play=true});
-$("bBack").onclick=()=>{st.t-=36e5};$("bFwd").onclick=()=>{st.t+=36e5};$("bNow").onclick=()=>{st.t=Date.now();st.speed=1;st.play=true};
+$("dt").onchange=e=>{const t=new Date(e.target.value).getTime();if(isFinite(t)){st.t=t;st.year=false;trClear();if(st.speed===1)st.play=false}};
+document.querySelectorAll("[data-sp]").forEach(b=>b.onclick=()=>{st.speed=+b.dataset.sp;st.year=false;st.play=true});
+$("bBack").onclick=()=>{st.t-=36e5;trClear()};$("bFwd").onclick=()=>{st.t+=36e5;trClear()};$("bNow").onclick=()=>{st.t=Date.now();st.speed=1;st.year=false;st.play=true;trClear()};
 $("bPlay").onclick=()=>{st.play=!st.play};
 const tog=(id,k)=>{$(id).onclick=()=>{st.L[k]=!st.L[k];$(id).setAttribute("aria-pressed",st.L[k])}};tog("lObs","obs");tog("lModel","model");tog("lLines","lines");tog("lGrid","grid");tog("lArt","art");tog("lLand","land");tog("lSat","sat");tog("lStarlink","starlink");tog("lAir","air");
 $("lSat").addEventListener("click",()=>{SAT.ts=0;if(st.L.sat){loadTLE("stations").then(()=>loadTLE("visual"))}else if(st.sel&&st.sel.kind==="sat")st.sel=null});$("lStarlink").addEventListener("click",()=>{SAT.ts=0;if(st.L.starlink){toast("Carregando os satélites Starlink…");loadTLE("starlink")}});
@@ -705,37 +765,54 @@ $("infoBody").addEventListener("click",e=>{const b=e.target.closest("[data-act]"
 $("bHome").onclick=()=>{goHome();panel(null)};
 function setMode(m){st.mode=m;$("bSens").hidden=m!=="sky";$("bSens").parentElement.style.gridTemplateColumns=m==="sky"?"":"1fr";$("mini").setAttribute("aria-label",m==="sky"?"Abrir o Disco 3D":"Voltar ao modo Imersivo");
  document.querySelectorAll(".tile.s").forEach(b=>b.hidden=m!=="sky");document.querySelectorAll(".tile.d").forEach(b=>b.hidden=m!=="disc");$("bComp").style.visibility=m==="sky"?"visible":"hidden";
- document.querySelector(".reticle").hidden=m!=="sky";if(m==="disc"){discInit();if(!dv.seen){dv.seen=true;toast("Arraste para girar e inclinar; pinça para aproximar. Toque num astro para ver detalhes. Segure o dedo num ponto para mudar o observador.")}}}
+ document.querySelector(".reticle").hidden=m!=="sky";applyLayout();if(m==="disc"){discInit();if(!dv.seen){dv.seen=true;toast("Arraste para girar e inclinar; pinça para aproximar. Toque num astro para ver detalhes. Segure o dedo num ponto para mudar o observador.")}}}
 $("mini").onclick=()=>setMode(st.mode==="sky"?"disc":"sky");
 $("dTop").onclick=()=>{dv.tiltT=1};$("dIncl").onclick=()=>{dv.tiltT=0.45};$("dReset").onclick=()=>{dv.tiltT=0.5;dv.rot=0;dv.zoom=1;dv.px=0;dv.py=0};
 const dtog=(id,k)=>{$(id).onclick=()=>{dv[k]=!dv[k];$(id).setAttribute("aria-pressed",dv[k])}};dtog("dStars","stars");dtog("dCons","cons");
-dtog("dLight","light");dtog("dReal","real");
+dtog("dLight","light");const STY=[["mapa","Estilo: mapa"],["foto","Estilo: foto"],["pontos","Estilo: pontos"]];
+$("dReal").onclick=()=>{const k=(STY.findIndex(x=>x[0]===dv.style)+1)%3;dv.style=STY[k][0];$("dRealL").textContent=STY[k][1];$("dReal").setAttribute("aria-pressed",dv.style!=="pontos");try{localStorage.setItem("planetarium-estilo",dv.style)}catch(e){}};
+try{const v=localStorage.getItem("planetarium-estilo");if(v&&STY.some(x=>x[0]===v)){dv.style=v;$("dRealL").textContent=STY.find(x=>x[0]===v)[1]}}catch(e){}
 const begin=()=>{$("welcome").hidden=true;const o=compute();if(o.sun.alt>0){st.yaw=o.sun.az*D;st.pitch=clamp(o.sun.alt-20,0,50)*D}else{st.yaw=(st.obs.lat<0?180:0)*D;st.pitch=2*D}};
 $("start").onclick=()=>{begin();enableSensors();gps()};$("startManual").onclick=()=>{begin();gps(true);toast("Arraste para olhar em volta. Use dois dedos para aproximar.")};
 // arrastar, aproximar e tocar
 const pts=new Map();let gest=null,holdT=null;const app=$("app");
 app.addEventListener("pointerdown",e=>{if(e.target.closest("button,.card,.sheet,select,input,#mini,#scrim,.dock"))return;pts.set(e.pointerId,{x:e.clientX,y:e.clientY});app.setPointerCapture(e.pointerId);
- clearTimeout(holdT);if(st.mode==="disc"&&pts.size===1){const hx=e.clientX,hy=e.clientY;holdT=setTimeout(()=>{if(gest&&!gest.moved&&pts.size===1){gest.held=true;discHold(hx,hy)}},550)}
- gest={rot:dv.rot,tilt:dv.tilt,zoom:dv.zoom,px:dv.px,py:dv.py,btn:e.button,shift:e.shiftKey,mid:null,x:e.clientX,y:e.clientY,yaw:st.yaw,pitch:st.pitch,cal:sens.cal,moved:false,fov:st.fov,d0:pts.size===2?dist2():0}});
+ const RG=pts.size===1||!gest?regionAt(e.clientX,e.clientY):{area:gest.area,ox:gest.ox,oy:gest.oy};clearTimeout(holdT);if(RG.area==="disc"&&pts.size===1){const hx=e.clientX-RG.ox,hy=e.clientY-RG.oy;holdT=setTimeout(()=>{if(gest&&!gest.moved&&pts.size===1){gest.held=true;discHold(hx,hy)}},550)}
+ gest={area:RG.area,ox:RG.ox,oy:RG.oy,rot:dv.rot,tilt:dv.tilt,zoom:dv.zoom,px:dv.px,py:dv.py,btn:e.button,shift:e.shiftKey,mid:null,x:e.clientX,y:e.clientY,yaw:st.yaw,pitch:st.pitch,cal:sens.cal,moved:false,fov:st.fov,d0:pts.size===2?dist2():0}});
 const dist2=()=>{const[a,b]=[...pts.values()];return Math.hypot(a.x-b.x,a.y-b.y)};
 app.addEventListener("pointermove",e=>{if(!gest||!pts.has(e.pointerId))return;pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
  const mid2=()=>{const[a,b]=[...pts.values()];return[(a.x+b.x)/2,(a.y+b.y)/2]};
- if(pts.size===2&&st.mode==="disc"){if(!gest.d0){gest.d0=dist2();gest.mid=mid2();gest.zoom=dv.zoom;gest.px=dv.px;gest.py=dv.py}const m=mid2();dv.zoom=clamp(gest.zoom*dist2()/gest.d0,0.6,5);dv.px=gest.px+m[0]-gest.mid[0];dv.py=gest.py+m[1]-gest.mid[1];gest.moved=true;return}
- if(pts.size===2&&st.mode==="sky"){if(!gest.d0)gest.d0=dist2();st.fov=clamp(gest.fov*gest.d0/dist2(),2,130);gest.moved=true;return}
+ if(pts.size===2&&gest.area==="disc"){if(!gest.d0){gest.d0=dist2();gest.mid=mid2();gest.zoom=dv.zoom;gest.px=dv.px;gest.py=dv.py}const m=mid2();dv.zoom=clamp(gest.zoom*dist2()/gest.d0,0.6,5);dv.px=gest.px+m[0]-gest.mid[0];dv.py=gest.py+m[1]-gest.mid[1];gest.moved=true;return}
+ if(pts.size===2&&gest.area==="sky"){if(!gest.d0)gest.d0=dist2();st.fov=clamp(gest.fov*gest.d0/dist2(),2,130);gest.moved=true;return}
  const dx=e.clientX-gest.x,dy=e.clientY-gest.y;if(Math.hypot(dx,dy)>6)gest.moved=true;if(!gest.moved)return;const k=1/F;
- if(st.mode==="disc"){dv.tiltT=null;if(gest.btn===2||gest.shift){dv.px=gest.px+dx;dv.py=gest.py+dy}else{dv.rot=gest.rot+dx*0.008;dv.tilt=clamp(gest.tilt+dy*0.004,0.12,1)}return}
+ if(gest.area==="disc"){dv.tiltT=null;if(gest.btn===2||gest.shift){dv.px=gest.px+dx;dv.py=gest.py+dy}else{dv.rot=gest.rot+dx*0.008;dv.tilt=clamp(gest.tilt+dy*0.004,0.12,1)}return}
  if(st.sensors&&sens.got){if(Math.abs(dx)>40&&!gest.warned){gest.warned=true;toast("Sensores ligados: a tela segue o celular. Toque na bússola para desligar e navegar com o dedo.")}return}
  st.yaw=gest.yaw-dx*k;st.pitch=clamp(gest.pitch+dy*k,0,89*D)});
-const end=e=>{clearTimeout(holdT);if(gest&&gest.held){}else if(gest&&!gest.moved&&pts.size===1&&st.mode==="disc"){discTap(e.clientX,e.clientY)}else if(gest&&!gest.moved&&pts.size===1){const best=pickHit(e.clientX,e.clientY);st.sel=best?{kind:best.kind,i:best.i,id:best.id}:null}
+const end=e=>{clearTimeout(holdT);if(gest&&st.split)st.hits=gest.area==="disc"?(st.hitsD||[]):(st.hitsS||[]);if(gest&&gest.held){}else if(gest&&!gest.moved&&pts.size===1&&gest.area==="disc"){discTap(e.clientX-gest.ox,e.clientY-gest.oy)}else if(gest&&!gest.moved&&pts.size===1){const best=pickHit(e.clientX-gest.ox,e.clientY-gest.oy);st.sel=best?{kind:best.kind,i:best.i,id:best.id}:null}
  pts.delete(e.pointerId);if(!pts.size)gest=null;else gest={...gest,d0:0,fov:st.fov}};
 app.addEventListener("pointerup",end);app.addEventListener("pointercancel",end);
-app.addEventListener("wheel",e=>{e.preventDefault();if(st.mode==="disc")dv.zoom=clamp(dv.zoom*(1-e.deltaY*0.0012),0.6,5);else st.fov=clamp(st.fov*(1+e.deltaY*0.001),2,130)},{passive:false});
-app.addEventListener("contextmenu",e=>{if(st.mode==="disc")e.preventDefault()});
+app.addEventListener("wheel",e=>{e.preventDefault();if(regionAt(e.clientX,e.clientY).area==="disc")dv.zoom=clamp(dv.zoom*(1-e.deltaY*0.0012),0.6,5);else st.fov=clamp(st.fov*(1+e.deltaY*0.001),2,130)},{passive:false});
+app.addEventListener("contextmenu",e=>{if(regionAt(e.clientX,e.clientY).area==="disc")e.preventDefault()});
 addEventListener("keydown",e=>{const k=3*D;if(e.key==="ArrowLeft")st.yaw-=k;if(e.key==="ArrowRight")st.yaw+=k;if(e.key==="ArrowUp")st.pitch=Math.min(st.pitch+k,89*D);if(e.key==="ArrowDown")st.pitch=Math.max(st.pitch-k,0)});
 // ---------- Laço ----------
 const ROSE_T=[...document.querySelectorAll("#rose text")];
 let last=performance.now(),lastI=0;
-function loop(now){const dt=Math.min(now-last,100);last=now;if(st.play)st.t+=dt*st.speed;updateCam();const o=compute();satUpdate(o);st.hits=[];if(st.mode==="disc"){drawDisc(o);drawMiniSky(o)}else{draw(o);drawMini(o);const az=Math.atan2(cam.f[0],cam.f[1])*R2D;$("ret").style.top=RY+"px";$("rose").setAttribute("transform",`rotate(${(-az).toFixed(1)} 32 32)`);for(const t of ROSE_T)t.setAttribute("transform",`rotate(${az.toFixed(1)} ${t.getAttribute("x")} ${+t.getAttribute("y")-3})`)}if(now-lastI>200){hud();info(o);lastI=now}requestAnimationFrame(loop)}
+function splitRects(){if(!st.split)return null;const Wf=innerWidth,Hf=innerHeight;if(Hf>=Wf){const h=Math.round(Hf*0.4);return{D:{x:0,y:0,w:Wf,h},S:{x:0,y:h,w:Wf,h:Hf-h},port:true}}const w=Math.round(Wf/2);return{D:{x:0,y:0,w,h:Hf},S:{x:w,y:0,w:Wf-w,h:Hf},port:false}}
+function applyLayout(){const sp=!!st.split;$("mini").style.visibility=sp?"hidden":"visible";document.querySelectorAll(".tile.s").forEach(b=>b.hidden=!sp&&st.mode!=="sky");document.querySelectorAll(".tile.d").forEach(b=>b.hidden=!sp&&st.mode!=="disc");
+ $("bComp").style.visibility=sp||st.mode==="sky"?"visible":"hidden";document.querySelector(".reticle").hidden=!(sp||st.mode==="sky");$("bSens").hidden=!(sp||st.mode==="sky");$("ret").style.left="50%"}
+function regionAt(x,y){const R=splitRects();if(!R)return{area:st.mode,ox:0,oy:0};const S=R.S;if(x>=S.x&&y>=S.y)return{area:"sky",ox:S.x,oy:S.y};return{area:"disc",ox:R.D.x,oy:R.D.y}}
+function sizeOff(c,w,h){const a=Math.round(w*dpr),b=Math.round(h*dpr);if(c.width!==a||c.height!==b){c.width=a;c.height=b}}
+function loop(now){const dt=Math.min(now-last,100);last=now;
+ if(st.play){if(st.year){st.yAcc=(st.yAcc||0)+dt/1000*15;const n=Math.floor(st.yAcc);if(n){st.yAcc-=n;st.t+=n*864e5}}else st.t+=dt*st.speed}
+ const R=splitRects();if(R){const W0=innerWidth,H0=innerHeight;W=W0;Hh=H0;updateCam();const o=compute();satUpdate(o);trPush(o);
+  sizeOff(cD,R.D.w,R.D.h);sizeOff(cS,R.S.w,R.S.h);
+  W=R.D.w;Hh=R.D.h;DMG=R.port?{top:78,bot:10}:{top:96,bot:120};ctx=xD;st.hits=[];drawDisc(o);st.hitsD=st.hits;
+  W=R.S.w;Hh=R.S.h;ctx=xS;updateCam();st.hits=[];draw(o);st.hitsS=st.hits;
+  ctx=ctx0;W=W0;Hh=H0;DMG={top:100,bot:110};ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,cv.width,cv.height);ctx.drawImage(cD,Math.round(R.D.x*dpr),Math.round(R.D.y*dpr));ctx.drawImage(cS,Math.round(R.S.x*dpr),Math.round(R.S.y*dpr));
+  ctx.fillStyle="rgba(238,240,234,.35)";if(R.port)ctx.fillRect(0,Math.round(R.S.y*dpr)-1,cv.width,2);else ctx.fillRect(Math.round(R.S.x*dpr)-1,0,2,cv.height);
+  $("ret").style.top=(R.S.y+RY)+"px";$("ret").style.left=(R.S.x+R.S.w/2)+"px";const az=Math.atan2(cam.f[0],cam.f[1])*R2D;$("rose").setAttribute("transform",`rotate(${(-az).toFixed(1)} 32 32)`);for(const t of ROSE_T)t.setAttribute("transform",`rotate(${az.toFixed(1)} ${t.getAttribute("x")} ${+t.getAttribute("y")-3})`);
+  if(now-lastI>200){hud();info(o);simLbl(o);lastI=now}requestAnimationFrame(loop);return}
+ updateCam();const o=compute();satUpdate(o);trPush(o);st.hits=[];if(st.mode==="disc"){drawDisc(o);drawMiniSky(o)}else{draw(o);drawMini(o);const az=Math.atan2(cam.f[0],cam.f[1])*R2D;$("ret").style.top=RY+"px";$("rose").setAttribute("transform",`rotate(${(-az).toFixed(1)} 32 32)`);for(const t of ROSE_T)t.setAttribute("transform",`rotate(${az.toFixed(1)} ${t.getAttribute("x")} ${+t.getAttribute("y")-3})`)}if(now-lastI>200){hud();info(o);simLbl(o);lastI=now}requestAnimationFrame(loop)}
 syncLoc();requestAnimationFrame(loop);
 if("serviceWorker"in navigator&&location.protocol==="https:"&&!/claude/.test(location.hostname)){try{const had=!!navigator.serviceWorker.controller;let reloaded=false;
  navigator.serviceWorker.addEventListener("controllerchange",()=>{if(had&&!reloaded){reloaded=true;location.reload()}});

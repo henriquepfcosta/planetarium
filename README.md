@@ -7,6 +7,10 @@ O céu ao vivo em duas visões:
 
 Nas duas visões aparecem juntos o **céu observado** (posições calculadas por efemérides) e o **modelo do disco** (onde um Sol e uma Lua locais, na altura escolhida, apareceriam do ponto do observador), para comparar no campo.
 
+## Simulação
+
+Toque no relógio para abrir a barra de simulação: tocar/pausar, régua das 24 horas, velocidades, atalhos (nascer e pôr do Sol, meio-dia, meia-noite), simulações prontas (um dia, uma noite, um ano no mesmo horário), rastros do Sol, da Lua e das estrelas, e tela dividida com o Disco 3D e o Imersivo ao mesmo tempo, sincronizados.
+
 ## Satélites e aviões
 
 - **Satélites:** órbitas do CelesTrak (estações espaciais, os mais brilhantes e, opcionalmente, Starlink), calculadas no próprio aparelho com SGP4. O app busca os dados direto no CelesTrak (ou em `dados/tle-<grupo>.txt`, se existir no site).
@@ -29,6 +33,7 @@ No celular, use "Adicionar à tela inicial" para abrir como app (PWA, funciona o
 ## Dados e créditos
 
 - Estrelas, constelações, Via Láctea e elementos orbitais: [d3-celestial](https://github.com/ofrohn/d3-celestial) de Olaf Frohn (licença BSD-3), com base no catálogo Hipparcos e nos elementos keplerianos aproximados do JPL.
+- Mapa estilizado (`terra/mapa.jpg`): gerado por `tools/mapa.py` a partir da NASA Blue Marble, da máscara de água e do relevo (topografia) do repositório three-globe, com sombreamento de relevo, oceano limpo e borda de gelo.
 - Foto da Terra e luzes noturnas: NASA Blue Marble e Black Marble (domínio público), reprojetadas para o disco (`terra/`). Arquivos de origem obtidos do repositório [three-globe](https://github.com/vasturiano/three-globe).
 - Foto da Lua: textura lunar dos exemplos do [three.js](https://github.com/mrdoob/three.js) (MIT), reprojetada para a face visível (`terra/lua.webp`).
 - Cálculo de órbitas: [satellite.js](https://github.com/shashwatak/satellite-js) (MIT), em `lib/`. Dados orbitais: [CelesTrak](https://celestrak.org).
