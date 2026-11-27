@@ -160,7 +160,7 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
   <div class="bottom">
     <div class="card" id="cvBar" hidden><div class="sgrip" id="cvGrip" aria-label="Arraste para mover o cartão"><i></i></div><button class="x" id="cvBarX" aria-label="Fechar">×</button><h3 style="font-size:14px;margin:0 0 6px">Forma da Terra</h3>
       <div class="seg sm" id="cvMode2"><button data-m="lens">Disco convexo</button><button data-m="globe">Globo</button></div>
-      <label class="f cvk" style="margin-top:6px"><span id="cvV2" style="color:var(--ink)"></span><input type="range" id="cvK2" aria-label="Altura do centro do disco"></label><p class="small cvg" id="cvG2" hidden style="margin:6px 0 0;color:var(--ink)"></p>
+      <p style="margin:6px 0 0;font-size:13px;color:var(--ink)" id="cvV2"></p><p class="small cvg" id="cvG2" style="margin:2px 0 4px"></p>
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span class="small" id="cvS2"></span><button class="btn" id="cvMore" style="min-height:36px;font-size:13px;padding:0 12px">Detalhes</button></div>
     </div>
     <div class="card" id="recDone" hidden><button class="x" id="recX" aria-label="Descartar">×</button><h3>Vídeo pronto</h3><p class="small" id="recInfo"></p><div class="acts" style="grid-template-columns:1fr 1fr"><button class="btn p" id="recSave">Salvar ou compartilhar</button><button class="btn" id="recDel">Descartar</button></div></div>
@@ -246,16 +246,17 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
     <p class="small" style="margin:0">Se o chão se curva, o horizonte de cada lugar se inclina e os polos do céu mudam de altura. Compare o que se observa em várias cidades com o que cada curvatura prevê.</p>
     <canvas id="cvCurve" style="width:100%;height:190px;border-radius:12px;background:#0b1820" aria-label="Perfil do disco em corte, do polo norte à borda sul"></canvas>
     <div class="seg" id="cvMode"><button data-m="lens">Disco convexo</button><button data-m="globe">Globo</button></div>
-    <p style="margin:0"><b id="cvVal" style="color:var(--ink)">—</b></p><label class="f cvk"><span class="small">Altura do centro</span><input type="range" id="cvK" min="-6000" max="6000" step="100" value="3000"></label>
+    <p style="margin:0"><b id="cvVal" style="color:var(--ink)">—</b></p>
     <div class="seg" id="cvDist"><button data-d="far" aria-pressed="true">Estrelas muito distantes</button><button data-d="dome" aria-pressed="false">Estrelas no domo</button></div>
-    <div class="two"><button class="btn" id="cvReset">Disco plano (centro 0)</button><button class="btn" id="cvFit">Melhor ajuste do disco</button></div>
-    <button class="btn p" id="cvShow">Ver no mapa</button>
-    <p class="small" style="margin:0">Disco convexo: o disco mantém o tamanho e a borda; só o centro sobe (positivo) ou desce, com as bordas mais altas (negativo). Globo: a curvatura medida (1° a cada 111,2 km, raio de 6.371 km), fixa, sem ajuste.</p>
+        <button class="btn p" id="cvShow">Ver no mapa</button>
+    <p class="small" style="margin:0">Dois modelos fixos, cada um com a sua fonte: o disco convexo do <i>Zhoubi Suanjing</i> e o globo medido. Não há ajuste: a tabela compara o que cada um prevê com o que se observa.</p>
     <p style="margin:0" id="cvSum"></p>
     <div class="res" id="cvList" style="max-height:none"></div>
-    <details class="adv"><summary>De onde vem o valor medido</summary>
+    <details class="adv"><summary>De onde vêm os dois modelos</summary>
+      <p class="small"><b>Disco convexo — <i>Zhoubi Suanjing</i></b> (China, por volta do séc. I), o único modelo antigo de Terra não esférica descrito com números. O texto diz: "天象蓋笠，地法覆槃" (o céu é como um chapéu cônico; a Terra, como uma bacia emborcada) e "極下者，其地高人所居六萬里，滂沱四隤而下" (sob o polo, o chão fica 60.000 li acima de onde as pessoas vivem e desce para todos os lados). Pelo próprio texto, Zhou fica a 103.000 li do polo; na escala deste mapa isso dá cerca de <span id="cvZH">3.600</span> km de altura no centro. A altura e a distância vêm do texto; o formato exato da encosta entre o polo e as terras habitadas é uma interpretação.</p>
+      <p class="small"><b>Globo — curvatura medida.</b></p>
       <p class="small">A altura do polo celeste muda cerca de 1° a cada 111,2 km andados de norte a sul (é a definição prática de latitude). Isso foi medido por Aristóteles (Canopus visível no Egito e não na Grécia), Eratóstenes (sombras em Siena e Alexandria), al-Biruni (horizonte visto de uma montanha), pelas expedições à Lapônia e ao Peru (anos 1730), por Lacaille no sul da África (anos 1750) e pelo Arco Geodésico de Struve (1816–1855). Hoje o GPS confirma diariamente.</p>
-      <p class="small">Com 100% e estrelas muito distantes, o perfil se fecha num círculo de 6.371 km de raio. A Polaris fica a 0,7° do polo norte celeste; a tabela usa os próprios polos celestes.</p>
+      <p class="small">No globo, o perfil é um círculo de 6.371 km de raio. A Polaris fica a 0,7° do polo norte celeste; a tabela usa os próprios polos celestes.</p>
     </details>
     <button class="btn" id="cvClose">Fechar</button>
   </div>
@@ -313,7 +314,7 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
       <p class="small" id="airMsg"></p>
     </details>
     <button class="btn" id="sheetClose">Fechar</button>
-    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-23</p>
+    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-24</p>
   </div>
   <div class="welcome" id="welcome">
     <div>
@@ -972,11 +973,11 @@ $("q").oninput=e=>{clearTimeout(qT);qT=setTimeout(()=>search(e.target.value),280
 const manualLoc=()=>{const la=parseFloat($("lat").value),lo=parseFloat($("lon").value);if(isFinite(la)&&isFinite(lo)&&Math.abs(la)<=90&&Math.abs(lo)<=180){st.obs={name:"Ponto escolhido",lat:la,lon:lo};setHome();placeName(la,lo,"Ponto escolhido").then(n=>{if(st.obs.lat===la&&st.obs.lon===lo){st.obs.name=n;setHome()}})}};
 $("lat").onchange=manualLoc;$("lon").onchange=manualLoc;
 $("height").oninput=e=>{st.H=+e.target.value;save()};$("gps").onclick=gps;
-function panel(id){["pMenu","pTime","sheet","pEcl","pTide","pWx","pCurve","sim"].forEach(k=>$(k).classList.toggle("open",k===id));$("scrim").hidden=!id;$("scrim").classList.toggle("clear",id==="pMenu"||id==="sim"||LSC())}
+function panel(id){if(id)$("mpHint").hidden=true;["pMenu","pTime","sheet","pEcl","pTide","pWx","pCurve","sim"].forEach(k=>$(k).classList.toggle("open",k===id));$("scrim").hidden=!id;$("scrim").classList.toggle("clear",id==="pMenu"||id==="sim"||LSC())}
 $("scrim").onclick=()=>panel(null);$("bMenu").onclick=()=>panel($("pMenu").classList.contains("open")?null:"pMenu");const simOpen=()=>$("sim").classList.contains("open");const simToggle=()=>panel(simOpen()?null:"sim");$("bTime").onclick=simToggle;$("mpMore").onclick=simToggle;$("sClose").onclick=()=>panel(null);
 const SPDS=[1,60,600,3600,86400];
 {let seen=false;try{seen=localStorage.getItem("planetarium-simhint")==="1"}catch(e){}const done=()=>{$("mpHint").hidden=true;$("mp").classList.remove("pulse");try{localStorage.setItem("planetarium-simhint","1")}catch(e){}};
- if(!seen)setTimeout(()=>{$("mp").classList.add("pulse");$("mpHint").hidden=false},4500);$("mpHintX").onclick=done;$("mpMore").addEventListener("click",done);$("bTime").addEventListener("click",done)}$("mpPlay").onclick=()=>{st.play=!st.play};$("mpSpd").onclick=()=>{const i=SPDS.indexOf(st.speed),n=SPDS[(i+1)%SPDS.length];st.speed=n;st.year=false;st.play=true;toast(n===1?"Velocidade normal (1×)":`Simulando a ${SPN[n]}`)};
+ if(!seen)setTimeout(()=>{if(document.querySelector(".sheet.open")||!$("cvBar").hidden)return;$("mp").classList.add("pulse");$("mpHint").hidden=false;setTimeout(()=>{$("mpHint").hidden=true},14000)},4500);$("mpHintX").onclick=done;$("mpMore").addEventListener("click",done);$("bTime").addEventListener("click",done)}$("mpPlay").onclick=()=>{st.play=!st.play};$("mpSpd").onclick=()=>{const i=SPDS.indexOf(st.speed),n=SPDS[(i+1)%SPDS.length];st.speed=n;st.year=false;st.play=true;toast(n===1?"Velocidade normal (1×)":`Simulando a ${SPN[n]}`)};
 $("sNow").onclick=()=>{st.t=Date.now();st.speed=1;st.play=true;st.year=false;trClear();panel(null)};
 // escolher uma ação fecha a ficha para a simulação ficar à vista
 $("sim").addEventListener("click",e=>{const b=e.target.closest("[data-sp],[data-go],#sTrail,#sSplit");if(b)setTimeout(()=>{if(simOpen())panel(null)},120)});$("sCal").onclick=()=>panel("pTime");
@@ -1180,10 +1181,12 @@ function drawCities(projFn){if(!st.L.city)return;loadCW();if(!CW.L)return;let n=
 // ---------- Teste da curvatura: duas formas (disco convexo e curvatura medida/globo) ----------
 const CV={mode:"lens",k:1,hc:3000,dist:"far"};try{const c=JSON.parse(localStorage.getItem("planetarium-curva")||"null");if(c){CV.k=+c.k||0;CV.dist=c.dist||"far";if(c.mode)CV.mode=c.mode;if(c.hc!=null)CV.hc=+c.hc}}catch(e){}
 const KMDEG=RKM/180,RE=RKM/Math.PI,HCMAX=6000;
+// Zhoubi Suanjing: 天象蓋笠，地法覆槃 · 極下者，其地高人所居六萬里，滂沱四隤而下 · 周去極十萬三千里 (Zhou fica a 103.000 li do polo)
+const ZB_SZ=(90-34.62)*KMDEG,ZB_H=ZB_SZ*60000/103000;CV.hc=ZB_H;
 const CVC=[["Reykjavík",64.15],["Londres",51.51],["Cairo",30.04],["Macapá (equador)",0.03],["Buenos Aires",-34.6],["Cidade do Cabo",-33.92],["Sydney",-33.87],["Ushuaia",-54.8]];
 CV.k=1;const shapeT=()=>CV.mode==="lens"?{k:0,hc:CV.hc}:{k:1,hc:0};
 // perfil do chão: distância horizontal ao eixo (q) e altura (z) em função de s (distância ao polo ao longo do chão)
-function prof(sk,S){let q=sk,z=0;if(Math.abs(S.k)>=1e-4){const rho=RE/S.k,f=sk/rho;q=rho*Math.sin(f);z=rho*(Math.cos(f)-1)}if(S.hc)z+=S.hc*(1-(sk/RKM)**2);return[q,z]}
+function prof(sk,S){let q=sk,z=0;if(Math.abs(S.k)>=1e-4){const rho=RE/S.k,f=sk/rho;q=rho*Math.sin(f);z=rho*(Math.cos(f)-1)}if(S.hc){const u=Math.min(1,sk/ZB_SZ);z+=S.hc*(1+Math.cos(Math.PI*u))/2}return[q,z]}
 function profN(sk,S){const a=prof(Math.max(0,sk-1),S),b=prof(sk+1,S),dq=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dq,dz)||1;return[-dz/l,dq/l]}
 // corte para o teste (polo norte na origem)
 function cvPos(sk,S){const P=prof(sk,S),z0=prof(0,S)[1],n=profN(sk,S);return{p:[P[0],P[1]-z0],n,t:[-n[1],n[0]],z0}}
@@ -1193,12 +1196,12 @@ const dot2=(a,b)=>a[0]*b[0]+a[1]*b[1];
 function cvRows(){const L=CVC.map(([n,lat])=>({n,lat}));const me=st.obs;if(!L.some(c=>Math.abs(c.lat-me.lat)<0.2))L.push({n:me.name,lat:me.lat,me:1});return L.sort((a,b)=>b.lat-a.lat)}
 function cvErr(S,dist){let s=0,n=0;for(const c of cvRows()){const p=cvPred(c.lat,S,dist);s+=Math.abs(p.altN-c.lat);n++;if(p.altS!=null){s+=Math.abs(p.altS+c.lat);n++}}return s/n}
 const errCol=e=>e<=1?"#7dffb0":e<=5?"#ffd27a":"#ff9f80";
-function cvLabel(){if(CV.mode==="lens"){const h=CV.hc;return Math.abs(h)<50?"Disco plano (centro a 0 km)":`${h>0?"Disco convexo":"Disco côncavo (bordas mais altas)"}: centro ${h>0?"+":"−"}${Math.abs(h).toLocaleString("pt-BR")} km`}
+function cvLabel(){if(CV.mode==="lens")return`Disco convexo (Zhoubi Suanjing): centro ${Math.round(ZB_H/10)*10>0?"+":""}${(Math.round(ZB_H/10)*10).toLocaleString("pt-BR")} km`;
  return"Globo: curvatura medida, 1° a cada 111,2 km (raio de 6.371 km)"}
-function cvSliders(){const L=CV.mode==="lens";for(const id of["cvK","cvK2"]){const e=$(id);e.min=-HCMAX;e.max=HCMAX;e.step=100;e.value=CV.hc}document.querySelectorAll(".cvk").forEach(e=>e.hidden=!L);$("cvG2").hidden=L;$("cvG2").textContent="Forma fixa, medida de Eratóstenes ao GPS.";$("cvFit").hidden=!L;$("cvReset").hidden=!L;
+function cvSliders(){const L=CV.mode==="lens";$("cvG2").hidden=false;$("cvG2").textContent=L?"Forma fixa do texto chinês (séc. I): sob o polo, o chão fica 60.000 li acima de onde as pessoas vivem.":"Forma fixa, medida de Eratóstenes ao GPS.";
  document.querySelectorAll("#cvMode button,#cvMode2 button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===CV.mode))}
 function cvBarRender(){if($("cvBar").hidden)return;const e=cvErr(shapeT(),CV.dist);$("cvV2").textContent=cvLabel();$("cvS2").innerHTML=`Diferença média: <b style="color:${errCol(e)}">${nf(e,1)}°</b> (${CV.dist==="far"?"estrelas distantes":"estrelas no domo"})`}
-function cvRender(){const S=shapeT(),dist=CV.dist;cvSliders();$("cvVal").textContent=cvLabel();cvBarRender();
+function cvRender(){const S=shapeT(),dist=CV.dist;cvSliders();if($("cvZH"))$("cvZH").textContent=(Math.round(ZB_H/10)*10).toLocaleString("pt-BR");$("cvVal").textContent=cvLabel();cvBarRender();
  document.querySelectorAll("#cvDist button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.d===dist));
  const rows=cvRows(),fmt=a=>a==null?"—":`${a>=0?"+":"−"}${nf(Math.abs(a),1)}°`;
  $("cvList").innerHTML=rows.map(c=>{const p=cvPred(c.lat,S,dist),oN=c.lat,oS=-c.lat,eN=Math.abs(p.altN-oN),eS=p.altS==null?null:Math.abs(p.altS-oS),ok=e=>e==null?"var(--mute)":errCol(e);
@@ -1215,7 +1218,7 @@ function cvRender(){const S=shapeT(),dist=CV.dist;cvSliders();$("cvVal").textCon
 function cvSave(){try{localStorage.setItem("planetarium-curva",JSON.stringify({mode:CV.mode,k:CV.k,hc:CV.hc,dist:CV.dist}))}catch(e){}}
 function cvSetMode(m){if(m===CV.mode)return;CV.mode=m;cvSave();cvRender();if(st.mode==="disc"){dv.zoomT=m==="globe"?2.2:1;dv.tiltT=m==="globe"?0.55:0.38}}
 function cvSlide(v){if(CV.mode!=="lens")return;CV.hc=+v;cvSave();cvRender()}
-function cvBarOpen(){panel(null);if(st.split){st.split=false;$("sSplit").setAttribute("aria-pressed",false);applyLayout()}if(st.mode!=="disc")setMode("disc");CVD.test=true;$("cvBar").hidden=false;requestAnimationFrame(CVDRAG.place);$("info").hidden=true;st.sel=null;if(dv.tilt>0.6)dv.tiltT=0.38;cvRender()}
+function cvBarOpen(){panel(null);if(st.split){st.split=false;$("sSplit").setAttribute("aria-pressed",false);applyLayout()}if(st.mode!=="disc")setMode("disc");CVD.test=true;$("mpHint").hidden=true;$("cvBar").hidden=false;requestAnimationFrame(CVDRAG.place);$("info").hidden=true;st.sel=null;if(dv.tilt>0.6)dv.tiltT=0.38;cvRender()}
 function cvBarClose(){CVD.test=false;$("cvBar").hidden=true}
 function dragCard(el,grip,key){const P={free:false,x:0,y:0};try{const v=JSON.parse(localStorage.getItem(key)||"null");if(v&&v.free)Object.assign(P,v)}catch(e){}
  const place=()=>{el.classList.toggle("free",P.free);if(P.free&&!el.hidden){const w=el.offsetWidth||320,h=el.offsetHeight||160;P.x=clamp(P.x,4,Math.max(4,innerWidth-w-4));P.y=clamp(P.y,(HDRB||90)-30,Math.max(60,innerHeight-h-4))}el.style.left=P.free?P.x+"px":"";el.style.top=P.free?P.y+"px":""};
@@ -1225,13 +1228,8 @@ function dragCard(el,grip,key){const P={free:false,x:0,y:0};try{const v=JSON.par
  grip.addEventListener("dblclick",()=>{P.free=false;place();save()});addEventListener("resize",place);return{place,P}}
 const CVDRAG=dragCard($("cvBar"),$("cvGrip"),"planetarium-cvpos");
 $("bCurve").onclick=cvBarOpen;$("cvClose").onclick=()=>panel(null);$("cvBarX").onclick=cvBarClose;$("cvMore").onclick=()=>{cvRender();panel("pCurve")};
-for(const id of["cvK","cvK2"])$(id).oninput=e=>cvSlide(e.target.value);
 for(const id of["cvMode","cvMode2"])$(id).addEventListener("click",e=>{const b=e.target.closest("[data-m]");if(b)cvSetMode(b.dataset.m)});
 $("cvDist").addEventListener("click",e=>{const b=e.target.closest("[data-d]");if(!b)return;CV.dist=b.dataset.d;cvSave();cvRender()});
-$("cvReset").onclick=()=>{CV.mode="lens";CV.hc=0;cvSave();cvRender()};
-$("cvFit").onclick=()=>{let best=0,be=1e9;if(CV.mode!=="lens")return;{for(let h=-HCMAX;h<=HCMAX;h+=100){const e=cvErr({k:0,hc:h},CV.dist);if(e<be){be=e;best=h}}CV.hc=best}
- cvSave();cvRender();toast(`Melhor ajuste do disco convexo ( ${CV.dist==="far"?"estrelas distantes":"estrelas no domo"}): ${cvLabel()} · diferença média de ${nf(be,1)}°.`)};
-
 // ---------- Disco em 3D: espessura, muralha de gelo e a forma escolhida ----------
 const CVD={on:false,test:false,kd:0,hd:0,mk:"",unbend:false,after:null};try{CVD.on=localStorage.getItem("planetarium-disco3d")==="1"}catch(e){}
 const WALL=650,THICK=900;const SCUR=()=>({k:CVD.kd,hc:CVD.hd});
@@ -1291,7 +1289,7 @@ function drawDisc3D(o){const gl=G3.gl;if(dv.tiltT!=null){dv.tilt+=(dv.tiltT-dv.t
   for(let h=0;h<24;h++){const a=(o.sp.lon+(h-12)*15)*D,q=[rr*Math.sin(a),-rr*Math.cos(a),z],p=vproj(V,q);if(!onScreen(p))continue;const ld=toDisc(-89.9,(o.sp.lon+(h-12)*15));if(!front(-89,o.sp.lon+(h-12)*15)&&dot(surfNLL(-89,o.sp.lon+(h-12)*15,S),nf2)<-0.2)continue;
    text(RN[h%12],p.sx,p.sy+4,h===12?"#ffd27a":h===0?"rgba(190,205,220,.75)":gl2?"#fff4ea":"#f6efe2",h===12||h===0?11:9.5,h===12?700:600,1)}ctx.textAlign="left"}
  if(front(st.obs.lat,st.obs.lon)){const p=pp(st.obs.lat,st.obs.lon);if(p){ctx.strokeStyle="#ff8f6b";ctx.lineWidth=1.8;ctx.beginPath();ctx.arc(p[0],p[1],6,0,7);ctx.stroke();ctx.beginPath();ctx.moveTo(p[0]-10,p[1]);ctx.lineTo(p[0]+10,p[1]);ctx.moveTo(p[0],p[1]-10);ctx.lineTo(p[0],p[1]+10);ctx.stroke();st.hits.push({x:p[0],y:p[1],kind:"obs",m:-9})}}
- if($("cvBar").hidden){const lab=Math.abs(S.hc)>=50?(S.hc>0?`Disco 3D · convexo · centro +${Math.round(S.hc).toLocaleString("pt-BR")} km`:`Disco 3D · côncavo · centro −${Math.round(-S.hc).toLocaleString("pt-BR")} km`):Math.abs(k)>=0.005?`Disco 3D · ${k>0?"convexo":"côncavo"} ${Math.round(Math.abs(k)*100)}% do valor medido`:"Disco 3D · plano";ctx.textAlign="center";text(lab,W/2,Math.max(HDRB+14,DMG.top-8),"rgba(235,245,255,.85)",11,600,0);ctx.textAlign="left"}}
+ if($("cvBar").hidden){const lab=Math.abs(S.hc)>=50?"Disco 3D · convexo (Zhoubi Suanjing)":Math.abs(k)>=0.005?`Disco 3D · ${k>0?"convexo":"côncavo"} ${Math.round(Math.abs(k)*100)}% do valor medido`:"Disco 3D · plano";ctx.textAlign="center";text(lab,W/2,Math.max(HDRB+14,DMG.top-8),"rgba(235,245,255,.85)",11,600,0);ctx.textAlign="left"}}
 function d3Step(){const act=(CVD.on||CVD.test)&&!CVD.unbend,tk=act&&CV.mode==="globe"?CV.k:0,th=act&&CV.mode==="lens"?CV.hc:0;CVD.kd+=(tk-CVD.kd)*0.08;CVD.hd+=(th-CVD.hd)*0.08;if(Math.abs(tk-CVD.kd)<0.002)CVD.kd=tk;if(Math.abs(th-CVD.hd)<4)CVD.hd=th;
  if(CVD.unbend&&Math.abs(CVD.kd)<0.004&&Math.abs(CVD.hd)<10){CVD.kd=0;CVD.hd=0;CVD.unbend=false;const a=CVD.after;CVD.after=null;if(a)a()}}
 const bent=()=>Math.abs(CVD.kd)>0.004||Math.abs(CVD.hd)>10;
