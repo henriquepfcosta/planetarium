@@ -22,6 +22,10 @@ Toque no relógio para abrir a barra de simulação: tocar/pausar, régua das 24
 - **Modelo** (chave **Disco | Globo** abaixo do ícone de troca, no canto superior direito, ou no menu): escolha entre **Disco** e **Globo**. O ícone de troca leva do céu ao modelo escolhido e de volta. O céu observado é o mesmo nos dois (as mesmas efemérides); o que muda é a estrutura que explica esse céu.
 - **Globo:** a vista do Disco 3D vira o **Sistema Solar** — Sol no centro, planetas nas órbitas (elementos orbitais do JPL/NASA), Terra com o eixo inclinado 23,4°, girando e com dia e noite reais no mapa, e a Lua na sua órbita. A vista fica centrada na Terra; toque em qualquer astro (ou use **Centro: Terra · Sol · Lua**) para centralizar nele. Arraste para girar, pinça para aproximar até a Terra e o seu local; o ícone de troca faz a viagem até o chão e de volta. Escala didática (padrão) ou real.
 - A Terra é desenhada com a foto de satélite (Blue Marble), iluminação real (dia, crepúsculo, noite com as luzes das cidades) e brilho da atmosfera; sua órbita fica em destaque.
+- **Terra detalhada (satélite):** ao aproximar da Terra no Globo, o mapa de base dá lugar a imagens de satélite reais em blocos (EOxCloudless 2024, a partir do Sentinel-2), carregadas conforme o zoom, até o nível das cidades (cerca de 1,5 km de altitude). **Nomes, ruas e fronteiras** vêm de uma camada do OpenStreetMap por cima. Perto da Terra, a câmera gira junto com ela (o chão não escorrega), o norte fica para cima, arrastar move o mapa e a pinça aproxima em proporção à altitude, mostrada no canto. Sem internet, fica o mapa de base. Os dois podem ser desligados no menu, na seção **Globo**.
+- **Céu ao fundo do Globo:** estrelas, linhas e nomes das constelações, a faixa da Via Láctea, o centro da galáxia, Andrômeda e a Grande Nuvem de Magalhães, fixos ao fundo (não giram com a Terra). Toque numa estrela para ver a ficha, com a distância em anos-luz das mais brilhantes.
+- **Nuvens no Globo:** as nuvens reais formam uma camada um pouco acima da superfície (≈ 50 km, exagerada para dar volume), iluminada pelo Sol e com sombra no chão; somem ao descer perto das cidades. Ligam e desligam em **Nuvens do tempo real**.
+- **Planetas e Lua nítidos:** discos com borda definida, faixas de Júpiter e Saturno, anéis que passam na frente e atrás, calota de Marte, Lua com foto e fase vista da câmera.
 - **Movimento na galáxia** (cartão Modelo): o Sol avança a cerca de 230 km/s rumo a Cygnus e os planetas o acompanham, deixando um rastro em espiral (velocidade comprimida na escala didática).
 - **Lado a lado** (botão abaixo da chave Disco | Globo): abre e fecha a tela dividida Disco + Globo com um toque. A simulação vale para os dois, e o globo se aproxima sozinho da vista certa para cada ação (um dia: a Terra girando; um ano: a órbita; 1 dia/s: Terra e Lua; nascer, meio-dia, pôr e meia-noite: o seu local).
 - **Tela dividida** (ficha de simulação): Céu + Disco, Disco + Globo ou Globo + Céu, no mesmo relógio.
@@ -81,7 +85,8 @@ Toque no relógio para abrir a barra de simulação: tocar/pausar, régua das 24
 
 ## Nuvens no disco, tempo no topo e cartão de simulação
 
-- Com **Nuvens do tempo real** ligado, o Disco 3D (plano ou em 3D) mostra as nuvens do mundo inteiro, a partir de uma grade de previsões Open-Meteo (a cada 15° de latitude e 20° de longitude), escurecidas no lado da noite; mudam com a hora simulada.
+- Com **Nuvens do tempo real** ligado, o Disco 3D (plano ou em 3D) mostra as nuvens do mundo inteiro, a partir de uma grade de previsões Open-Meteo (a cada 15° de latitude e 20° de longitude), escurecidas no lado da noite; mudam com a hora simulada. As nuvens flutuam um pouco acima do disco e projetam sombra no chão, do lado oposto ao Sol.
+- Na tela dividida, as chaves **Disco | Globo** e o botão lado a lado sobem para o topo, sem cobrir o mapa.
 - No topo, abaixo da fase da Lua, aparece o tempo do seu local (ícone, temperatura, condição) e se as nuvens estão ligadas (✓) ou desligadas (✕); toque para abrir a previsão.
 - **Mini player** no rodapé: ▶/⏸, relógio, velocidade atual (toque para trocar) e o botão **Simular**, que abre a ficha de simulação (tempo, velocidade, ir para, simular, ver, situação). Escolher uma ação fecha a ficha e a simulação roda à vista. Na primeira vez, um aviso mostra onde simular.
 - O anel de horas aparece também no disco em 3D.
@@ -129,5 +134,7 @@ No celular, use "Adicionar à tela inicial" para abrir como app (PWA, funciona o
 - Aviões: [adsb.fi](https://adsb.fi), [adsb.lol](https://adsb.lol), [airplanes.live](https://airplanes.live) e [OpenSky Network](https://opensky-network.org).
 - Desenhos das constelações: ilustrações de Johan Meuris, do projeto [Stellarium sky cultures](https://github.com/Stellarium/stellarium-skycultures) (cultura ocidental), sob a [Free Art License](https://artlibre.org/licence/lal/en/). Os dados de âncoras são CC BY-SA.
 - Municípios do Brasil: [kelvins/municipios-brasileiros](https://github.com/kelvins/municipios-brasileiros) (MIT).
+- Imagens de satélite do Globo: [EOxCloudless 2024](https://cloudless.eox.at) por EOX IT Services GmbH (contém dados modificados do Copernicus Sentinel 2024). Nomes, ruas e fronteiras: camada Overlay da EOX com dados © [OpenStreetMap](https://www.openstreetmap.org/copyright). Carregadas direto do servidor da EOX, sem chave; não são guardadas para uso offline.
+- Distâncias das estrelas: valores aproximados do catálogo Hipparcos/Gaia, arredondados.
 - Sol: algoritmo da NOAA. Lua: método simplificado de Paul Schlyter.
 - `sky.json` é gerado a partir de `d3-celestial/data` (estrelas até magnitude 6).
