@@ -68,6 +68,13 @@ Toque no relógio para abrir a barra de simulação: tocar/pausar, régua das 24
 - **Detalhes** mostra o perfil em corte e, para várias cidades, a altura observada e a prevista dos polos celestes, com **Melhor ajuste**.
 - **Disco em 3D (forma e muralha)** (menu, Disco 3D) mantém o disco em 3D com espessura de rocha e muralha de gelo mesmo com a barra fechada. Espessura e muralha são ilustrativas.
 
+## Nuvens no disco, tempo no topo e cartão de simulação
+
+- Com **Nuvens do tempo real** ligado, o Disco 3D (plano ou em 3D) mostra as nuvens do mundo inteiro, a partir de uma grade de previsões Open-Meteo (a cada 15° de latitude e 20° de longitude), escurecidas no lado da noite; mudam com a hora simulada.
+- No topo, abaixo da fase da Lua, aparece o tempo do seu local (ícone, temperatura, condição) e se as nuvens estão ligadas (✓) ou desligadas (✕); toque para abrir a previsão.
+- O cartão de simulação mostra todas as opções em três linhas (velocidade, ir para, simular), sem rolagem, e pode ser arrastado pela alça do topo; **Recentrar** ou toque duplo na alça o devolvem ao lugar.
+- O anel de horas aparece também no disco em 3D.
+
 ## Marés
 
 - **Marés** (menu, nos dois modos): calcula a maré astronômica de equilíbrio pelas posições reais da Lua e do Sol. No Disco 3D, o oceano fica azul onde a água se acumula (maré alta) e cor de areia onde baixa, com as duas regiões de maré alta marcadas: sob a Lua e do lado oposto.
