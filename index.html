@@ -130,7 +130,7 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
     <div class="card" id="info" hidden><button class="x" id="infoX" aria-label="Fechar">×</button><div id="infoBody"></div></div>
     <div class="sim" id="sim" hidden>
       <div class="srow"><button class="sp" id="sPlay" aria-label="Rodar ou pausar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7Z"/></svg></button><input type="range" id="sDay" min="0" max="1439" step="1" aria-label="Hora do dia"><button class="sp" id="sCal" aria-label="Escolher data"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></button></div>
-      <div class="chips"><button data-sp="1">1×</button><button data-sp="60">1 min/s</button><button data-sp="600">10 min/s</button><button data-sp="3600">1 h/s</button><button data-sp="86400">1 dia/s</button><i class="sep"></i><button data-go="rise">Nascer do Sol</button><button data-go="noon">Meio-dia</button><button data-go="set">Pôr do Sol</button><button data-go="mid">Meia-noite</button><i class="sep"></i><button data-go="day">Um dia</button><button data-go="night">Uma noite</button><button data-go="year">Um ano</button><button id="sEcl">Eclipses</button><i class="sep"></i><button id="sTrail" aria-pressed="false">Rastros</button><button id="sSplit" aria-pressed="false">Tela dividida</button></div>
+      <div class="chips"><button data-sp="1">1×</button><button data-sp="60">1 min/s</button><button data-sp="600">10 min/s</button><button data-sp="3600">1 h/s</button><button data-sp="86400">1 dia/s</button><i class="sep"></i><button data-go="rise">Nascer do Sol</button><button data-go="noon">Meio-dia</button><button data-go="set">Pôr do Sol</button><button data-go="mid">Meia-noite</button><i class="sep"></i><button data-go="day">Um dia</button><button data-go="night">Uma noite</button><button data-go="year">Um ano</button><button id="sEcl">Eclipses</button><button id="sTide">Marés</button><i class="sep"></i><button id="sTrail" aria-pressed="false">Rastros</button><button id="sSplit" aria-pressed="false">Tela dividida</button></div>
       <p class="slbl" id="sLbl">—</p>
     </div>
     <div class="dock">
@@ -163,6 +163,8 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
       <div class="mh">Nos dois modos</div>
       <button class="tile" id="lPolar" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 1.6 4.4 4.6.2-3.6 2.9 1.3 4.5L12 12.4 8.1 15l1.3-4.5L5.8 7.6l4.6-.2Z"/><path d="M12 15v6"/></svg><span>Estrela Polar</span></button>
       <button class="tile" id="bEclT"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="12" r="6"/><path d="M14 6.6a6 6 0 1 1 0 10.8"/></svg><span>Eclipses</span></button>
+      <button class="tile" id="lTide" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 15c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2"/><path d="M2 19c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2"/><path d="M12 3v7M9 7l3 3 3-3"/></svg><span>Marés</span></button>
+      <button class="tile" id="bTide"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17c3 0 3-8 6-8s3 8 6 8 3-6 6-6"/><path d="M3 21h18"/></svg><span>Tábua de marés</span></button>
       <div class="mh">Ao vivo</div>
       <button class="tile" id="lSat" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="6" height="6" rx="1"/><path d="M3 6l4 4M17 14l4 4M7 10l2 1M15 13l2 1"/><path d="M2 5l3-3 4 4-3 3ZM15 18l3-3 4 4-3 3Z"/></svg><span>Satélites</span></button>
       <button class="tile" id="lStarlink" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17 21 7"/><circle cx="6" cy="15.3" r="1"/><circle cx="10" cy="13.1" r="1"/><circle cx="14" cy="10.9" r="1"/><circle cx="18" cy="8.7" r="1"/></svg><span>Starlink</span></button>
@@ -176,6 +178,19 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
       <button class="btn ic" id="bSens" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2.5" width="10" height="19" rx="2.2"/><path d="M11 18.5h2"/><path d="M2.5 9a7 7 0 0 1 2-4M21.5 9a7 7 0 0 0-2-4"/></svg>Sensores</button>
       <button class="btn ic" id="bLoc"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Local e modelo</button>
     </div>
+  </div>
+  <div class="sheet" id="pTide" role="dialog" aria-label="Marés">
+    <h2><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 15c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2"/><path d="M2 19c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2"/></svg>Marés · <span id="tdDay" style="font-weight:500"></span></h2>
+    <p style="margin:0" id="tdState"></p>
+    <canvas id="tdChart" style="width:100%;height:150px;border-radius:12px;background:#0b1820" aria-label="Curva da maré nas 24 horas"></canvas>
+    <div class="res" id="tdList" style="max-height:none"></div>
+    <p class="small" id="tdSN"></p>
+    <details class="adv"><summary>Como isso é calculado</summary>
+      <p class="small">É a maré astronômica de equilíbrio: a força da Lua e do Sol sobre um oceano ideal, calculada pelas posições reais dos dois. Ela mostra o ritmo (duas marés altas por dia, uma a cada ~12 h 25 min) e a força (sizígia e quadratura).</p>
+      <p class="small">No litoral de verdade a altura é bem maior (de 1 a vários metros) e os horários costumam atrasar algumas horas, conforme o porto. Para a altura exata de um porto, use a tábua de marés da Marinha.</p>
+      <p class="small">Repare que há duas marés altas: uma com a Lua passando no alto e outra quando ela está do lado oposto, fora do céu. No Disco 3D, ligue Marés para ver as duas regiões.</p>
+    </details>
+    <div class="two"><button class="btn" id="tdSim">Simular o dia</button><button class="btn" id="tdClose">Fechar</button></div>
   </div>
   <div class="sheet" id="pEcl" role="dialog" aria-label="Eclipses">
     <h2><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="12" r="6"/><path d="M14 6.6a6 6 0 1 1 0 10.8"/></svg>Próximos eclipses</h2>
@@ -209,7 +224,7 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
       <p class="small" id="airMsg"></p>
     </details>
     <button class="btn" id="sheetClose">Fechar</button>
-    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-6</p>
+    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-7</p>
   </div>
   <div class="welcome" id="welcome">
     <div>
@@ -287,7 +302,7 @@ function clipProj(pts,C){const P=pts.map(q=>[dot(q,C.r),dot(q,C.u),dot(q,C.f)]),
 
 // ---------- Estado ----------
 const st={t:Date.now(),play:true,speed:1,obs:{name:"São Paulo",lat:-23.55,lon:-46.63},H:5000,yaw:180*D,pitch:25*D,fov:90,
- L:{polar:true,trail:false,obs:true,model:true,lines:true,grid:false,art:true,land:true,sat:false,starlink:false,air:false},sensors:false,mode:"sky",dg:null,sel:null,hits:[]};
+ L:{polar:true,trail:false,obs:true,model:true,lines:true,grid:false,art:true,land:true,tide:false,sat:false,starlink:false,air:false},sensors:false,mode:"sky",dg:null,sel:null,hits:[]};
 const sens={alpha:0,beta:90,gamma:0,cal:0,off:null,samp:[],got:false,rel:false,raw:null};
 let cam={f:[0,1,0],r:[1,0,0],u:[0,0,1]};
 st.home={...st.obs};st.pend=null;
@@ -460,13 +475,15 @@ function draw(o){
  if(st.L.grid){polyAltAz(azs.map(()=>0),azs,"rgba(238,240,234,.35)",1);for(const a of[30,60])polyAltAz(azs.map(()=>a),azs,"rgba(238,240,234,.22)",1,[3,5]);for(let z=0;z<360;z+=45){const al=[...Array(18).keys()].map(i=>i*5);polyAltAz(al,al.map(()=>z),"rgba(238,240,234,.18)",1,[3,5])}}
  const CARD=["N","NE","L","SE","S","SO","O","NO"];CARD.forEach((c,i)=>{const p=proj(enu(st.L.land?Math.max(LANDP[Math.round(i*180)%1440],FARP[Math.round(i*180)%1440])+1:1.2,i*45));if(onScreen(p)){ctx.textAlign="center";text(c,p.sx,p.sy-6,i===0?"#ff9f80":"#eef0ea",i%2?10:13,500);ctx.textAlign="left"}});
  // Modelo do disco
- if(st.L.model){const draws=[[o.ms,"Sol · modelo","msun",9],[o.mm,"Lua · modelo","mmoon",7]];
-  for(const[m,lab,kind,r]of draws){const p=proj(m.v);if(!onScreen(p))continue;ctx.strokeStyle="#ff8f6b";ctx.lineWidth=1.4;ctx.setLineDash([3,3]);ctx.beginPath();ctx.arc(p.sx,p.sy,r,0,7);ctx.stroke();ctx.setLineDash([]);
-   ctx.beginPath();ctx.moveTo(p.sx-r-6,p.sy);ctx.lineTo(p.sx-r+2,p.sy);ctx.moveTo(p.sx+r-2,p.sy);ctx.lineTo(p.sx+r+6,p.sy);ctx.stroke();text(lab,p.sx+r+8,p.sy-6,"#ff8f6b",11,500);st.hits.push({x:p.sx,y:p.sy,kind})}
-  if(st.L.obs){const a=proj(o.sun.v),b=proj(o.ms.v);if(o.sun.alt>-1&&a.ok&&b.ok&&(onScreen(a)||onScreen(b))){ctx.strokeStyle="rgba(255,143,107,.45)";ctx.setLineDash([2,4]);ctx.beginPath();ctx.moveTo(a.sx,a.sy);ctx.lineTo(b.sx,b.sy);ctx.stroke();ctx.setLineDash([])}}}
+ if(st.L.model){const SK=st.sel&&st.sel.kind,selS=SK==="sun"||SK==="msun",selM=SK==="moon"||SK==="mmoon";
+  for(const[m,lab,kind,r,on]of[[o.ms,"modelo","msun",6,selS],[o.mm,"modelo","mmoon",5,selM]]){const p=proj(m.v);if(!onScreen(p))continue;ctx.globalAlpha=on?1:0.6;ctx.strokeStyle="#ff8f6b";ctx.lineWidth=on?1.6:1.1;ctx.setLineDash([2,3]);ctx.beginPath();ctx.arc(p.sx,p.sy,r,0,7);ctx.stroke();ctx.setLineDash([]);
+   text(on?(kind==="msun"?"Sol · modelo":"Lua · modelo"):lab,p.sx+r+5,p.sy+4,"#ff8f6b",on?11:9.5,500);ctx.globalAlpha=1;st.hits.push({x:p.sx,y:p.sy,kind})}
+  for(const[real,mod,on,vis]of[[o.sun,o.ms,selS,o.sun.alt>-1],[o.moon,o.mm,selM,o.moon.alt>-1]]){if(!on||!st.L.obs||!vis)continue;const a=proj(real.v),b=proj(mod.v);if(!a.ok||!b.ok||!(onScreen(a)||onScreen(b)))continue;
+   ctx.strokeStyle="rgba(255,143,107,.7)";ctx.lineWidth=1.2;ctx.setLineDash([3,4]);ctx.beginPath();ctx.moveTo(a.sx,a.sy);ctx.lineTo(b.sx,b.sy);ctx.stroke();ctx.setLineDash([]);
+   const sep=Math.acos(clamp(dot(real.v,mod.v),-1,1))*R2D,mx=(a.sx+b.sx)/2,my=(a.sy+b.sy)/2;ctx.textAlign="center";text(`diferença ${nf(sep,0)}°`,mx,my-8,"#ffb39b",11,600);ctx.textAlign="left"}}
  if(st.L.obs&&o.sun.alt>-1&&!onScreen(pS))arrow(pS,"Sol","#ffcf73");
  if(st.L.obs){const pm=proj(o.moon.v);if(o.moon.alt>-1&&!onScreen(pm))arrow(pm,"Lua","#e7ecee")}
- if(st.L.model){const p=proj(o.ms.v);if(!onScreen(p))arrow(p,"Sol modelo","#ff8f6b",18)}
+ if(st.L.model&&st.sel&&(st.sel.kind==="sun"||st.sel.kind==="msun")){const p=proj(o.ms.v);if(!onScreen(p))arrow(p,"Sol modelo","#ff8f6b",18)}
  if(st.sel){const h=st.hits.find(h=>h.kind===st.sel.kind&&h.i===st.sel.i&&h.id===st.sel.id);if(h){ctx.strokeStyle="rgba(255,255,255,.8)";ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(h.x,h.y,22,0,7);ctx.stroke()}}
 }
 const MINI_ST=[[38,40,1.4],[62,28,1],[90,34,1.6],[118,46,1.1],[52,62,1],[76,54,1.8],[104,66,1],[130,72,1.3],[30,78,1],[60,86,1.2],[96,22,1],[122,30,1],[84,80,1],[44,100,1.1]];
@@ -578,6 +595,7 @@ function drawDisc(o){discInit();domeInit();if(dv.tiltT!=null){dv.tilt+=(dv.tiltT
  if((dv.style==="mapa"||dv.style==="gleason")&&photo){dS();ctx.strokeStyle=dv.style==="gleason"?"rgba(110,70,40,.28)":"rgba(235,245,255,.16)";ctx.lineWidth=0.7;ctx.beginPath();
   for(let la=75;la>=-75;la-=15){if(la===0||Math.abs(la)===15&&false)continue;const r=(90-la)/180;let first=true;for(let b=0;b<=360;b+=4){const[x,y]=DS(g,r*Math.sin(b*D),r*Math.cos(b*D));first?ctx.moveTo(x,y):ctx.lineTo(x,y);first=false}}
   for(let lo=0;lo<360;lo+=15){const r0=lo%90===0?0:1/12,[x0,y0]=DS(g,r0*Math.sin(lo*D),r0*Math.cos(lo*D)),[x1,y1]=DS(g,Math.sin(lo*D),Math.cos(lo*D));ctx.moveTo(x0,y0);ctx.lineTo(x1,y1)}ctx.stroke()}
+ if(st.L.tide)drawTideDisc(g,o);
  // borda de gelo
  dM(g);ctx.beginPath();ctx.arc(0,0,1,0,7);dS();ctx.strokeStyle="rgba(240,248,250,.95)";ctx.lineWidth=2.5;ctx.stroke();
  if((dv.style==="mapa"||dv.style==="gleason")&&photo&&(dv.zoom>=1.25||dv.tilt>0.8)){const gl=dv.style==="gleason",tc=gl?"#5a3a1c":"rgba(235,245,255,.75)";for(const la of[60,30,0,-30,-60]){const r=(90-la)/180,a=-170*D,[x,y]=DS(g,r*Math.sin(a),r*Math.cos(a));text(la===0?"0°":`${Math.abs(la)}°${la>0?"N":"S"}`,x+3,y-3,tc,9.5,500)}
@@ -726,7 +744,40 @@ function nextPhases(){if(Math.abs(st.t-PH.t)<36e5)return PH.list;PH.t=st.t;const
 function simLbl(o){if(o.ecl>0.005){if(!st.eclT){st.eclT=1;toast(`Eclipse do Sol em andamento: ${Math.round(o.ecl*100)}% do Sol coberto daqui.`)}}else st.eclT=0;
  if(o.lun>0.3){if(!st.lunT){st.lunT=1;toast("Eclipse da Lua em andamento: a Lua está entrando na sombra.")}}else st.lunT=0;
  if($("sim").hidden)return;const T=riseSet(st.obs),nx=eclList().find(e=>e.t>st.t-3*36e5);
- $("sLbl").textContent=(o.ecl>0.005?`Eclipse do Sol agora: ${Math.round(o.ecl*100)}% coberto daqui · `:o.lun>0.1?"Eclipse da Lua agora · ":"")+`Lua: ${o.ph.n.toLowerCase()} (${Math.round(o.ph.k*100)}%) · Sol ${T.rise?fmtH.format(T.rise):"—"}–${T.set?fmtH.format(T.set):"—"}`+(nx?` · Próximo eclipse: ${fmtD.format(new Date(nx.t))}, ${nx.type}`:"")}
+ $("sLbl").textContent=(o.ecl>0.005?`Eclipse do Sol agora: ${Math.round(o.ecl*100)}% coberto daqui · `:o.lun>0.1?"Eclipse da Lua agora · ":"")+`Lua: ${o.ph.n.toLowerCase()} (${Math.round(o.ph.k*100)}%) · Sol ${T.rise?fmtH.format(T.rise):"—"}–${T.set?fmtH.format(T.set):"—"}`+(st.L.tide?(()=>{const ts=tideState(st.t),n=ts.nx[0];return` · Maré ${ts.up?"subindo":"baixando"}`+(n?` (${n.hi?"alta":"baixa"} ${fmtH.format(new Date(n.t))})`:"")})():"")+(nx?` · Próximo eclipse: ${fmtD.format(new Date(nx.t))}, ${nx.type}`:"")}
+
+// ---------- Marés (maré astronômica de equilíbrio) ----------
+const TIDE={day:null,list:null,cur:null},TD={mask:null,vec:null,c:null,x:null,img:null,t:-1,N:110};
+function sunDistAU(t){const M=(357.529+0.98560028*(jdOf(t)-2451545))*D;return 1.00014-0.01671*Math.cos(M)-0.00014*Math.cos(2*M)}
+const subV=b=>[Math.cos(b.lat*D)*Math.cos(b.lon*D),Math.cos(b.lat*D)*Math.sin(b.lon*D),Math.sin(b.lat*D)];
+function tideK(t,mo){return[0.3578*Math.pow(60.27/mo.dist,3),0.1643/Math.pow(sunDistAU(t),3)]}
+function tideAt(lat,lon,t){const mo=moon(t),sp=sun(t),[Km,Ks]=tideK(t,mo),p=subV({lat,lon}),cm=dot(p,subV(mo)),cs=dot(p,subV(sp));return Km*(1.5*cm*cm-0.5)+Ks*(1.5*cs*cs-0.5)}
+function tideDay(t){const d0=dayStart(t),key=d0+"|"+st.obs.lat+"|"+st.obs.lon;if(TIDE.day===key)return TIDE.cur;
+ const st6=6*6e4,a=d0-2*36e5,n=Math.round(28*36e5/st6),v=[];for(let k=0;k<=n;k++)v.push(tideAt(st.obs.lat,st.obs.lon,a+k*st6));
+ const ex=[];for(let k=1;k<n;k++){const hi=v[k]>v[k-1]&&v[k]>=v[k+1],lo=v[k]<v[k-1]&&v[k]<=v[k+1];if(!hi&&!lo)continue;const den=v[k-1]-2*v[k]+v[k+1],dx=den?0.5*(v[k-1]-v[k+1])/den:0,tt=a+(k+dx)*st6;if(tt<d0||tt>=d0+864e5)continue;ex.push({t:tt,h:v[k]-0.25*(v[k-1]-v[k+1])*dx,hi})}
+ const curve=v.slice(Math.round(2*36e5/st6),Math.round(26*36e5/st6)+1);TIDE.day=key;TIDE.cur={d0,curve,ex,max:Math.max(...curve),min:Math.min(...curve)};return TIDE.cur}
+function tideNext(t){let L=tideDay(t).ex.filter(e=>e.t>t);if(L.length<2)L=L.concat(tideDay(dayStart(t)+30*36e5).ex.filter(e=>e.t>t));tideDay(t);return L}
+function springNeap(o){const e=((o.mo.elon-o.sp.lam)%360+360)%360,k=Math.min(e,Math.abs(e-180),360-e);return k<40?{s:"sizígia",d:"Lua nova ou cheia: marés mais fortes (marés de sizígia, as “marés vivas”)."}:k>55?{s:"quadratura",d:"Lua em quarto: marés mais fracas (marés de quadratura, as “marés mortas”)."}:{s:"transição",d:"Entre as fases: as marés estão mudando de força."}}
+function tideState(t){const h=tideAt(st.obs.lat,st.obs.lon,t),h2=tideAt(st.obs.lat,st.obs.lon,t+6e5),nx=tideNext(t);return{h,up:h2>h,nx}}
+function drawTideDisc(g,o){const N=TD.N;if(!TD.mask){TD.mask=new Uint8Array(N*N);TD.vec=new Float32Array(3*N*N);for(let j=0;j<N;j++)for(let i=0;i<N;i++){const u=-1+2*(i+.5)/N,v=-1+2*(j+.5)/N;if(u*u+v*v>1)continue;const[la,lo]=fromDisc(u,v),k=j*N+i;TD.mask[k]=isLand(lo,la)?2:1;const w=subV({lat:la,lon:lo});TD.vec[3*k]=w[0];TD.vec[3*k+1]=w[1];TD.vec[3*k+2]=w[2]}
+  TD.c=document.createElement("canvas");TD.c.width=TD.c.height=N;TD.x=TD.c.getContext("2d");TD.img=TD.x.createImageData(N,N)}
+ if(Math.abs(st.t-TD.t)>3e4){TD.t=st.t;const[Km,Ks]=tideK(st.t,o.mo),m=subV(o.mo),q=subV(o.sp),P=TD.img.data;for(let k=0;k<N*N;k++){const f=TD.mask[k];if(!f){P[4*k+3]=0;continue}const x=TD.vec[3*k],y=TD.vec[3*k+1],z=TD.vec[3*k+2],cm=x*m[0]+y*m[1]+z*m[2],cs=x*q[0]+y*q[1]+z*q[2],h=Km*(1.5*cm*cm-0.5)+Ks*(1.5*cs*cs-0.5),lnd=f===2?0:1;
+   if(h>0){P[4*k]=60;P[4*k+1]=160;P[4*k+2]=255;P[4*k+3]=Math.min(1,h/0.42)*190*lnd}else{P[4*k]=240;P[4*k+1]=200;P[4*k+2]=140;P[4*k+3]=Math.min(1,-h/0.24)*105*lnd}}TD.x.putImageData(TD.img,0,0)}
+ dM(g);ctx.save();ctx.beginPath();ctx.arc(0,0,1,0,7);ctx.clip();ctx.imageSmoothingEnabled=true;ctx.drawImage(TD.c,-1,-1,2,2);ctx.restore();dS();
+ for(const[la,lo,lab]of[[o.mo.lat,o.mo.lon,"maré alta"],[-o.mo.lat,norm(o.mo.lon+180),"maré alta (oposta à Lua)"]]){const d=toDisc(la,lo),[x,y]=DS(g,d[0],d[1]);ctx.strokeStyle="#9fd4ff";ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(x,y,5,0,7);ctx.stroke();ctx.beginPath();ctx.moveTo(x,y-9);ctx.lineTo(x,y-3);ctx.moveTo(x-3,y-6);ctx.lineTo(x,y-9);ctx.lineTo(x+3,y-6);ctx.stroke();ctx.font="600 10.5px Inter,sans-serif";const tw=ctx.measureText(lab).width;text(lab,clamp(x-tw/2,6,W-tw-6),y+19,"#cfe9ff",10.5,600)}}
+function openTide(){const o=compute(),T=tideDay(st.t),sn=springNeap(o),ts=tideState(st.t),ph=nextPhases().filter(([n])=>n==="Lua nova"||n==="Lua cheia")[0];
+ $("tdState").textContent=`Agora em ${st.obs.name}: maré ${ts.up?"subindo":"baixando"}`+(ts.nx[0]?`, ${ts.nx[0].hi?"alta":"baixa"} às ${fmtH.format(new Date(ts.nx[0].t))}`:"")+".";
+ $("tdSN").textContent=sn.d+(ph?` Próxima sizígia: ${ph[0].toLowerCase()} em ${fmtD.format(new Date(ph[1]))}.`:"");
+ $("tdList").innerHTML=T.ex.map(e=>`<div class="ri" style="cursor:default"><b>${e.hi?"Maré alta":"Maré baixa"}</b><span>${fmtH.format(new Date(e.t))} · ${e.h>0?"+":"−"}${Math.abs(Math.round(e.h*100))} cm</span></div>`).join("")||'<p class="small">Sem extremos neste dia.</p>';
+ $("tdDay").textContent=fmtD.format(new Date(T.d0));drawTideChart(T);panel("pTide")}
+function drawTideChart(T){const c=$("tdChart"),r=c.getBoundingClientRect(),w=Math.max(260,r.width||320),h=150,dp=devicePixelRatio||1;c.width=w*dp;c.height=h*dp;const x=c.getContext("2d");x.setTransform(dp,0,0,dp,0,0);x.clearRect(0,0,w,h);
+ const lo=Math.min(-0.3,T.min),hi=Math.max(0.45,T.max),Y=v=>24+(hi-v)/(hi-lo)*(h-48),X=k=>8+k/(T.curve.length-1)*(w-16);x.font="500 10px Inter,sans-serif";x.fillStyle="rgba(169,180,182,.9)";x.strokeStyle="rgba(255,255,255,.1)";x.lineWidth=1;
+ for(let H=0;H<=24;H+=6){const xx=X(H*10);x.beginPath();x.moveTo(xx,10);x.lineTo(xx,h-20);x.stroke();x.textAlign=H===0?"left":H===24?"right":"center";x.fillText(`${String(H).padStart(2,"0")}h`,xx,h-6)}
+ x.strokeStyle="rgba(255,255,255,.25)";x.setLineDash([3,4]);x.beginPath();x.moveTo(8,Y(0));x.lineTo(w-8,Y(0));x.stroke();x.setLineDash([]);
+ const gr=x.createLinearGradient(0,10,0,h-20);gr.addColorStop(0,"rgba(60,160,255,.35)");gr.addColorStop(1,"rgba(60,160,255,0)");x.beginPath();T.curve.forEach((v,k)=>k?x.lineTo(X(k),Y(v)):x.moveTo(X(k),Y(v)));x.lineTo(X(T.curve.length-1),h-20);x.lineTo(X(0),h-20);x.closePath();x.fillStyle=gr;x.fill();
+ x.strokeStyle="#6cb8ff";x.lineWidth=2;x.beginPath();T.curve.forEach((v,k)=>k?x.lineTo(X(k),Y(v)):x.moveTo(X(k),Y(v)));x.stroke();
+ for(const e of T.ex){const xx=X((e.t-T.d0)/36e4),yy=Y(e.h);x.fillStyle=e.hi?"#bfe3ff":"#ffc98a";x.beginPath();x.arc(xx,yy,3.5,0,7);x.fill();x.textAlign="center";x.fillText(fmtH.format(new Date(e.t)),xx,e.hi?yy-7:yy+14)}
+ const nk=(st.t-T.d0)/36e4;if(nk>=0&&nk<=240){const xx=X(nk);x.strokeStyle="#ffcf73";x.lineWidth=1.5;x.beginPath();x.moveTo(xx,10);x.lineTo(xx,h-20);x.stroke()}}
 // ---------- Textos ----------
 const fmt=new Intl.DateTimeFormat("pt-BR",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"}),fmtH=new Intl.DateTimeFormat("pt-BR",{hour:"2-digit",minute:"2-digit"});
 const nf=(x,d=1)=>x.toLocaleString("pt-BR",{minimumFractionDigits:d,maximumFractionDigits:d});
@@ -734,9 +785,9 @@ const latT=l=>`${nf(Math.abs(l),2)}°${l>=0?"N":"S"}`,lonT=l=>`${nf(Math.abs(l),
 const CARDN=["N","NNE","NE","LNE","L","LSE","SE","SSE","S","SSO","SO","OSO","O","ONO","NO","NNO"],dirT=a=>CARDN[Math.round(a/22.5)%16];
 function info(o){const s=st.sel;if(!s){$("info").hidden=true;return}$("info").hidden=false;let h="",rows=[],note="",acts=[];
  if(s.kind==="sun"||s.kind==="msun"){const rs=riseSet(st.obs);h="Sol";rows=[["Observado",`${nf(o.sun.alt)}° de altura · ${Math.round(o.sun.az)}° ${dirT(o.sun.az)}`],["Nascer / pôr",`${rs.rise?fmtH.format(rs.rise):"—"} / ${rs.set?fmtH.format(rs.set):"—"}`],["Modelo do disco",`${nf(o.ms.alt)}° · ${Math.round(o.ms.az)}° ${dirT(o.ms.az)}`],["Distância no disco",`${Math.round(o.ms.dist).toLocaleString("pt-BR")} km`]];
-  const sep=Math.acos(clamp(dot(o.sun.v,o.ms.v),-1,1))*R2D;note=o.sun.alt<-0.83?`Observado: o Sol está abaixo do horizonte. No modelo, ele estaria a ${nf(o.ms.alt)}° de altura.`:`O marcador do modelo está a ${nf(sep)}° do Sol observado.`}
+  const sep=Math.acos(clamp(dot(o.sun.v,o.ms.v),-1,1))*R2D;const dA=o.ms.alt-o.sun.alt;note=(o.sun.alt<-0.83?`Observado: o Sol está abaixo do horizonte. No modelo, ele estaria a ${nf(o.ms.alt)}° de altura.`:`Diferença de ${nf(sep)}°: no modelo o Sol apareceria ${nf(Math.abs(dA))}° ${dA<0?"mais baixo":"mais alto"} e em outra direção (${Math.round(o.ms.az)}° ${dirT(o.ms.az)}).`)+` A marca coral tracejada é onde o Sol estaria se fosse um Sol pequeno a ${st.H.toLocaleString("pt-BR")} km sobre o disco; a linha liga essa posição ao Sol observado.`}
  else if(s.kind==="moon"||s.kind==="mmoon"){h="Lua";rows=[["Fase",`${o.ph.n} · ${Math.round(o.ph.k*100)}% iluminada`],...nextPhases().map(([n,t])=>[n,`${fmtD.format(new Date(t))} às ${fmtH.format(new Date(t))}`]),["Observada",`${nf(o.moon.alt)}° · ${Math.round(o.moon.az)}° ${dirT(o.moon.az)}`],["Modelo do disco",`${nf(o.mm.alt)}° · ${Math.round(o.mm.az)}° ${dirT(o.mm.az)}`],["Distância no disco",`${Math.round(o.mm.dist).toLocaleString("pt-BR")} km`]];
-  const sep=Math.acos(clamp(dot(o.moon.v,o.mm.v),-1,1))*R2D;note=o.moon.alt<-0.5?`Observado: a Lua está abaixo do horizonte. No modelo, ela estaria a ${nf(o.mm.alt)}° de altura.`:`O marcador do modelo está a ${nf(sep)}° da Lua observada.`}
+  const sep=Math.acos(clamp(dot(o.moon.v,o.mm.v),-1,1))*R2D;note=(o.moon.alt<-0.5?`Observado: a Lua está abaixo do horizonte. No modelo, ela estaria a ${nf(o.mm.alt)}° de altura.`:`Diferença de ${nf(sep)}° entre a Lua observada e a marca do modelo.`)+` A marca coral tracejada é onde a Lua estaria a ${st.H.toLocaleString("pt-BR")} km sobre o disco.`}
  else if(s.kind==="planet"){const P=o.pl.find(p=>p.id===s.id);h=P.name;rows=[["Brilho aproximado",`magnitude ${nf(P.mag)}`],["Posição",`${nf(P.alt)}° de altura · ${Math.round(P.az)}° ${dirT(P.az)}`],["Ponto abaixo dele",`${latT(P.sub.lat)} · ${lonT(P.sub.lon)}`]]}
  else if(s.kind==="sat"||s.kind==="air"){const r=liveInfo(o,s);if(!r){st.sel=null;$("info").hidden=true;return}h=r.h;rows=r.rows;note=r.note}
  else if(s.kind==="loc"){const P=st.pend;if(!P){st.sel=null;return}h="Ponto escolhido no disco";const sd=toDisc(o.sp.lat,o.sp.lon),pd=toDisc(P.lat,P.lon);
@@ -810,7 +861,7 @@ $("q").oninput=e=>{clearTimeout(qT);qT=setTimeout(()=>search(e.target.value),280
 const manualLoc=()=>{const la=parseFloat($("lat").value),lo=parseFloat($("lon").value);if(isFinite(la)&&isFinite(lo)&&Math.abs(la)<=90&&Math.abs(lo)<=180){st.obs={name:"Ponto escolhido",lat:la,lon:lo};setHome();placeName(la,lo,"Ponto escolhido").then(n=>{if(st.obs.lat===la&&st.obs.lon===lo){st.obs.name=n;setHome()}})}};
 $("lat").onchange=manualLoc;$("lon").onchange=manualLoc;
 $("height").oninput=e=>{st.H=+e.target.value;save()};$("gps").onclick=gps;
-function panel(id){["pMenu","pTime","sheet","pEcl"].forEach(k=>$(k).classList.toggle("open",k===id));$("scrim").hidden=!id;$("scrim").classList.toggle("clear",id==="pMenu")}
+function panel(id){["pMenu","pTime","sheet","pEcl","pTide"].forEach(k=>$(k).classList.toggle("open",k===id));$("scrim").hidden=!id;$("scrim").classList.toggle("clear",id==="pMenu")}
 $("scrim").onclick=()=>panel(null);$("bMenu").onclick=()=>panel($("pMenu").classList.contains("open")?null:"pMenu");$("bTime").onclick=()=>{$("sim").hidden=!$("sim").hidden};$("sCal").onclick=()=>panel("pTime");
 $("sPlay").onclick=()=>{st.play=!st.play};
 new ResizeObserver(()=>{const e=$("sim");SIMH=e.hidden?0:e.offsetHeight+10}).observe($("sim"));
@@ -848,6 +899,9 @@ $("sEcl").onclick=()=>{openEcl();panel("pEcl")};$("bEclT").onclick=()=>{openEcl(
 $("lSat").addEventListener("click",()=>{SAT.ts=0;if(st.L.sat){if(!SAT.loaded.stations)toast("Carregando os satélites…");loadTLE("stations").then(()=>loadTLE("visual"))}else if(st.sel&&st.sel.kind==="sat")st.sel=null});$("lStarlink").addEventListener("click",()=>{SAT.ts=0;if(st.L.starlink){toast("Carregando os satélites Starlink…");loadTLE("starlink")}});
 $("lAir").addEventListener("click",()=>{if(st.L.air){AIR.err=0;AIR.first=false;airFetch(true)}else AIR.list=[]});
 $("mX").onclick=()=>panel(null);
+tog("lTide","tide");$("lTide").addEventListener("click",()=>{if(st.L.tide){if(st.mode==="disc"&&!st.split)toast("Marés no disco: azul = água acumulada (maré alta), areia = maré baixa.");else toast("Marés ligadas: veja o estado na barra de simulação ou abra a Tábua de marés.")}});
+$("bTide").onclick=openTide;$("sTide").onclick=openTide;$("tdClose").onclick=()=>panel(null);
+$("tdSim").onclick=()=>{st.year=false;trClear();st.t=dayStart(st.t);st.speed=3600;st.play=true;if(!st.L.tide){st.L.tide=true;$("lTide").setAttribute("aria-pressed",true)}panel(null);$("sim").hidden=false;toast("Simulando o dia a 1 hora por segundo. No Disco 3D, veja as duas marés altas girando com a Lua.")};
 const scrLand=()=>innerWidth>innerHeight;
 $("bRot").onclick=async()=>{const so=screen.orientation;try{if(!scrLand()){if(!document.fullscreenElement&&document.documentElement.requestFullscreen)await document.documentElement.requestFullscreen({navigationUI:"hide"}).catch(()=>{});if(!so||!so.lock)throw 0;await so.lock("landscape")}else{if(so&&so.lock&&document.fullscreenElement){await so.lock("portrait").catch(()=>{});so.unlock&&so.unlock()}else throw 1}}catch(e){toast(scrLand()?"Gire o celular de volta para deixar a tela em pé.":"Gire o celular de lado. Se a tela não girar, desative o bloqueio de rotação do aparelho.")}};
 $("bSens").onclick=()=>{if(st.sensors){st.sensors=false;sens.got=false;const a=Math.atan2(cam.f[0],cam.f[1]);st.yaw=a;st.pitch=Math.asin(clamp(cam.f[2],-1,1));toast("Sensores desligados: arraste para navegar livremente.")}else{sens.off=null;sens.samp=[];enableSensors()}};

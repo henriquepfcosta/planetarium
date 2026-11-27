@@ -17,8 +17,15 @@ Toque no relógio para abrir a barra de simulação: tocar/pausar, régua das 24
 - **Estrela Polar:** marcada no centro do domo do Disco 3D e no céu do Imersivo; abaixo do horizonte, o app mostra quantos graus.
 - **Anel de horas (inspirado no mapa de Gleason, 1892):** horas solares em algarismos romanos em volta do disco, girando com o Sol (XII dourado = meio-dia); graus de latitude e longitude na grade e escala de distância ao longo dos meridianos. Estilo de mapa “Gleason 1892” gerado por `tools/gleason.py`.
 
+## Marés
+
+- **Marés** (menu, nos dois modos): calcula a maré astronômica de equilíbrio pelas posições reais da Lua e do Sol. No Disco 3D, o oceano fica azul onde a água se acumula (maré alta) e cor de areia onde baixa, com as duas regiões de maré alta marcadas: sob a Lua e do lado oposto.
+- **Tábua de marés:** curva das 24 horas no seu local, horários de maré alta e baixa, aviso de sizígia (marés vivas) e quadratura (marés mortas) e o botão Simular o dia.
+- É o ritmo teórico; no litoral real a altura é maior e os horários atrasam algumas horas conforme o porto.
+
 ## Menu e tela
 
+- O Sol e a Lua do modelo aparecem como marcas coral discretas no imersivo; toque no Sol ou na Lua para ver a linha até a marca e a diferença em graus.
 - O menu de camadas abre como uma lista na lateral esquerda, com uma chave liga/desliga em cada item; no Disco 3D o disco se desloca para a direita enquanto o menu está aberto.
 - **Tela deitada:** gire o celular (ou use o item do menu) para ver em paisagem. No Android o app trava a tela deitada em tela cheia; no iPhone basta girar com o bloqueio de rotação desligado.
 
