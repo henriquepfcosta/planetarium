@@ -262,7 +262,7 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
       <p class="small" id="airMsg"></p>
     </details>
     <button class="btn" id="sheetClose">Fechar</button>
-    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-11</p>
+    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-12</p>
   </div>
   <div class="welcome" id="welcome">
     <div>
@@ -959,10 +959,11 @@ $("lAir").addEventListener("click",()=>{if(st.L.air){AIR.err=0;AIR.first=false;a
 try{const v=localStorage.getItem("planetarium-follow");dv.follow=v==null?true:v==="1"}catch(e){dv.follow=true}
 function heading(){const f=cam.f,u=cam.u,hf=Math.hypot(f[0],f[1]);return hf>0.35?Math.atan2(f[0],f[1])*R2D:Math.atan2(u[0],u[1])*R2D}
 function hfovDeg(){return 2*Math.atan((innerWidth/2)/F)*R2D}
-function discFollow(){if(!dv.follow)return;const o=st.obs,od=toDisc(o.lat,o.lon),az=heading(),q=dest(o.lat,o.lon,2,az),qd=toDisc(q[0],q[1]),du=qd[0]-od[0],dvv=qd[1]-od[1];
+function discKeep(){const g=dgeom(),Lx=Math.max(0,g.R-W*0.3),Ly=Math.max(0,g.R*dv.tilt-Hh*0.2),tx=clamp(dv.px,-Lx,Lx),ty=clamp(dv.py,-Ly,Ly);dv.px+=(tx-dv.px)*0.25;dv.py+=(ty-dv.py)*0.25}
+function discFollow(){if(!dv.follow){discKeep();return}const o=st.obs,od=toDisc(o.lat,o.lon),az=heading(),q=dest(o.lat,o.lon,2,az),qd=toDisc(q[0],q[1]),du=qd[0]-od[0],dvv=qd[1]-od[1];
  const tr=Math.atan2(-du,-dvv);let d=tr-dv.rot;d=Math.atan2(Math.sin(d),Math.cos(d));dv.rot+=d*(Math.abs(d)>1.5?0.25:0.18);
  if(dv.zoomT!=null){dv.zoom+=(dv.zoomT-dv.zoom)*0.12;if(Math.abs(dv.zoomT-dv.zoom)<0.01){dv.zoom=dv.zoomT;dv.zoomT=null}}
- const g=dgeom(),[x,y]=DS(g,od[0],od[1]),tx=W/2+(st.split?0:MOFF),ty=Hh*(W>Hh?0.6:0.62);dv.px+=(tx-x)*0.2;dv.py+=(ty-y)*0.2}
+ const g=dgeom(),[x,y]=DS(g,od[0],od[1]),tx=W/2+(st.split?0:MOFF),ty=Hh*(W>Hh?0.6:0.62),w=clamp((dv.zoom-1.1)/0.9,0,1),wx=dv.px+(tx-x),wy=dv.py+(ty-y);dv.px+=(w*wx-dv.px)*0.2;dv.py+=(w*wy-dv.py)*0.2}
 function setFollow(v,quiet){dv.follow=v;$("dFollow").setAttribute("aria-pressed",v);try{localStorage.setItem("planetarium-follow",v?"1":"0")}catch(e){}if(v){dv.zoomT=Math.max(dv.zoom,2.2);if(!quiet)toast(st.sensors&&sens.got?"Seguindo você: o disco gira junto com o celular, com a frente para onde você aponta.":"Seguindo você: o disco gira junto com a direção para onde você olha no Imersivo.")}else if(!quiet)toast("Disco livre: arraste para girar e inclinar. Ligue Seguir minha posição e direção no menu para voltar.")}
 function drawView(g){if(!dv.follow)return;const o=st.obs,az=heading(),h=Math.min(60,hfovDeg()/2),L=22,pts=[toDisc(o.lat,o.lon)];for(let a=-h;a<=h+0.01;a+=h/8){const q=dest(o.lat,o.lon,L,az+a);pts.push(toDisc(q[0],q[1]))}
  const P=pts.map(p=>DS(g,p[0],p[1]));const gr=ctx.createRadialGradient(P[0][0],P[0][1],2,P[0][0],P[0][1],Math.hypot(P[9][0]-P[0][0],P[9][1]-P[0][1])||1);gr.addColorStop(0,"rgba(255,207,115,.6)");gr.addColorStop(1,"rgba(255,207,115,.08)");
