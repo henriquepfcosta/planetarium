@@ -327,7 +327,7 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
       <p class="small" id="airMsg"></p>
     </details>
     <button class="btn" id="sheetClose">Fechar</button>
-    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-35</p>
+    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-36</p>
   </div>
   <div class="welcome" id="welcome">
     <div>
@@ -1116,7 +1116,9 @@ if(uHs>0.)c=mix(c,uHaze,(1.-exp(-vD/uHs))*.88);gl_FragColor=vec4(c,1.);}`;
 // nuvens: camada um pouco acima da superfície, iluminada pelo Sol
 const FS_C=`precision highp float;uniform vec3 uSun,uC;uniform float uClA,uNoL;varying vec2 vT,vU;varying vec3 vN;`+GLSL_CLOUD+`
 void main(){vec3 n=normalize(vN);float d=cloudD(n);if(d<.01)discard;float l=dot(n,uSun),lit=max(uNoL,smoothstep(-.08,.16,l));vec3 c=mix(vec3(.045,.055,.08),vec3(1.),lit)*(.88+.12*d);c+=vec3(.6,.28,.08)*exp(-pow(l/.07,2.))*.3;float a=d*.94*uClA;gl_FragColor=vec4(c*a,a);}`;
-function g3Init(){if(G3.ok!==null)return G3.ok;try{const c=document.createElement("canvas");c.width=c.height=8;const gl=c.getContext("webgl",{alpha:true,premultipliedAlpha:true,antialias:true,preserveDrawingBuffer:true});if(!gl)throw 0;
+// se o celular derrubar o WebGL (falta de memória), recria tudo no quadro seguinte
+function g3Reset(){Object.assign(G3,{ok:null,gl:null,cv:null,P:{},B:{},tex:null,texK:"",gK:"",imK:"",eDay:null,eNight:null,ctex:null,stex:null,cver:"",wN:0,cN:0});CVD.mk="";SV.mesh=false;COV=null;ET.img.clear();ET.ov.clear();ET.geo.clear();ET.idx={};ET.q=[];ET.act=0;ET.dN=0}
+function g3Init(){if(G3.ok!==null)return G3.ok;try{const c=document.createElement("canvas");c.width=c.height=8;c.addEventListener("webglcontextlost",e=>{e.preventDefault();setTimeout(g3Reset,0)});const gl=c.getContext("webgl",{alpha:true,premultipliedAlpha:true,antialias:true,preserveDrawingBuffer:true});if(!gl)throw 0;
  const mk=(vs,fs)=>{const p=gl.createProgram();for(const[t,src]of[[gl.VERTEX_SHADER,vs],[gl.FRAGMENT_SHADER,fs]]){const s=gl.createShader(t);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw gl.getShaderInfoLog(s);gl.attachShader(p,s)}gl.linkProgram(p);if(!gl.getProgramParameter(p,gl.LINK_STATUS))throw gl.getProgramInfoLog(p);
   const u={},a={};for(const n of["uC","uR","uU","uF","uK","uFar","uTex","uHaze","uHs","uCl","uClC","uOff","uThr","uBf","uTA","uDay","uNight","uSun","uLift","uSh","uShA","uTile","uOv","uCov","uSubT","uSubO","uMode","uOvA","uClT","uClA","uClH","uO","uLz","uRim","uNoL"])u[n]=gl.getUniformLocation(p,n);for(const n of["aP","aT","aU","aC","aS","aQ","aN"])a[n]=gl.getAttribLocation(p,n);return{p,u,a}};
  G3.P.g=mk(VS_G,FS_G);G3.P.e=mk(VS_E,FS_E);G3.P.c=mk(VS_E,FS_C);G3.P.dt=mk(VS_DT,FS_E);G3.P.dc=mk(VS_DT,FS_C);G3.P.g3=mk(VS_G.replace("attribute vec2 aP;","attribute vec3 aP;uniform vec3 uLift;").replace("vec3 r=vec3(aP,0.)-uC;","vec3 r=aP+uLift-uC;").replace("vW=aP;","vW=aP.xy;"),FS_G);G3.P.p=mk(VS_P,FS_P);G3.P.l=mk(VS_P.replace("gl_PointSize=aS;",""),FS_L);
@@ -1351,7 +1353,7 @@ function drawDisc3D(o){const gl=G3.gl;if(dv.tiltT!=null){dv.tilt+=(dv.tiltT-dv.t
    gl.bindTexture(gl.TEXTURE_2D,CT.s);dr();gl.bindTexture(gl.TEXTURE_2D,CT.c);gl.uniform3fv(P.u.uLift,[0,0,CLOUD_LIFT]);dr();gl.uniform3fv(P.u.uLift,[0,0,0]);
    gl.depthMask(true);gl.disable(gl.BLEND);gl.uniform1f(P.u.uTA,0)}
   gl.disableVertexAttribArray(P.a.aT)}
- if(discSat()){discTilesGL(gl,V,o,{clA:clamp(Math.log(150/dv.zoom)/Math.log(3),0,1)});gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL)}else ET.dN=0;
+ if(discSat()&&(dv.style!=="gleason"||dv.zoom>2.5)){discTilesGL(gl,V,o,{clA:clamp(Math.log(150/dv.zoom)/Math.log(3),0,1)});gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL)}else ET.dN=0;
  if(G3.wN){const P=G3.P.l;g3Cam(P,V);gl.bindBuffer(gl.ARRAY_BUFFER,G3.B.wP);gl.enableVertexAttribArray(P.a.aP);gl.vertexAttribPointer(P.a.aP,3,gl.FLOAT,false,0,0);gl.bindBuffer(gl.ARRAY_BUFFER,G3.B.wC);gl.enableVertexAttribArray(P.a.aC);gl.vertexAttribPointer(P.a.aC,4,gl.FLOAT,false,0,0);gl.drawArrays(gl.TRIANGLES,0,G3.wN);gl.disableVertexAttribArray(P.a.aC)}
  gl.enable(gl.BLEND);if(!far&&n){gl.depthMask(false);if(st.L.lines){const lp=[],lc=[];for(const c2 of dv.dome.L)for(const sg of c2.segs){let prev=null;for(const p of sg){const lo=(p.ra-g0)*D,P2=[p.r*Math.sin(lo)*RKM,-p.r*Math.cos(lo)*RKM,dv.HD*RKM*Math.sqrt(Math.max(0,1-p.r*p.r))];if(prev){lp.push(...prev,...P2);lc.push(0.42,0.76,0.71,0.35,0.42,0.76,0.71,0.35)}prev=P2}}if(lp.length)g3DrawPts(V,new Float32Array(lp),new Float32Array(lc),null,lp.length/3,true)}
   g3DrawPts(V,pos.subarray(0,n*3),col.subarray(0,n*4),siz.subarray(0,n),n,false);gl.depthMask(true)}gl.disable(gl.DEPTH_TEST);
@@ -1413,18 +1415,24 @@ const SV_MINALT=1.5/6371,svLims=()=>[Math.log((SV.focus==="sun"?svSunR()*1.6:SV.
 // ---------- Satélite também no disco plano: os mesmos blocos, reprojetados no mapa equidistante do disco ----------
 function etGeoDisc(z,x,y){const k="d"+z+"/"+x+"/"+y;let g=ET.geo.get(k);if(g){g.u=ET.fr;return g}const gl=G3.gl,N=z<3?24:z<7?14:8,lac=etLat(y+0.5,z),loc=etLon(x+0.5,z),dc=toDisc(lac,loc),Xc=dc[0]*RKM,Yc=-dc[1]*RKM,A=new Float32Array((N+1)*(N+1)*9);let q=0;
  for(let j=0;j<=N;j++){const la=etLat(y+j/N,z);for(let i=0;i<=N;i++){const lo=etLon(x+i/N,z),v=svLL(la,lo),d=toDisc(la,lo);A[q++]=d[0]*RKM-Xc;A[q++]=-d[1]*RKM-Yc;A[q++]=v[0];A[q++]=v[1];A[q++]=v[2];A[q++]=(d[0]+1)/2;A[q++]=(d[1]+1)/2;A[q++]=i/N;A[q++]=j/N}}
- if(ET.geo.size>420){for(const[kk,gg]of ET.geo)if(gg.u<ET.fr-90){gl.deleteBuffer(gg.b);ET.geo.delete(kk)}}if(!ET.idx[N]){const I=[];for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=j*(N+1)+i,b=a+1,c=a+N+1,d2=c+1;I.push(a,c,b,b,c,d2)}const ib=gl.createBuffer();gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ib);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Uint16Array(I),gl.STATIC_DRAW);ET.idx[N]={ib,n:I.length}}
+ if(ET.geo.size>260){for(const[kk,gg]of ET.geo)if(gg.u<ET.fr-3){gl.deleteBuffer(gg.b);ET.geo.delete(kk)}}if(!ET.idx[N]){const I=[];for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=j*(N+1)+i,b=a+1,c=a+N+1,d2=c+1;I.push(a,c,b,b,c,d2)}const ib=gl.createBuffer();gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ib);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Uint16Array(I),gl.STATIC_DRAW);ET.idx[N]={ib,n:I.length}}
  const b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,A,gl.STATIC_DRAW);g={b,N,u:ET.fr,Xc,Yc};ET.geo.set(k,g);return g}
 // blocos visíveis no disco (câmera do disco 3D ou do mergulho); off = deslocamento do mundo (no mergulho, a origem é o observador)
-function etSelectDisc(V,off,zTop){const dq=Math.min(dpr,2),tw=(V.w/2)/V.Ff,th=(V.h/2)/V.Ff;let Q=1.25,out;
- for(let pass=0;pass<4;pass++){out=[];const visit=(z,x,y)=>{const la0=etLat(y,z),la1=etLat(y+1,z),lac=etLat(y+0.5,z),loc=etLon(x+0.5,z),dc=toDisc(lac,loc),P=[dc[0]*RKM+off[0],-dc[1]*RKM+off[1],0],rad=(la0-la1)*111.19,tan=(2*Math.PI/2**z)*(90-Math.min(la1,lac))*111.19,E=Math.max(rad,Math.min(tan,4*RKM)),rb=z<2?RKM*2:E*0.8;
-   const q=[P[0]-V.C[0],P[1]-V.C[1],P[2]-V.C[2]],zc=dot(q,V.f);if(z>1){if(zc<-rb)return;if(Math.abs(dot(q,V.r))-rb*1.3>Math.max(0,zc)*tw||Math.abs(dot(q,V.u)+(V.py-V.h/2)/V.Ff*zc)-rb*1.3>Math.max(0,zc)*th)return}
-   // tamanho real na tela: projeta os cantos (considera a inclinação e o esticamento do mapa do disco)
-   const dist=Math.max(1e-6,Math.hypot(q[0],q[1],q[2])-rb*0.7),pxD=E*V.Ff/dist*dq;let px=pxD,ok=true;if(z>=2){const lo0=etLon(x,z),lo1=etLon(x+1,z),cs=[[la0,lo0],[la0,lo1],[la1,lo0],[la1,lo1]].map(([a,b])=>{const d=toDisc(a,b);return vproj(V,[d[0]*RKM+off[0],-d[1]*RKM+off[1],0])});if(cs.some(c=>!c.ok)){px=pxD}else{const L=(a,b)=>Math.hypot(a.sx-b.sx,a.sy-b.sy);px=Math.max(L(cs[0],cs[1]),L(cs[2],cs[3]),L(cs[0],cs[2]),L(cs[1],cs[3]))*dq;
-    const xs=cs.map(c=>c.sx),ys=cs.map(c=>c.sy),mx=Math.min(...xs),Mx=Math.max(...xs),my=Math.min(...ys),My=Math.max(...ys),mg=Math.max(Mx-mx,My-my)*0.3+8;if(Mx<-mg||mx>V.w+mg||My<-mg||my>V.h+mg)return}}
-   if(z<zTop&&(z<2||!ok||px>256*Q))for(const[a,b]of[[0,0],[1,0],[0,1],[1,1]])visit(z+1,2*x+a,2*y+b);else out.push([z,x,y])};
-  visit(0,0,0);if(out.length<=160)break;Q*=1.45}return out}
-const discSat=()=>st.L.et&&dv.style!=="gleason"&&G3.ok!==false;
+// refino com orçamento: sempre divide o bloco que aparece maior na tela, até o limite de blocos (memória do celular)
+function etRefine(info,zTop,budget){const Q=256*1.25,L=[],r0=info(0,0,0);if(r0)L.push(r0);
+ for(let it=0;it<600;it++){let bi=-1,bp=Q;for(let i=0;i<L.length;i++){const t=L[i];if(t.z>=zTop)continue;const need=t.z<2?1e12:t.px;if(need>bp){bp=need;bi=i}}if(bi<0)break;
+  const t=L[bi],ch=[];for(const[a,b]of[[0,0],[1,0],[0,1],[1,1]]){const c=info(t.z+1,2*t.x+a,2*t.y+b);if(c)ch.push(c)}if(L.length-1+ch.length>budget)break;L.splice(bi,1,...ch)}return L.map(t=>[t.z,t.x,t.y])}
+function etSelectDisc(V,off,zTop){const dq=Math.min(dpr,2),tw=(V.w/2)/V.Ff,th=(V.h/2)/V.Ff;
+ const info=(z,x,y)=>{const la0=etLat(y,z),la1=etLat(y+1,z),lac=etLat(y+0.5,z),loc=etLon(x+0.5,z),dc=toDisc(lac,loc),P=[dc[0]*RKM+off[0],-dc[1]*RKM+off[1],0],rad=(la0-la1)*111.19,tan=(2*Math.PI/2**z)*(90-Math.min(la1,lac))*111.19,E=Math.max(rad,Math.min(tan,4*RKM)),rb=z<2?RKM*2:E*0.8;
+  const q=[P[0]-V.C[0],P[1]-V.C[1],P[2]-V.C[2]],zc=dot(q,V.f);if(z>1){if(zc<-rb)return null;if(Math.abs(dot(q,V.r))-rb*1.3>Math.max(0,zc)*tw||Math.abs(dot(q,V.u)+(V.py-V.h/2)/V.Ff*zc)-rb*1.3>Math.max(0,zc)*th)return null}
+  const dist=Math.max(1e-6,Math.hypot(q[0],q[1],q[2])-rb*0.7);let px=E*V.Ff/dist*dq;
+  // tamanho real na tela: projeta os cantos (considera a inclinação e o esticamento do mapa do disco)
+  if(z>=2){const lo0=etLon(x,z),lo1=etLon(x+1,z),cs=[[la0,lo0],[la0,lo1],[la1,lo0],[la1,lo1]].map(([a,b])=>{const d=toDisc(a,b);return vproj(V,[d[0]*RKM+off[0],-d[1]*RKM+off[1],0])});if(cs.every(c=>c.ok)){const L=(a,b)=>Math.hypot(a.sx-b.sx,a.sy-b.sy);px=Math.max(L(cs[0],cs[1]),L(cs[2],cs[3]),L(cs[0],cs[2]),L(cs[1],cs[3]))*dq;
+   const xs=cs.map(c=>c.sx),ys=cs.map(c=>c.sy),mx=Math.min(...xs),Mx=Math.max(...xs),my=Math.min(...ys),My=Math.max(...ys),mg=Math.max(Mx-mx,My-my)*0.3+8;if(Mx<-mg||mx>V.w+mg||My<-mg||my>V.h+mg)return null}}
+  return{z,x,y,px}};
+ return etRefine(info,zTop,110)}
+// satélite no disco: em todos os estilos; no Gleason 1892 o mapa histórico fica na vista inteira e o satélite entra ao aproximar
+const discSat=()=>st.L.et&&G3.ok!==false;
 function discTilesGL(gl,V,o,opt){opt=opt||{};ET.fr++;ET.up=0;const off=opt.off||[0,0],P=G3.P.dt,eS=gl.UNSIGNED_SHORT,sp=o.sp,sun=svLL(sp.lat,sp.lon),noL=dv.light?0:1,cov=st.L.wx?etCov():null,clA=cov?(opt.clA??1):0,ovOn=st.L.eo,dz=Math.min(dpr,2)>=1.5?1:0,list=etSelectDisc(V,off,ovOn?ET_ZO:ET_ZI);
  g3Cam(P,V);gl.uniform3fv(P.u.uSun,sun);gl.uniform1i(P.u.uDay,0);gl.uniform1i(P.u.uNight,1);gl.uniform1i(P.u.uTile,2);gl.uniform1i(P.u.uOv,3);gl.uniform1i(P.u.uCov,4);gl.uniform1f(P.u.uShA,clA*0.5);gl.uniform1f(P.u.uClH,CLOUD_LIFT/6371);gl.uniform1f(P.u.uClT,(st.t/36e5)*0.004%100);
  gl.uniform1f(P.u.uMode,1);gl.uniform1f(P.u.uRim,0);gl.uniform1f(P.u.uNoL,noL);gl.uniform1f(P.u.uLz,0);gl.uniform3fv(P.u.uHaze,opt.haze||[0,0,0]);gl.uniform1f(P.u.uHs,opt.hs||0);
@@ -1441,7 +1449,7 @@ function discTilesGL(gl,V,o,opt){opt=opt||{};ET.fr++;ET.up=0;const off=opt.off||
  if(cov&&clA>0.01&&drawn.length){const C2=G3.P.dc;g3Cam(C2,V);gl.uniform3fv(C2.u.uSun,sun);gl.uniform1i(C2.u.uCov,4);gl.uniform1f(C2.u.uClT,(st.t/36e5)*0.004%100);gl.uniform1f(C2.u.uClA,clA);gl.uniform1f(C2.u.uNoL,noL);gl.uniform1f(C2.u.uLz,CLOUD_LIFT);gl.enable(gl.BLEND);gl.depthMask(false);
   for(const g of drawn){const c=[g.Xc+off[0]-V.C[0],g.Yc+off[1]-V.C[1],-V.C[2]];gl.uniform3f(C2.u.uO,dot(c,V.r),dot(c,V.u),dot(c,V.f));gl.bindBuffer(gl.ARRAY_BUFFER,g.b);gl.vertexAttribPointer(C2.a.aQ,2,gl.FLOAT,false,36,0);gl.vertexAttribPointer(C2.a.aN,3,gl.FLOAT,false,36,8);gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ET.idx[g.N].ib);gl.drawElements(gl.TRIANGLES,ET.idx[g.N].n,eS,0)}
   gl.depthMask(true);gl.disable(gl.BLEND)}
- for(const k of["aQ","aN"])gl.disableVertexAttribArray(P.a[k]);gl.depthFunc(gl.LEQUAL);gl.activeTexture(gl.TEXTURE0);etPump();etEvict(ET.img,230);etEvict(ET.ov,150);ET.dN=drawn.length;return drawn.length}
+ for(const k of["aQ","aN"])gl.disableVertexAttribArray(P.a[k]);gl.depthFunc(gl.LEQUAL);gl.activeTexture(gl.TEXTURE0);etPump();etEvict(ET.img,130);etEvict(ET.ov,80);ET.dN=drawn.length;return drawn.length}
 // zoom do disco ancorado num ponto da tela (o ponto sob os dedos fica parado)
 function dZoomAt(z1,mx,my){const g0=dgeom(),det=g0.a*g0.d-g0.b*g0.cc;if(Math.abs(det)<1e-9){dv.zoom=z1;return}const X=mx-g0.cx,Y=my-g0.cy,u=(g0.d*X-g0.cc*Y)/det,v=(-g0.b*X+g0.a*Y)/det;dv.zoom=z1;const g1=dgeom(),q=DS(g1,u,v);dv.px+=mx-q[0];dv.py+=my-q[1]}
 const DZMAX=()=>disc3D()&&discSat()?30000:5;
@@ -1567,13 +1575,13 @@ function etGeo(z,x,y){const k=z+"/"+x+"/"+y;let g=ET.geo.get(k);if(g){g.u=ET.fr;
  for(let j=0;j<=N;j++){const la=etLat(y+j/N,z);for(let i=0;i<=N;i++){const lo=etLon(x+i/N,z),v=svLL(la,lo),d=toDisc(la,lo);A[q++]=v[0];A[q++]=v[1];A[q++]=v[2];A[q++]=(d[0]+1)/2;A[q++]=(d[1]+1)/2;A[q++]=i/N;A[q++]=j/N}}
  if(!ET.idx[N]){const I=[];for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=j*(N+1)+i,b=a+1,c=a+N+1,d2=c+1;I.push(a,c,b,b,c,d2)}const ib=gl.createBuffer();gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ib);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Uint16Array(I),gl.STATIC_DRAW);ET.idx[N]={ib,n:I.length}}
  const b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,A,gl.STATIC_DRAW);g={b,N,u:ET.fr};ET.geo.set(k,g);
- if(ET.geo.size>420){for(const[kk,gg]of ET.geo)if(gg.u<ET.fr-90){gl.deleteBuffer(gg.b);ET.geo.delete(kk)}}return g}
+ if(ET.geo.size>260){for(const[kk,gg]of ET.geo)if(gg.u<ET.fr-3){gl.deleteBuffer(gg.b);ET.geo.delete(kk)}}return g}
 // escolha dos blocos visíveis: mais detalhe onde a câmera está perto
-function etSelect(ce,zTop){const C=ce.C,cl=Math.hypot(C[0],C[1],C[2]),dc=[C[0]/cl,C[1]/cl,C[2]/cl],hor=Math.acos(Math.min(1,1/cl)),dq=Math.min(dpr,2),tw=(ce.w/2)/ce.Ff,th=(ce.h/2)/ce.Ff;let Q=1.25,out;
- for(let pass=0;pass<4;pass++){out=[];const visit=(z,x,y)=>{const n2=2**z,la0=etLat(y,z),la1=etLat(y+1,z),lac=etLat(y+0.5,z),loc=etLon(x+0.5,z),P=svLL(lac,loc),dla=(la0-la1)*D,dlo=2*Math.PI/n2*Math.cos(lac*D),rho=z===0?Math.PI:0.5*Math.hypot(dla,(2*Math.PI/n2)*Math.cos(Math.min(Math.abs(la0),Math.abs(la1))*D))*1.05+1e-7;
-   const ang=Math.acos(clamp(dot(P,dc),-1,1));if(ang-rho>hor)return;const q=[P[0]-C[0],P[1]-C[1],P[2]-C[2]],rb=Math.min(2,rho*1.08),zc=dot(q,ce.f);if(zc<-rb)return;if(z>1&&(Math.abs(dot(q,ce.r))-rb*1.4>Math.max(0,zc)*tw||Math.abs(dot(q,ce.u))-rb*1.4>Math.max(0,zc)*th))return;
-   const dist=Math.max(1e-7,Math.hypot(q[0],q[1],q[2])-rb*0.7),px=Math.max(dla,dlo)*ce.Ff/dist*dq;if(z<zTop&&(z<2||px>256*Q)){for(const[a,b]of[[0,0],[1,0],[0,1],[1,1]])visit(z+1,2*x+a,2*y+b)}else out.push([z,x,y])};
-  visit(0,0,0);if(out.length<=150)break;Q*=1.45}return out}
+function etSelect(ce,zTop){const C=ce.C,cl=Math.hypot(C[0],C[1],C[2]),dc=[C[0]/cl,C[1]/cl,C[2]/cl],hor=Math.acos(Math.min(1,1/cl)),dq=Math.min(dpr,2),tw=(ce.w/2)/ce.Ff,th=(ce.h/2)/ce.Ff;
+ const info=(z,x,y)=>{const n2=2**z,la0=etLat(y,z),la1=etLat(y+1,z),lac=etLat(y+0.5,z),loc=etLon(x+0.5,z),P=svLL(lac,loc),dla=(la0-la1)*D,dlo=2*Math.PI/n2*Math.cos(lac*D),rho=z===0?Math.PI:0.5*Math.hypot(dla,(2*Math.PI/n2)*Math.cos(Math.min(Math.abs(la0),Math.abs(la1))*D))*1.05+1e-7;
+  const ang=Math.acos(clamp(dot(P,dc),-1,1));if(ang-rho>hor)return null;const q=[P[0]-C[0],P[1]-C[1],P[2]-C[2]],rb=Math.min(2,rho*1.08),zc=dot(q,ce.f);if(zc<-rb)return null;if(z>1&&(Math.abs(dot(q,ce.r))-rb*1.4>Math.max(0,zc)*tw||Math.abs(dot(q,ce.u))-rb*1.4>Math.max(0,zc)*th))return null;
+  const dist=Math.max(1e-7,Math.hypot(q[0],q[1],q[2])-rb*0.7);return{z,x,y,px:Math.max(dla,dlo)*ce.Ff/dist*dq}};
+ return etRefine(info,zTop,120)}
 let COV=null;
 function etCov(){if(!WG.cc)return null;const s0=st.t/1000,T=WG.t;if(s0<T[0]||s0>T[T.length-1])return null;const key=WG.ver+"|"+Math.round(st.t/18e5);const gl=G3.gl;if(COV&&COV.key===key)return COV.tex;
  if(!COV){COV={cv:document.createElement("canvas"),tex:gl.createTexture()};COV.cv.width=64;COV.cv.height=32;COV.x=COV.cv.getContext("2d");COV.id=COV.x.createImageData(64,32)}COV.key=key;let ti=0;while(ti<T.length-2&&T[ti+1]<=s0)ti++;const tf=clamp((s0-T[ti])/(T[ti+1]-T[ti]),0,1),d=COV.id.data;
@@ -1594,7 +1602,7 @@ function svEarthGL(gl,ce,sunE,o){ET.fr++;ET.up=0;const P=G3.P.e,eS=gl.UNSIGNED_S
    const g=etGeo(z,x,y),kI=1/2**sI;ET.nI++;ET.zMax=Math.max(ET.zMax,z-sI);gl.uniform4f(P.u.uSubT,(x-(it.x<<sI))*kI,(y-(it.y<<sI))*kI,kI,kI);gl.activeTexture(gl.TEXTURE2);gl.bindTexture(gl.TEXTURE_2D,it.tex);
    if(ov){const kO=1/2**sO;gl.uniform4f(P.u.uSubO,(x-(ov.x<<sO))*kO,(y-(ov.y<<sO))*kO,kO,kO);gl.activeTexture(gl.TEXTURE3);gl.bindTexture(gl.TEXTURE_2D,ov.tex);gl.uniform1f(P.u.uOvA,0.95);ET.nO++}else gl.uniform1f(P.u.uOvA,0);
    gl.bindBuffer(gl.ARRAY_BUFFER,g.b);gl.vertexAttribPointer(P.a.aP,3,gl.FLOAT,false,28,0);gl.vertexAttribPointer(P.a.aT,2,gl.FLOAT,false,28,12);gl.vertexAttribPointer(P.a.aU,2,gl.FLOAT,false,28,20);gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ET.idx[g.N].ib);gl.drawElements(gl.TRIANGLES,ET.idx[g.N].n,eS,0)}
-  gl.disableVertexAttribArray(P.a.aU);gl.disable(gl.CULL_FACE);gl.depthFunc(gl.LEQUAL);etPump();etEvict(ET.img,230);etEvict(ET.ov,150)}
+  gl.disableVertexAttribArray(P.a.aU);gl.disable(gl.CULL_FACE);gl.depthFunc(gl.LEQUAL);etPump();etEvict(ET.img,130);etEvict(ET.ov,80)}
  gl.disableVertexAttribArray(P.a.aT);gl.activeTexture(gl.TEXTURE0);
  // 3) nuvens reais flutuando um pouco acima (somem ao descer perto do chão, para ver as cidades)
  if(cov&&clA>0.01){const C2=G3.P.c,k=1/(1+SV_CLH);g3Cam(C2,{...ce,C:[ce.C[0]*k,ce.C[1]*k,ce.C[2]*k],near:ce.near*k,far:ce.far*k});gl.uniform3fv(C2.u.uSun,sunE);gl.uniform1i(C2.u.uCov,4);gl.uniform1f(C2.u.uClT,(st.t/36e5)*0.004%100);gl.uniform1f(C2.u.uClA,clA);gl.uniform1f(C2.u.uNoL,0);

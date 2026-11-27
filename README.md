@@ -37,7 +37,7 @@ Toque no relógio para abrir a barra de simulação: tocar/pausar, régua das 24
 - Como no mapa do disco, as regiões do sul aparecem esticadas no sentido leste-oeste: é a própria geometria do modelo plano.
 - No máximo do zoom, perto do seu local, a pinça desce ao chão (mergulho), que também usa o satélite.
 - No **Imersivo**, com **Paisagem** e **Chão com o mapa** ligados, o chão também é de satélite e dá para olhar para baixo (até 80°). No mergulho, pare na altura que quiser (▲▼ ou pinça) para ver a cidade de cima e arraste para cima para ver as estrelas; o pouso só acontece ao chegar ao chão ou em **Pousar**.
-- O Disco 3D passa a ser o padrão; o **Disco 2D** clássico continua disponível (desligue **Disco em 3D** no menu) e na tela dividida. O estilo **Gleason 1892** mantém o mapa histórico, sem satélite.
+- O Disco 3D passa a ser o padrão; o **Disco 2D** clássico continua disponível (desligue **Disco em 3D** no menu) e na tela dividida. No estilo **Gleason 1892**, o mapa histórico fica na vista do disco inteiro e o satélite entra ao aproximar, no mergulho e no chão do Imersivo.
 - Chaves no menu, em **Nos dois modos**: **Satélite com zoom** e **Nomes, ruas e fronteiras**. O atalho **Nuvens** aparece também no Imersivo.
 
 ## Mergulho: do disco ao chão
