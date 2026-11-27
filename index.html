@@ -188,7 +188,7 @@ function clipProj(pts,C){const P=pts.map(q=>[dot(q,C.r),dot(q,C.u),dot(q,C.f)]),
  return out.map(([x,y,z])=>[W/2+F*x/z,Hh/2-F*y/z])}
 
 // ---------- Estado ----------
-const st={t:Date.now(),play:true,speed:1,obs:{name:"São Paulo",lat:-23.55,lon:-46.63},H:5000,yaw:180*D,pitch:25*D,fov:75,
+const st={t:Date.now(),play:true,speed:1,obs:{name:"São Paulo",lat:-23.55,lon:-46.63},H:5000,yaw:180*D,pitch:25*D,fov:80,
  L:{obs:true,model:true,lines:true,grid:false,art:true,land:true},sensors:false,mode:"sky",dg:null,sel:null,hits:[]};
 const sens={alpha:0,beta:90,gamma:0,cal:0,iosOff:null,got:false,abs:false};
 let cam={f:[0,1,0],r:[1,0,0],u:[0,0,1]};
@@ -206,7 +206,7 @@ function camSensor(){const a=(sens.alpha+sens.cal)*D,b=sens.beta*D,g=sens.gamma*
  return{f:[-dz[0],-dz[1],-dz[2]],r:[c*dx[0]-s*dy[0],c*dx[1]-s*dy[1],c*dx[2]-s*dy[2]],u:[s*dx[0]+c*dy[0],s*dx[1]+c*dy[1],s*dx[2]+c*dy[2]]}}
 function updateCam(){const t=st.sensors&&sens.got?camSensor():camManual();
  if(st.sensors&&sens.got){const k=0.25,mix=(a,b)=>a.map((v,i)=>v+(b[i]-v)*k);let f=nrm(mix(cam.f,t.f)),r=mix(cam.r,t.r);r=nrm(r.map((v,i)=>v-dot(r,f)*f[i]));cam={f,r,u:cross(r,f)}}else cam=t;
- F=(Math.min(W,Hh)/2)/Math.tan(st.fov*D/2)}
+ F=(Math.max(W,Hh)/2)/Math.tan(st.fov*D/2)}
 function proj(v){const z=dot(v,cam.f),x=dot(v,cam.r),y=dot(v,cam.u);return z>0.02?{ok:true,sx:W/2+F*x/z,sy:Hh/2-F*y/z,x,y,z}:{ok:false,x,y,z}}
 const onScreen=p=>p.ok&&p.sx>-40&&p.sx<W+40&&p.sy>-40&&p.sy<Hh+40;
 // ---------- Cálculo dos objetos ----------
@@ -231,10 +231,10 @@ function skyCols(a){const t1=clamp((a+18)/12,0,1),t2=clamp((a+6)/10,0,1);
 function polyAltAz(alts,azs,style,w,dash){ctx.beginPath();let pen=false;for(let i=0;i<alts.length;i++){const p=proj(enu(alts[i],azs[i]));if(!p.ok||Math.abs(p.sx)>8*W||Math.abs(p.sy)>8*Hh){pen=false;continue}pen?ctx.lineTo(p.sx,p.sy):ctx.moveTo(p.sx,p.sy);pen=true}ctx.strokeStyle=style;ctx.lineWidth=w;ctx.setLineDash(dash||[]);ctx.stroke();ctx.setLineDash([])}
 function glow(x,y,r,c0){const g=ctx.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,c0);g.addColorStop(1,"rgba(0,0,0,0)");ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fill()}
 function text(s,x,y,col,size,weight){ctx.font=`${weight||500} ${size||12}px Inter,sans-serif`;ctx.lineWidth=3;ctx.lineJoin="round";ctx.strokeStyle="rgba(0,0,0,.6)";ctx.strokeText(s,x,y);ctx.fillStyle=col;ctx.fillText(s,x,y)}
-function arrow(p,label,col){let ang=Math.atan2(-p.y,p.x);if(!p.ok&&Math.hypot(p.x,p.y)<1e-3)ang=Math.PI/2;
+function arrow(p,label,col,dy=0){let ang=Math.atan2(p.y,p.x);if(!p.ok&&Math.hypot(p.x,p.y)<1e-3)ang=Math.PI/2;
  const cx=W/2,cy=Hh/2,mx=W/2-34,my=Hh/2-150,c=Math.cos(ang),s=-Math.sin(ang),k=Math.min(Math.abs(mx/(c||1e-9)),Math.abs(my/(s||1e-9)));const x=cx+c*k,y=cy+s*k;
  ctx.save();ctx.translate(x,y);ctx.rotate(Math.atan2(s,c));ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(12,0);ctx.lineTo(-6,-8);ctx.lineTo(-6,8);ctx.closePath();ctx.fill();ctx.restore();
- ctx.textAlign=c>0.3?"right":c<-0.3?"left":"center";text(label,x-c*16,y-s*16+4,col,12,600);ctx.textAlign="left"}
+ ctx.textAlign=c>0.3?"right":c<-0.3?"left":"center";text(label,x-c*16,y-s*16+4+dy,col,12,600);ctx.textAlign="left"}
 function moonDisc(x,y,r,ph,sunP){ctx.save();ctx.translate(x,y);let ang=0;if(sunP)ang=sunP.ok?Math.atan2(-(sunP.sy-y),sunP.sx-x):Math.atan2(sunP.y,sunP.x);ctx.rotate(-ang);
  ctx.fillStyle="#2a3036";ctx.beginPath();ctx.arc(0,0,r,0,7);ctx.fill();ctx.fillStyle="#e7ecee";
  ctx.beginPath();ctx.arc(0,0,r,-Math.PI/2,Math.PI/2);const ex=r*Math.abs(1-2*ph.k);ctx.ellipse(0,0,ex,r,0,Math.PI/2,-Math.PI/2,ph.k<0.5);ctx.fill();ctx.restore()}
@@ -242,7 +242,7 @@ function moonDisc(x,y,r,ph,sunP){ctx.save();ctx.translate(x,y);let ang=0;if(sunP
 const ART={list:[],img:{}};
 fetch("art.json").then(r=>r.json()).then(a=>{ART.list=a.map(([id,file,w,h,an])=>{const A=an.map(([x,y,ra,dec])=>({x,y,v:eqv(ra,dec)}));return{id,file,w,h,an:A,cv:nrm([0,1,2].map(k=>A[0].v[k]+A[1].v[k]+A[2].v[k]))}})}).catch(()=>{});
 function artImg(c){let im=ART.img[c.file];if(!im){im=new Image();im.decoding="async";im.src=c.file;ART.img[c.file]=im}return im.complete&&im.naturalWidth?im:null}
-function drawArt(C,upE,night){if(!ART.list.length)return;const fade=0.32*clamp((night-0.15)/0.6,0,1);if(fade<0.01)return;const cf=Math.cos(Math.min(80,st.fov*0.95)*D);
+function drawArt(C,upE,night){if(!ART.list.length)return;const fade=0.24*clamp((night-0.15)/0.6,0,1);if(fade<0.01)return;const hf=Math.atan((Math.max(W,Hh)/2)/F),cf=Math.cos(Math.min(1.45,hf*1.3));
  ctx.save();ctx.globalCompositeOperation="screen";
  for(const c of ART.list){if(dot(c.cv,C.f)<cf-0.35||dot(c.cv,upE)<-0.2)continue;const im=artImg(c);if(!im)continue;const P=[];let ok=true;
   for(const a of c.an){const z=dot(a.v,C.f);if(z<0.12){ok=false;break}P.push([W/2+F*dot(a.v,C.r)/z,Hh/2-F*dot(a.v,C.u)/z])}if(!ok)continue;
@@ -250,17 +250,23 @@ function drawArt(C,upE,night){if(!ART.list.length)return;const fade=0.32*clamp((
   const dX1=P[1][0]-P[0][0],dX2=P[2][0]-P[0][0],dY1=P[1][1]-P[0][1],dY2=P[2][1]-P[0][1];
   const a=(dX1*(A2.y-A0.y)-dX2*(A1.y-A0.y))/det,cc=(dX2*(A1.x-A0.x)-dX1*(A2.x-A0.x))/det,b=(dY1*(A2.y-A0.y)-dY2*(A1.y-A0.y))/det,d=(dY2*(A1.x-A0.x)-dY1*(A2.x-A0.x))/det;
   const e=P[0][0]-a*A0.x-cc*A0.y,f=P[0][1]-b*A0.x-d*A0.y,size=Math.sqrt(Math.abs(a*d-b*cc))*c.w;if(size>5*Math.max(W,Hh)||size<24)continue;
-  ctx.globalAlpha=fade;ctx.setTransform(dpr*a,dpr*b,dpr*cc,dpr*d,dpr*e,dpr*f);ctx.drawImage(im,0,0,c.w,c.h)}
+  const ang=Math.acos(clamp(dot(c.cv,C.f),-1,1)),fa=fade*1.5*clamp(1.6-ang/(hf*0.32),0,1);if(fa<0.01)continue;ctx.globalAlpha=fa;ctx.setTransform(dpr*a,dpr*b,dpr*cc,dpr*d,dpr*e,dpr*f);ctx.drawImage(im,0,0,c.w,c.h)}
  ctx.restore();ctx.setTransform(dpr,0,0,dpr,0,0)}
 // ---------- Paisagem: colinas e árvores ----------
-const LANDP=(()=>{let s=1234567;const R=()=>(s=(s*16807)%2147483647)/2147483647;const n=1440,base=new Float32Array(n),h=new Float32Array(n),p=[0,1,2,3].map(()=>R()*6.3);
- for(let i=0;i<n;i++){const a=i/n*2*Math.PI;base[i]=Math.max(0.15,0.9+0.8*Math.sin(a*2+p[0])+0.5*Math.sin(a*5+p[1])+0.3*Math.sin(a*13+p[2])+0.15*Math.sin(a*29+p[3]))}h.set(base);
- const tree=(c,pine,ht,wd)=>{const b=base[((c%n)+n)%n];for(let k=-wd;k<=wd;k++){const i=((c+k)%n+n)%n,x=Math.abs(k)/wd;const y=pine?ht*Math.pow(1-x,1.2)*(1+0.14*Math.sin(k*2.1)):ht*Math.sqrt(Math.max(0,1-x*x))*(0.86+0.14*Math.sin(k*1.3+c));h[i]=Math.max(h[i],b+y)}};
- for(let cl=0;cl<9;cl++){const cc=R()*n,hw=(15+R()*55)*4,cnt=Math.round(hw/5);for(let t=0;t<cnt;t++){const pine=R()<0.4;tree(Math.round(cc+(R()*2-1)*hw),pine,pine?2.4+R()*4:1.6+R()*3,Math.round((pine?1+R()*1.2:1.8+R()*2.6)*4))}}
- for(let t=0;t<25;t++){const pine=R()<0.5;tree(Math.round(R()*n),pine,pine?2+R()*3.5:1.5+R()*2.5,Math.round((pine?1+R():1.6+R()*2)*4))}return h})();
-const LANDV=(()=>{const n=LANDP.length,a=[];for(let i=0;i<=n;i++){const k=i%n;a.push(enu(LANDP[k],k*360/n))}return a})();
-function drawLandscape(col){const n=LANDP.length,step=8;ctx.fillStyle=col;ctx.beginPath();
- for(let s=0;s<n;s+=step){const az0=s*360/n,az1=(s+step)*360/n;if(dot(LANDV[s],cam.f)<-0.6&&dot(LANDV[s+step],cam.f)<-0.6)continue;const pts=LANDV.slice(s,s+step+1);pts.push(enu(-50,az1),enu(-50,az0));
+const LANDN=1440,mkRng=seed=>{let s=seed;return()=>(s=(s*16807)%2147483647)/2147483647};
+const FARP=(()=>{const R=mkRng(98765),h=new Float32Array(LANDN),p=[0,1,2].map(()=>R()*6.3);for(let i=0;i<LANDN;i++){const a=i/LANDN*2*Math.PI;h[i]=Math.max(0.3,1.3+0.9*Math.sin(a*3+p[0])+0.55*Math.sin(a*7+p[1])+0.22*Math.sin(a*17+p[2]))}return h})();
+const LANDP=(()=>{const R=mkRng(1234567),n=LANDN,h=new Float32Array(n),p=[R()*6.3,R()*6.3];
+ for(let i=0;i<n;i++){const a=i/n*2*Math.PI;h[i]=Math.max(0,0.22+0.18*Math.sin(a*4+p[0])+0.1*Math.sin(a*11+p[1]))}
+ const bump=(c,cy,r)=>{const w=Math.ceil(r*4);for(let k=-w;k<=w;k++){const dx=k/4;if(Math.abs(dx)>r)continue;const i=((Math.round(c)+k)%n+n)%n;h[i]=Math.max(h[i],cy+Math.sqrt(r*r-dx*dx))}};
+ const broad=(c,ht,wd)=>{const m=4+Math.floor(R()*3);for(let k=0;k<m;k++){const r=Math.min(ht*0.6,wd*(0.45+R()*0.3)),off=(R()*2-1)*(wd-r*0.6)*4;bump(c+off,Math.max(0,ht*(0.35+R()*0.65)-r),r)}};
+ const pine=(c,ht,wd)=>{const w=Math.round(wd*4);for(let k=-w;k<=w;k++){const i=((c+k)%n+n)%n,x=Math.abs(k)/w;h[i]=Math.max(h[i],ht*Math.pow(1-x,1.1)*(1+0.1*Math.sin(k*2.3)))}};
+ for(let g=0;g<11;g++){const cc=R()*n,span=(6+R()*30)*4,cnt=2+Math.round(span/12);for(let t=0;t<cnt;t++){const c=Math.round(cc+(R()*2-1)*span),ht=1.8+R()*3.4;if(R()<0.18)pine(c,ht*1.2,0.6+R()*0.6);else broad(c,ht,1+R()*1.6)}}
+ for(let t=0;t<18;t++){const c=Math.round(R()*n);if(R()<0.6)broad(c,0.6+R()*1,0.6+R()*0.8);else broad(c,2+R()*2.5,1.2+R()*1.4)}
+ const out=new Float32Array(n);for(let i=0;i<n;i++){let m=h[i];for(let k=-10;k<=10;k++){const v=h[((i+k)%n+n)%n]-2.4*Math.abs(k)/4;if(v>m)m=v}out[i]=m>0.6?m+(R()-0.5)*0.09:m}return out})();
+const toV=P=>{const a=[];for(let i=0;i<=LANDN;i++){const k=i%LANDN;a.push(enu(P[k],k*360/LANDN))}return a};
+const LANDV=toV(LANDP),FARV=toV(FARP);
+function drawLandscape(V,col){const step=8;ctx.fillStyle=col;ctx.beginPath();
+ for(let s=0;s<LANDN;s+=step){const az0=s*360/LANDN,az1=(s+step)*360/LANDN;if(dot(V[s],cam.f)<-0.6&&dot(V[s+step],cam.f)<-0.6)continue;const pts=V.slice(s,s+step+1);pts.push(enu(-0.6,az1),enu(-0.6,az0));
   const cl=clipProj(pts,cam);if(cl.length<3)continue;cl.forEach(([x,y],k)=>k?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath()}ctx.fill()}
 // ---------- Sol e Lua com mais realismo ----------
 function drawSun(x,y,r,alt){const low=clamp(1-alt/8,0,1),core=`rgb(255,${Math.round(244-70*low)},${Math.round(210-125*low)})`;
@@ -283,24 +289,26 @@ function draw(o){
  if(o.sun.alt>-16&&o.sun.alt<14){const hp=proj(enu(0,o.sun.az));if(hp.ok)glow(hp.sx,hp.sy,Math.min(W,Hh)*0.95,`rgba(255,150,90,${0.3*(1-Math.abs(o.sun.alt+1)/15)})`)}
  if(o.sun.alt>-12){const p=proj(o.sun.v);if(p.ok)glow(p.sx,p.sy,Math.min(W,Hh)*0.6,`rgba(255,214,150,${0.35*clamp((o.sun.alt+12)/14,0,1)})`)}
  // céu profundo
- const lim=limMag(o.sun.alt)+clamp((75-st.fov)/50,0,0.6),Mq=o.Mq,toEq=w=>[w[0]*Mq[0][0]+w[1]*Mq[1][0]+w[2]*Mq[2][0],w[0]*Mq[0][1]+w[1]*Mq[1][1]+w[2]*Mq[2][1],w[0]*Mq[0][2]+w[1]*Mq[1][2]+w[2]*Mq[2][2]];
+ const LB=[],lim=limMag(o.sun.alt)+clamp((80-st.fov)/50,0,0.6),Mq=o.Mq,toEq=w=>[w[0]*Mq[0][0]+w[1]*Mq[1][0]+w[2]*Mq[2][0],w[0]*Mq[0][1]+w[1]*Mq[1][1]+w[2]*Mq[2][1],w[0]*Mq[0][2]+w[1]*Mq[1][2]+w[2]*Mq[2][2]];
  const C={r:toEq(cam.r),u:toEq(cam.u),f:toEq(cam.f)},upE=Mq[2],night=clamp((-o.sun.alt-8)/10,0,1);
  const pq=q=>{const z=dot(q,C.f);if(z<=0.02)return null;const x=W/2+F*dot(q,C.r)/z,y=Hh/2-F*dot(q,C.u)/z;return x>-60&&x<W+60&&y>-60&&y<Hh+60?[x,y]:null};
  if(st.L.obs&&CAT.ready){
   if(night>0.02){for(const m of CAT.mw){const pts=clipProj(m.a,C);if(pts.length<3)continue;ctx.fillStyle=`rgba(190,205,255,${0.04*night})`;ctx.beginPath();pts.forEach(([x,y],k)=>k?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fill()}}
   if(st.L.art)drawArt(C,upE,night);
-  if(st.L.lines&&lim>1.5){const la=clamp((lim-1.5)/2,0,1);ctx.strokeStyle=`rgba(108,195,182,${0.42*la})`;ctx.lineWidth=1;ctx.beginPath();
+  if(st.L.lines&&lim>1.5){const la=clamp((lim-1.5)/2,0,1);ctx.strokeStyle=`rgba(108,195,182,${0.3*la})`;ctx.lineWidth=1;ctx.beginPath();
    for(const c of CAT.cons)for(const seg of c.segs){let prev=null;for(const q of seg){const z=dot(q,C.f);const p=z>0.05?[W/2+F*dot(q,C.r)/z,Hh/2-F*dot(q,C.u)/z]:null;if(p&&prev){ctx.moveTo(prev[0],prev[1]);ctx.lineTo(p[0],p[1])}prev=p}}ctx.stroke();
-   ctx.textAlign="center";for(const c of CAT.cons){if(dot(c.lab,upE)<0.05)continue;const p=pq(c.lab);if(p)text(c.name,p[0],p[1],`rgba(143,216,204,${0.8*la})`,12,500)}ctx.textAlign="left"}
-  const zs=Math.pow(75/st.fov,0.35),lab=1.4+(75-st.fov)/22;
+   for(const c of CAT.cons){if(dot(c.lab,upE)<0.05)continue;const p=pq(c.lab);if(p)LB.push({t:c.up||(c.up=c.name.toUpperCase().split("").join("\u2009")),x:p[0],y:p[1],c:`rgba(143,216,204,${0.72*la})`,s:11,w:500,pr:2,ctr:1})}}
+  const zs=Math.pow(80/st.fov,0.35),lab=0.9+(80-st.fov)/25;
   for(let i=0;i<CAT.n;i++){const m=CAT.mag[i];if(m>lim)continue;const q=[CAT.v[i*3],CAT.v[i*3+1],CAT.v[i*3+2]],al=dot(q,upE);if(al<0)continue;const p=pq(q);if(!p)continue;
    let a=clamp((lim-m)/1.4,0.08,1);if(m<3.8){const k=0.08+0.32*clamp(1-al/0.5,0,1);a*=1-k*(0.5+0.5*Math.sin(tnow*0.006*(1+(i%5)*0.37)+i*1.7))}
-   const r=Math.max(0.55,(2.9-0.5*m)*zs);ctx.fillStyle=CAT.col[i];
+   const r=Math.max(0.5,(2.5-0.45*m)*zs);ctx.fillStyle=CAT.col[i];
    if(m<1.6){glow(p[0],p[1],r*5,`rgba(220,230,255,${0.22*a})`);if(m<0.9){ctx.strokeStyle=CAT.col[i];ctx.globalAlpha=a*0.4;ctx.lineWidth=0.8;const L=r*7;ctx.beginPath();ctx.moveTo(p[0]-L,p[1]);ctx.lineTo(p[0]+L,p[1]);ctx.moveTo(p[0],p[1]-L);ctx.lineTo(p[0],p[1]+L);ctx.stroke()}}
    ctx.globalAlpha=a;if(r<1.2)ctx.fillRect(p[0]-r,p[1]-r,r*2,r*2);else{ctx.beginPath();ctx.arc(p[0],p[1],r,0,7);ctx.fill()}
-   ctx.globalAlpha=1;const nm=CAT.names[i];if(nm&&m<lab)text(nm,p[0]+r+4,p[1]+4,`rgba(215,222,235,${0.9*a})`,11);if(m<4.5)st.hits.push({x:p[0],y:p[1],kind:"star",i})}
+   ctx.globalAlpha=1;const nm=CAT.names[i];if(nm&&m<lab)LB.push({t:nm,x:p[0]+r+4,y:p[1]+4,c:`rgba(215,222,235,${0.85*a})`,s:11,w:500,pr:1+m/10});if(m<4.5)st.hits.push({x:p[0],y:p[1],kind:"star",i})}
   for(const P of o.pl){if(P.alt<0)continue;const vis=P.mag<lim+0.6||(o.sun.alt<-8&&P.mag<8.5);if(!vis)continue;const p=proj(P.v);if(!onScreen(p))continue;const r=Math.max(2.2,(3.6-0.45*P.mag)*zs);
-   glow(p.sx,p.sy,r*5,"rgba(255,240,210,.28)");ctx.fillStyle=P.col;ctx.beginPath();ctx.arc(p.sx,p.sy,r,0,7);ctx.fill();text(P.name,p.sx+r+5,p.sy+4,P.col,12,600);st.hits.push({x:p.sx,y:p.sy,kind:"planet",id:P.id})}}
+   glow(p.sx,p.sy,r*5,"rgba(255,240,210,.28)");ctx.fillStyle=P.col;ctx.beginPath();ctx.arc(p.sx,p.sy,r,0,7);ctx.fill();LB.push({t:P.name,x:p.sx+r+5,y:p.sy+4,c:P.col,s:12,w:600,pr:0});st.hits.push({x:p.sx,y:p.sy,kind:"planet",id:P.id})}
+  LB.sort((a,b)=>a.pr-b.pr);const used=[];for(const L of LB){ctx.font=`${L.w} ${L.s}px Inter,sans-serif`;const w=ctx.measureText(L.t).width,x=L.ctr?L.x-w/2:L.x,y=L.y-L.s;
+   if(used.some(b=>x<b[2]+4&&x+w+4>b[0]&&y<b[3]&&y+L.s+4>b[1]))continue;used.push([x,y,x+w,y+L.s+2]);text(L.t,x,L.y,L.c,L.s,L.w)}}
  // Sol e Lua observados (antes da paisagem, para as árvores ficarem na frente)
  const pS=proj(o.sun.v),south=st.obs.lat<0;
  if(st.L.obs){const pm=proj(o.moon.v);if(o.moon.alt>-2&&onScreen(pm)){const r=Math.max(9,F*Math.tan(0.26*D));drawMoon(pm.sx,pm.sy,r,o.ph,pS,south);text("Lua",pm.sx+r+6,pm.sy+4,"#e7ecee",12,600);st.hits.push({x:pm.sx,y:pm.sy,kind:"moon"})}
@@ -308,13 +316,14 @@ function draw(o){
  // chão e paisagem
  const corners=[[0,0],[W,0],[W,Hh],[0,Hh]],gfun=([x,y])=>cam.f[2]+(x-W/2)/F*cam.r[2]-(y-Hh/2)/F*cam.u[2],poly=[];
  for(let i=0;i<4;i++){const a=corners[i],b=corners[(i+1)%4],ga=gfun(a),gb=gfun(b);if(ga<0)poly.push(a);if((ga<0)!==(gb<0)){const t=ga/(ga-gb);poly.push([a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t])}}
- const landCol=rgb(lerp([3,5,7],[30,43,29],clamp((o.sun.alt+6)/10,0,1)));
- if(poly.length>2){ctx.fillStyle=st.L.land?landCol:rgb(sc.gnd);ctx.beginPath();poly.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fill()}
+ const dT=clamp((o.sun.alt+6)/10,0,1),G=lerp([14,17,13],[58,72,44],dT),TC=rgb(lerp([5,7,6],[26,38,24],dT)),FC=rgb(lerp(sc.hor,G,0.55));
+ if(poly.length>2){ctx.fillStyle=st.L.land?rgb(G):rgb(sc.gnd);ctx.beginPath();poly.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fill();
+  if(st.L.land&&hz){const g=ctx.createLinearGradient(hz.hx,hz.hy,hz.hx-hz.nx*Hh*0.4,hz.hy-hz.ny*Hh*0.4),c=sc.hor;g.addColorStop(0,`rgba(${c[0]},${c[1]},${c[2]},.16)`);g.addColorStop(1,`rgba(${c[0]},${c[1]},${c[2]},0)`);ctx.fillStyle=g;ctx.beginPath();poly.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fill()}}
  const azs=[...Array(181).keys()].map(i=>i*2);
- if(st.L.land){drawLandscape(landCol);if(hz){const g=ctx.createLinearGradient(hz.hx-hz.nx*Hh*0.12,hz.hy-hz.ny*Hh*0.12,hz.hx+hz.nx*Hh*0.05,hz.hy+hz.ny*Hh*0.05);const c=sc.hor;g.addColorStop(0,`rgba(${c[0]},${c[1]},${c[2]},0)`);g.addColorStop(0.75,`rgba(${c[0]},${c[1]},${c[2]},.16)`);g.addColorStop(1,`rgba(${c[0]},${c[1]},${c[2]},0)`);ctx.fillStyle=g;ctx.fillRect(0,0,W,Hh)}}
+ if(st.L.land){drawLandscape(FARV,FC);drawLandscape(LANDV,TC)}
  else polyAltAz(azs.map(()=>0),azs,"rgba(238,240,234,.7)",1.3);
  if(st.L.grid){polyAltAz(azs.map(()=>0),azs,"rgba(238,240,234,.35)",1);for(const a of[30,60])polyAltAz(azs.map(()=>a),azs,"rgba(238,240,234,.22)",1,[3,5]);for(let z=0;z<360;z+=45){const al=[...Array(18).keys()].map(i=>i*5);polyAltAz(al,al.map(()=>z),"rgba(238,240,234,.18)",1,[3,5])}}
- const CARD=["N","NE","L","SE","S","SO","O","NO"];CARD.forEach((c,i)=>{const p=proj(enu(st.L.land?LANDP[Math.round(i*180)%1440]+1.5:1.2,i*45));if(onScreen(p)){ctx.textAlign="center";text(c,p.sx,p.sy-6,i===0?"#ff9f80":"#eef0ea",i%2?12:16,600);ctx.textAlign="left"}});
+ const CARD=["N","NE","L","SE","S","SO","O","NO"];CARD.forEach((c,i)=>{const p=proj(enu(st.L.land?Math.max(LANDP[Math.round(i*180)%1440],FARP[Math.round(i*180)%1440])+1:1.2,i*45));if(onScreen(p)){ctx.textAlign="center";text(c,p.sx,p.sy-6,i===0?"#ff9f80":"#eef0ea",i%2?12:16,600);ctx.textAlign="left"}});
  // Modelo do disco
  if(st.L.model){const draws=[[o.ms,"Sol · modelo","msun",12],[o.mm,"Lua · modelo","mmoon",9]];
   for(const[m,lab,kind,r]of draws){const p=proj(m.v);if(!onScreen(p))continue;ctx.strokeStyle="#ff8f6b";ctx.lineWidth=2;ctx.setLineDash([4,3]);ctx.beginPath();ctx.arc(p.sx,p.sy,r,0,7);ctx.stroke();ctx.setLineDash([]);
@@ -322,7 +331,7 @@ function draw(o){
   if(st.L.obs){const a=proj(o.sun.v),b=proj(o.ms.v);if(o.sun.alt>-1&&a.ok&&b.ok&&(onScreen(a)||onScreen(b))){ctx.strokeStyle="rgba(255,143,107,.45)";ctx.setLineDash([2,4]);ctx.beginPath();ctx.moveTo(a.sx,a.sy);ctx.lineTo(b.sx,b.sy);ctx.stroke();ctx.setLineDash([])}}}
  if(st.L.obs&&o.sun.alt>-1&&!onScreen(pS))arrow(pS,"Sol","#ffcf73");
  if(st.L.obs){const pm=proj(o.moon.v);if(o.moon.alt>-1&&!onScreen(pm))arrow(pm,"Lua","#e7ecee")}
- if(st.L.model){const p=proj(o.ms.v);if(!onScreen(p))arrow(p,"Sol modelo","#ff8f6b")}
+ if(st.L.model){const p=proj(o.ms.v);if(!onScreen(p))arrow(p,"Sol modelo","#ff8f6b",18)}
  if(st.sel){const h=st.hits.find(h=>h.kind===st.sel.kind&&(h.kind!=="star"||h.i===st.sel.i)&&(h.kind!=="planet"||h.id===st.sel.id));if(h){ctx.strokeStyle="rgba(255,255,255,.8)";ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(h.x,h.y,22,0,7);ctx.stroke()}}
 }
 function drawMini(o){const c=mctx,S=192,R=88;c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,S,S);c.translate(S/2,S/2);
@@ -330,7 +339,7 @@ function drawMini(o){const c=mctx,S=192,R=88;c.setTransform(1,0,0,1,0,0);c.clear
  for(const[lat,col]of[[23.44,"rgba(108,195,182,.6)"],[0,"rgba(238,240,234,.5)"],[-23.44,"rgba(108,195,182,.6)"]]){c.strokeStyle=col;c.lineWidth=1.5;c.beginPath();c.arc(0,0,R*(90-lat)/180,0,7);c.stroke()}
  const P=(la,lo)=>{const d=toDisc(la,lo);return[d[0]*R,d[1]*R]},ob=P(st.obs.lat,st.obs.lon),s=P(o.sp.lat,o.sp.lon),m=P(o.mo.lat,o.mo.lon);
  const lo=st.obs.lon*D,east=[Math.cos(lo),-Math.sin(lo)],north=[-Math.sin(lo),-Math.cos(lo)],az=Math.atan2(cam.f[0],cam.f[1]),dir=[Math.sin(az)*east[0]+Math.cos(az)*north[0],Math.sin(az)*east[1]+Math.cos(az)*north[1]];
- c.fillStyle="rgba(255,255,255,.14)";c.beginPath();c.moveTo(ob[0],ob[1]);const half=st.fov*D/2;for(const k of[-half,half]){const a=az+k;c.lineTo(ob[0]+(Math.sin(a)*east[0]+Math.cos(a)*north[0])*44,ob[1]+(Math.sin(a)*east[1]+Math.cos(a)*north[1])*44)}c.closePath();c.fill();
+ c.fillStyle="rgba(255,255,255,.14)";c.beginPath();c.moveTo(ob[0],ob[1]);const half=Math.atan((W/2)/F);for(const k of[-half,half]){const a=az+k;c.lineTo(ob[0]+(Math.sin(a)*east[0]+Math.cos(a)*north[0])*44,ob[1]+(Math.sin(a)*east[1]+Math.cos(a)*north[1])*44)}c.closePath();c.fill();
  c.fillStyle="#e7ecee";c.beginPath();c.arc(m[0],m[1],5,0,7);c.fill();c.fillStyle="#ffcf73";c.beginPath();c.arc(s[0],s[1],7,0,7);c.fill();
  c.strokeStyle="#ff8f6b";c.lineWidth=3;c.beginPath();c.arc(ob[0],ob[1],6,0,7);c.stroke();c.fillStyle="#eef0ea";c.beginPath();c.arc(0,0,2.5,0,7);c.fill()}
 const LAND=[
@@ -497,14 +506,14 @@ app.addEventListener("pointerdown",e=>{if(e.target.closest("button,.card,.sheet,
  gest={rot:dv.rot,x:e.clientX,y:e.clientY,yaw:st.yaw,pitch:st.pitch,cal:sens.cal,moved:false,fov:st.fov,d0:pts.size===2?dist2():0}});
 const dist2=()=>{const[a,b]=[...pts.values()];return Math.hypot(a.x-b.x,a.y-b.y)};
 app.addEventListener("pointermove",e=>{if(!gest||!pts.has(e.pointerId))return;pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
- if(pts.size===2&&st.mode==="sky"){if(!gest.d0)gest.d0=dist2();st.fov=clamp(gest.fov*gest.d0/dist2(),20,110);gest.moved=true;return}
+ if(pts.size===2&&st.mode==="sky"){if(!gest.d0)gest.d0=dist2();st.fov=clamp(gest.fov*gest.d0/dist2(),15,130);gest.moved=true;return}
  const dx=e.clientX-gest.x,dy=e.clientY-gest.y;if(Math.hypot(dx,dy)>6)gest.moved=true;if(!gest.moved)return;const k=1/F;
  if(st.mode==="disc"){dv.rot=gest.rot+dx*0.008;return}
  if(st.sensors&&sens.got)sens.cal=gest.cal+dx*k*R2D;else{st.yaw=gest.yaw-dx*k;st.pitch=clamp(gest.pitch+dy*k,-80*D,89*D)}});
 const end=e=>{if(gest&&!gest.moved&&pts.size===1&&st.mode==="disc"){discTap(e.clientX,e.clientY)}else if(gest&&!gest.moved&&pts.size===1){let best=null,bd=34;for(const h of st.hits){const d=Math.hypot(h.x-e.clientX,h.y-e.clientY);if(d<bd){bd=d;best=h}}st.sel=best?{kind:best.kind,i:best.i,id:best.id}:null}
  pts.delete(e.pointerId);if(!pts.size)gest=null;else gest={...gest,d0:0,fov:st.fov}};
 app.addEventListener("pointerup",end);app.addEventListener("pointercancel",end);
-app.addEventListener("wheel",e=>{e.preventDefault();st.fov=clamp(st.fov*(1+e.deltaY*0.001),20,110)},{passive:false});
+app.addEventListener("wheel",e=>{e.preventDefault();st.fov=clamp(st.fov*(1+e.deltaY*0.001),15,130)},{passive:false});
 addEventListener("keydown",e=>{const k=3*D;if(e.key==="ArrowLeft")st.yaw-=k;if(e.key==="ArrowRight")st.yaw+=k;if(e.key==="ArrowUp")st.pitch=Math.min(st.pitch+k,89*D);if(e.key==="ArrowDown")st.pitch=Math.max(st.pitch-k,-80*D)});
 // ---------- Laço ----------
 let last=performance.now(),lastI=0;
