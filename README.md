@@ -73,7 +73,7 @@ Toque no relógio para abrir a barra de simulação: tocar/pausar, régua das 24
 
 - Com **Nuvens do tempo real** ligado, o Disco 3D (plano ou em 3D) mostra as nuvens do mundo inteiro, a partir de uma grade de previsões Open-Meteo (a cada 15° de latitude e 20° de longitude), escurecidas no lado da noite; mudam com a hora simulada.
 - No topo, abaixo da fase da Lua, aparece o tempo do seu local (ícone, temperatura, condição) e se as nuvens estão ligadas (✓) ou desligadas (✕); toque para abrir a previsão.
-- O cartão de simulação mostra todas as opções em três linhas (velocidade, ir para, simular), sem rolagem, e pode ser arrastado pela alça do topo; **Recentrar** ou toque duplo na alça o devolvem ao lugar.
+- **Mini player** no rodapé: ▶/⏸, relógio, velocidade atual (toque para trocar) e o botão **Simular**, que abre a ficha de simulação (tempo, velocidade, ir para, simular, ver, situação). Escolher uma ação fecha a ficha e a simulação roda à vista. Na primeira vez, um aviso mostra onde simular.
 - O anel de horas aparece também no disco em 3D.
 
 ## Marés
