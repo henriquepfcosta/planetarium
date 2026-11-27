@@ -17,6 +17,17 @@ Toque no relógio para abrir a barra de simulação: tocar/pausar, régua das 24
 - **Estrela Polar:** marcada no centro do domo do Disco 3D e no céu do Imersivo; abaixo do horizonte, o app mostra quantos graus.
 - **Anel de horas (inspirado no mapa de Gleason, 1892):** horas solares em algarismos romanos em volta do disco, girando com o Sol (XII dourado = meio-dia); graus de latitude e longitude na grade e escala de distância ao longo dos meridianos. Estilo de mapa “Gleason 1892” gerado por `tools/gleason.py`.
 
+## Mergulho: do disco ao chão
+
+- **Pinça no disco** além do zoom máximo (ou **Descer até meu local**, no menu do disco): a câmera desce pelo domo até o seu local, em 3D (WebGL). Acima do domo você vê o disco e as constelações; sob o domo, o mapa em perspectiva embaixo, o domo com as estrelas em cima e o Sol e a Lua do modelo a 5.000 km.
+- Perto do chão, as estrelas, o Sol e a Lua deslizam das posições do domo (modelo) para as posições observadas; o painel lateral mostra a altitude e qual céu está sendo mostrado.
+- Abaixo de 2 m você pousa no Imersivo; pinça para fora no Imersivo (ou **Subir até o disco**) faz o caminho inverso. Botões ▲ ▼, **Pousar** e **Disco** no painel lateral.
+- Com as nuvens ligadas, a camada de nuvens prevista aparece vista de cima e você atravessa a neblina por volta de 2 km.
+
+## Chão do Imersivo
+
+- **Chão com o mapa** (menu, Céu): o chão usa o mesmo mapa do disco, em perspectiva, com dia e noite, e uma rosa dos ventos pintada no chão. No horizonte aparecem cidades próximas na direção certa, com a distância real.
+
 ## Disco seguindo você
 
 - **Seguir minha posição e direção** (menu, Disco 3D, ligado por padrão): ao abrir o disco, ele se aproxima do seu local e gira para que a frente seja para onde você olha no Imersivo; com os sensores ligados, gira junto com o celular. Um leque dourado mostra o seu campo de visão sobre o mapa.
