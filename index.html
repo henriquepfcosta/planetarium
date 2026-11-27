@@ -329,7 +329,7 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
       <p class="small" id="airMsg"></p>
     </details>
     <button class="btn" id="sheetClose">Fechar</button>
-    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-39</p>
+    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-40</p>
   </div>
   <div class="welcome" id="welcome">
     <div>
@@ -596,6 +596,14 @@ function draw(o){
   if(st.L.land&&hz){const g=ctx.createLinearGradient(hz.hx,hz.hy,hz.hx-hz.nx*Hh*0.4,hz.hy-hz.ny*Hh*0.4),c=sc.hor;g.addColorStop(0,`rgba(${c[0]},${c[1]},${c[2]},.16)`);g.addColorStop(1,`rgba(${c[0]},${c[1]},${c[2]},0)`);ctx.fillStyle=g;ctx.beginPath();poly.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fill()}}
  const azs=[...Array(181).keys()].map(i=>i*2);
  if(st.L.land&&!CV){if((st.eyeH||0)<0.05||!st.L.gmap){drawLandscape(FARV,FC);drawLandscape(LANDV,TC)}if(st.L.gmap)drawRose()}
+ // marca d'água: o céu que está abaixo do horizonte aparece de leve através do chão (estrelas, constelações, Sol e Lua)
+ if(st.L.land&&!CV&&st.L.obs&&CAT.ready&&poly.length>2){const lim2=Math.max(lim,3.4),below=q=>dot(q,upE)<-0.005;ctx.save();
+  if(st.L.lines){ctx.strokeStyle="rgba(170,225,215,.3)";ctx.lineWidth=0.8;ctx.setLineDash([3,3]);ctx.beginPath();for(const c of CAT.cons)for(const seg of c.segs){let prev=null;for(const q of seg){const z=dot(q,C.f);const p=z>0.05&&below(q)?[W/2+F*dot(q,C.r)/z,PY-F*dot(q,C.u)/z]:null;if(p&&prev){ctx.moveTo(prev[0],prev[1]);ctx.lineTo(p[0],p[1])}prev=p}}ctx.stroke();ctx.setLineDash([]);
+   ctx.textAlign="center";for(const c of CAT.cons){if(dot(c.lab,upE)>-0.05)continue;const p=pq(c.lab);if(p)text(c.up||(c.up=c.name.toUpperCase().split("").join("\u2009")),p[0],p[1],"rgba(190,235,225,.42)",9.5,500,8)}ctx.textAlign="left"}
+  const zs2=Math.pow(90/st.fov,0.35);for(let i=0;i<CAT.n;i++){const m=CAT.mag[i];if(m>lim2)continue;const q=[CAT.v[i*3],CAT.v[i*3+1],CAT.v[i*3+2]];if(!below(q))continue;const p=pq(q);if(!p)continue;const r=Math.max(0.7,(2.2-0.4*m)*zs2);ctx.globalAlpha=0.45*clamp((lim2-m)/1.6,0.35,1);ctx.fillStyle=CAT.col[i];ctx.beginPath();ctx.arc(p[0],p[1],r,0,7);ctx.fill();
+   if(m<1.3&&CAT.names[i]){ctx.globalAlpha=1;text(CAT.names[i],p[0]+r+4,p[1]+4,"rgba(225,232,245,.45)",10,400,9)}}ctx.globalAlpha=1;
+  for(const[v,al,nm,col]of[[o.sun.v,o.sun.alt,"Sol","255,207,115"],[o.moon.v,o.moon.alt,"Lua","231,236,238"]]){if(al>=-0.5)continue;const p=proj(v);if(!onScreen(p))continue;ctx.strokeStyle=`rgba(${col},.55)`;ctx.lineWidth=1.4;ctx.setLineDash([3,3]);ctx.beginPath();ctx.arc(p.sx,p.sy,nm==="Sol"?11:9,0,7);ctx.stroke();ctx.setLineDash([]);text(`${nm} · ${nf(-al,0)}° abaixo do horizonte`,p.sx+15,p.sy+4,`rgba(${col},.8)`,10.5,600,1)}
+  ctx.restore()}
  else polyAltAz(azs.map(()=>0),azs,"rgba(238,240,234,.7)",1.3);
  if(st.L.grid){polyAltAz(azs.map(()=>0),azs,"rgba(238,240,234,.35)",1);for(const a of[30,60])polyAltAz(azs.map(()=>a),azs,"rgba(238,240,234,.22)",1,[3,5]);for(let z=0;z<360;z+=45){const al=[...Array(18).keys()].map(i=>i*5);polyAltAz(al,al.map(()=>z),"rgba(238,240,234,.18)",1,[3,5])}}
  const CARD=["N","NE","L","SE","S","SO","O","NO"];CARD.forEach((c,i)=>{const p=proj(enu(st.L.land?Math.max(LANDP[Math.round(i*180)%1440],FARP[Math.round(i*180)%1440])+1:1.2,i*45));if(onScreen(p)){ctx.textAlign="center";text(c,p.sx,p.sy-6,i===0?"#ff9f80":"#eef0ea",i%2?10:13,500);ctx.textAlign="left"}});
@@ -607,8 +615,9 @@ function draw(o){
   for(const[real,mod,on,vis]of[[o.sun,o.ms,selS,o.sun.alt>-1],[o.moon,o.mm,selM,o.moon.alt>-1]]){if(!on||!st.L.obs||!vis)continue;const a=proj(real.v),b=proj(mod.v);if(!a.ok||!b.ok||!(onScreen(a)||onScreen(b)))continue;
    ctx.strokeStyle="rgba(255,143,107,.7)";ctx.lineWidth=1.2;ctx.setLineDash([3,4]);ctx.beginPath();ctx.moveTo(a.sx,a.sy);ctx.lineTo(b.sx,b.sy);ctx.stroke();ctx.setLineDash([]);
    const sep=Math.acos(clamp(dot(real.v,mod.v),-1,1))*R2D,mx=(a.sx+b.sx)/2,my=(a.sy+b.sy)/2;ctx.textAlign="center";text(`diferença ${nf(sep,0)}°`,mx,my-8,"#ffb39b",11,600);ctx.textAlign="left"}}
- if(st.L.obs&&o.sun.alt>-1&&!onScreen(pS))arrow(pS,"Sol","#ffcf73");
- if(st.L.obs){const pm=proj(o.moon.v);if(o.moon.alt>-1&&!onScreen(pm))arrow(pm,"Lua","#e7ecee")}
+ if(st.L.obs&&!onScreen(pS))arrow(pS,o.sun.alt>-1?"Sol":`Sol · ${nf(o.sun.alt,0)}°`,"#ffcf73");
+ if(st.L.obs){const pm=proj(o.moon.v);if(!onScreen(pm))arrow(pm,o.moon.alt>-1?"Lua":`Lua · ${nf(o.moon.alt,0)}°`,"#e7ecee")}
+ if(st.L.polar&&CAT.ready&&polIdx()!=null){const q=[CAT.v[POL*3],CAT.v[POL*3+1],CAT.v[POL*3+2]],E=[dot(o.Mq[0],q),dot(o.Mq[1],q),dot(o.Mq[2],q)],al=Math.asin(clamp(E[2],-1,1))*R2D,az=(Math.atan2(E[0],E[1])*R2D+360)%360,pp=proj(enu(al,az)),pm2=proj(enu(Math.max(al,6),az));if(!onScreen(pp)&&!(al<-0.3&&st.L.land&&onScreen(pm2)))arrow(pp,al>-0.3?"Polaris":`Polaris · ${nf(al,0)}°`,"#9fd8ff")}
  if(st.L.model&&MODEL()==="disc"&&st.sel&&(st.sel.kind==="sun"||st.sel.kind==="msun")){const p=proj(o.ms.v);if(!onScreen(p))arrow(p,"Sol modelo","#ff8f6b",18)}
  if(CAL.open){const t=CAL.cur;if(t){const p=proj(t.v);if(p.ok){ctx.strokeStyle="#ffcf73";ctx.lineWidth=1.5;ctx.setLineDash([4,3]);ctx.beginPath();ctx.arc(p.sx,p.sy,16,0,7);ctx.stroke();ctx.setLineDash([]);ctx.textAlign="center";text(`${t.n} calculado`,p.sx,p.sy-22,"#ffe1a3",11,600);ctx.textAlign="left"}}}
  if(st.sel){const h=st.hits.find(h=>h.kind===st.sel.kind&&h.i===st.sel.i&&h.id===st.sel.id);if(h){ctx.strokeStyle="rgba(255,255,255,.8)";ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(h.x,h.y,22,0,7);ctx.stroke()}}
