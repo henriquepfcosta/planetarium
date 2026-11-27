@@ -11,6 +11,12 @@ Nas duas visões aparecem juntos o **céu observado** (posições calculadas por
 
 Toque no relógio para abrir a barra de simulação: tocar/pausar, régua das 24 horas, velocidades, atalhos (nascer e pôr do Sol, meio-dia, meia-noite), simulações prontas (um dia, uma noite, um ano no mesmo horário), rastros do Sol, da Lua e das estrelas, e tela dividida com o Disco 3D e o Imersivo ao mesmo tempo, sincronizados.
 
+## Eclipses, Estrela Polar e anel de horas
+
+- **Eclipses:** o app procura os próximos eclipses do Sol e da Lua a partir das posições calculadas (conferido com o catálogo da NASA para 2026–2027), diz se cada um é visível do seu local e permite simular daqui ou do centro da sombra. Durante a simulação, a Lua cobre o Sol no Imersivo, o céu escurece conforme a cobertura e a sombra aparece no Disco 3D; no eclipse da Lua, ela fica avermelhada.
+- **Estrela Polar:** marcada no centro do domo do Disco 3D e no céu do Imersivo; abaixo do horizonte, o app mostra quantos graus.
+- **Anel de horas (inspirado no mapa de Gleason, 1892):** horas solares em algarismos romanos em volta do disco, girando com o Sol (XII dourado = meio-dia); graus de latitude e longitude na grade e escala de distância ao longo dos meridianos. Estilo de mapa “Gleason 1892” gerado por `tools/gleason.py`.
+
 ## Satélites e aviões
 
 - **Satélites:** órbitas do CelesTrak (estações espaciais, os mais brilhantes e, opcionalmente, Starlink), calculadas no próprio aparelho com SGP4. O app busca os dados direto no CelesTrak (ou em `dados/tle-<grupo>.txt`, se existir no site).

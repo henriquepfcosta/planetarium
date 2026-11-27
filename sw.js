@@ -1,6 +1,6 @@
 const VERSION = "2026.11.27-3";
 const CACHE = "planetarium-" + VERSION;
-const CORE = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png", "sky.json", "art.json", "cidades-br.json", "terra/mapa.jpg", "terra/dia.jpg", "terra/noite.jpg", "terra/lua.webp", "lib/satellite.min.js"];
+const CORE = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png", "sky.json", "art.json", "cidades-br.json", "terra/mapa.jpg", "terra/gleason.jpg", "terra/dia.jpg", "terra/noite.jpg", "terra/lua.webp", "lib/satellite.min.js"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE.map(u => new Request(u, { cache: "reload" }))))); self.skipWaiting(); });
 self.addEventListener("activate", e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k))))); self.clients.claim(); });
 // Página e dados: sempre a versão mais nova da rede (ignorando cópias antigas), cache só sem internet.
