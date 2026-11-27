@@ -125,6 +125,7 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
  .sheet:not(#pMenu).open{transform:none}
  .card{justify-self:start;max-width:380px;max-height:calc(100vh - 160px)}
  #mIcon{width:46px;height:46px}
+ #flyBar{top:calc(env(safe-area-inset-top) + 88px);transform:none;gap:4px;padding:6px 5px;width:76px}#flyBar button{min-height:32px}#flyLbl{display:none}
 }
 [hidden]{display:none!important}
 </style>
@@ -268,7 +269,7 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
       <p class="small" id="airMsg"></p>
     </details>
     <button class="btn" id="sheetClose">Fechar</button>
-    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-13</p>
+    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-14</p>
   </div>
   <div class="welcome" id="welcome">
     <div>
@@ -1049,7 +1050,7 @@ const FL={h:24000,v:0,anim:null,pAuto:true,hint:0};
 function domeHAt(){const r=(90-st.obs.lat)/180;return dv.HD*RKM*Math.sqrt(Math.max(0,1-r*r))}
 function flyEnter(h,anim){if(!g3Init()){toast("Este aparelho não oferece gráficos 3D (WebGL) para o mergulho.");return false}FL.h=h;FL.anim=anim||null;FL.pAuto=true;FL.v=0;if(st.mode!=="fly"){if(st.split){st.split=false;$("sSplit").setAttribute("aria-pressed",false)}setMode("fly")}
  if(!FL.hint){FL.hint=1;toast("Mergulho: pinça para descer e subir, arraste para olhar em volta. Abaixo de 1 km você pousa no Imersivo; acima do domo volta ao disco.")}return true}
-function flyStep(dt){if(FL.anim){const t=FL.anim,k=Math.exp(dt/1000*1.15*(t>FL.h?1:-1));FL.h*=k;if((t>FL.h)!==(t>FL.h/k)||Math.abs(Math.log(FL.h/t))<0.02){FL.h=t;FL.anim=null}}
+function flyStep(dt){if(FL.anim){const t=FL.anim,k=Math.exp(dt/1000*1.5*(t>FL.h?1:-1));FL.h*=k;if((t>FL.h)!==(t>FL.h/k)||Math.abs(Math.log(FL.h/t))<0.02){FL.h=t;FL.anim=null}}
  if(FL.v)FL.h*=Math.exp(FL.v*dt/1000*1.3);FL.h=clamp(FL.h,0.0017,34000);if(FL.v||FL.anim)FL.pAuto=true;
  if(FL.h<=0.0019&&!FL.v){if(FL.anim==null||FL.anim<=0.0019){FL.anim=null;st.pitch=Math.max(st.pitch,2*D);setMode("sky");toast("Você pousou: céu observado do seu local.");return false}}
  if(FL.h>=33000&&(FL.v>0||(FL.anim&&FL.anim>=33000)||(!FL.anim&&!FL.v))){FL.anim=null;FL.v=0;dv.follow=true;$("dFollow").setAttribute("aria-pressed",true);dv.zoom=4;dv.zoomT=2.4;setMode("disc");return false}return true}
