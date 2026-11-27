@@ -26,7 +26,7 @@ html,body{margin:0;height:100%;background:#03070f;color:var(--ink);font:15px/1.4
 .brand span{display:block;font-size:13px;line-height:1.35;color:var(--ink);text-shadow:0 1px 3px #000;font-weight:500}
 .brand .t{color:var(--mute);font-weight:400;font-size:12px;font-variant-numeric:tabular-nums}
 #mini{width:72px;height:72px;flex:none;border-radius:50%;background:rgba(4,10,16,.5);border:1px solid var(--line);pointer-events:auto;cursor:pointer}
-.reticle{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;text-align:center}
+.reticle{position:absolute;left:50%;top:78%;transform:translate(-50%,-10px);pointer-events:none;text-align:center}
 .reticle i{display:block;width:20px;height:20px;margin:0 auto;border:1px solid rgba(255,255,255,.45);border-radius:50%}
 .reticle span{display:block;margin-top:5px;font-size:11px;color:var(--mute);text-shadow:0 1px 3px #000;font-variant-numeric:tabular-nums;white-space:nowrap}
 .bottom{position:absolute;left:0;right:0;bottom:0;padding:0 14px calc(env(safe-area-inset-bottom) + 12px);display:grid;gap:10px;pointer-events:none}
@@ -42,6 +42,7 @@ html,body{margin:0;height:100%;background:#03070f;color:var(--ink);font:15px/1.4
 .compass .nN{fill:#ff8f6b}.compass .nS{fill:rgba(238,240,234,.75)}
 .compass text{fill:rgba(238,240,234,.85);font:600 8px Inter,sans-serif;text-anchor:middle}
 .compass.on .ring{stroke:var(--teal);stroke-width:1.6}
+.compass{position:relative}.stag{position:absolute;left:50%;bottom:-12px;transform:translateX(-50%);font:600 8.5px Inter,sans-serif;letter-spacing:.12em;color:var(--teal)}
 .scrim{position:absolute;inset:0;background:rgba(0,0,0,.25)}
 .card{pointer-events:auto;background:var(--glass);border:1px solid var(--line);border-radius:16px;padding:12px 14px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);max-width:520px;width:100%;justify-self:center;position:relative}
 .card h3{margin:0 0 6px;font:600 17px "Chakra Petch",sans-serif}
@@ -89,7 +90,7 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
     <div class="brand"><span id="place">—</span><span class="t" id="clock">—</span></div>
     <canvas id="mini" width="160" height="160" aria-label="Minimapa do disco. Toque para abrir o disco"></canvas>
   </div>
-  <div class="reticle"><i></i><span id="aim">—</span></div>
+  <div class="reticle" id="ret"><i></i><span id="aim">—</span></div>
   <div class="toast" id="toast"></div>
   <div class="scrim" id="scrim" hidden></div>
   <div class="bottom">
@@ -97,7 +98,7 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
     <div class="dock">
       <button class="ib" id="bMenu" aria-label="Camadas e ações"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="m3 12 9 5 9-5"/><path d="m3 16 9 5 9-5"/></svg></button>
       <button class="compass" id="bComp" aria-label="Bússola. Toque para ligar ou desligar os sensores">
-        <svg viewBox="0 0 64 64" aria-hidden="true"><g id="rose"><circle cx="32" cy="32" r="22" class="ring"/><path d="M32 13 36 32 32 29 28 32Z" class="nN"/><path d="M32 51 36 32 32 35 28 32Z" class="nS"/><text x="32" y="8.5">N</text><text x="59" y="35.5">L</text><text x="32" y="62.5">S</text><text x="5" y="35.5">O</text></g></svg>
+        <svg viewBox="0 0 64 64" aria-hidden="true"><g id="rose"><circle cx="32" cy="32" r="22" class="ring"/><path d="M32 13 36 32 32 29 28 32Z" class="nN"/><path d="M32 51 36 32 32 35 28 32Z" class="nS"/><text x="32" y="8.5">N</text><text x="59" y="35.5">L</text><text x="32" y="62.5">S</text><text x="5" y="35.5">O</text></g></svg><span class="stag" id="sensTag" hidden>SENSOR</span>
       </button>
       <button class="tb" id="bTime" aria-label="Data e hora"><span id="tNow">--:--</span><small id="tState">ao vivo</small></button>
     </div>
@@ -118,6 +119,7 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
       <button class="tile d" id="dIncl" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="15" rx="9" ry="3.5"/><path d="M4 13a8 6 0 0 1 16 0"/></svg><span>Vista inclinada</span></button>
       <button class="tile d" id="dReset" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4h4"/></svg><span>Centralizar</span></button>
     </div>
+    <button class="btn" id="bRecal" hidden>Recalibrar o norte</button>
     <div class="two">
       <button class="btn ic" id="bSens" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2.5" width="10" height="19" rx="2.2"/><path d="M11 18.5h2"/><path d="M2.5 9a7 7 0 0 1 2-4M21.5 9a7 7 0 0 0-2-4"/></svg>Sensores</button>
       <button class="btn ic" id="bLoc"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Local e modelo</button>
@@ -217,17 +219,17 @@ function limMag(a){return a>=0?-3.5:a>-6?1+(-3.5-1)*(a+6)/6:a>-12?3.5+(1-3.5)*(a
 // Polígono no espaço da câmera, recortado no plano próximo
 function clipProj(pts,C){const P=pts.map(q=>[dot(q,C.r),dot(q,C.u),dot(q,C.f)]),out=[],nz=0.08;
  for(let i=0;i<P.length;i++){const a=P[i],b=P[(i+1)%P.length],ia=a[2]>=nz,ib=b[2]>=nz;if(ia)out.push(a);if(ia!==ib){const t=(nz-a[2])/(b[2]-a[2]);out.push([a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,nz])}}
- return out.map(([x,y,z])=>[W/2+F*x/z,Hh/2-F*y/z])}
+ return out.map(([x,y,z])=>[W/2+F*x/z,PY-F*y/z])}
 
 // ---------- Estado ----------
 const st={t:Date.now(),play:true,speed:1,obs:{name:"São Paulo",lat:-23.55,lon:-46.63},H:5000,yaw:180*D,pitch:25*D,fov:90,
  L:{obs:true,model:true,lines:true,grid:false,art:true,land:true},sensors:false,mode:"sky",dg:null,sel:null,hits:[]};
-const sens={alpha:0,beta:90,gamma:0,cal:0,off:null,samp:[],cand:null,cn:0,got:false,rel:false,raw:null};
+const sens={alpha:0,beta:90,gamma:0,cal:0,off:null,samp:[],got:false,rel:false,raw:null};
 let cam={f:[0,1,0],r:[1,0,0],u:[0,0,1]};
 try{const s=JSON.parse(localStorage.getItem("planetarium")||"null");if(s&&s.obs)st.obs=s.obs;if(s&&s.H)st.H=s.H}catch(e){}
 const save=()=>{try{localStorage.setItem("planetarium",JSON.stringify({obs:st.obs,H:st.H}))}catch(e){}};
 // ---------- Canvas ----------
-const cv=$("sky"),ctx=cv.getContext("2d"),mini=$("mini"),mctx=mini.getContext("2d");let W=0,Hh=0,dpr=1,F=1;
+const cv=$("sky"),ctx=cv.getContext("2d"),mini=$("mini"),mctx=mini.getContext("2d");let W=0,Hh=0,dpr=1,F=1,PY=0;
 function resize(){dpr=Math.min(devicePixelRatio||1,2);W=innerWidth;Hh=innerHeight;cv.width=W*dpr;cv.height=Hh*dpr}
 addEventListener("resize",resize);resize();
 // ---------- Câmera ----------
@@ -238,8 +240,8 @@ function camSensor(){const a=(sens.alpha+sens.cal)*D,b=sens.beta*D,g=sens.gamma*
  return{f:[-dz[0],-dz[1],-dz[2]],r:[c*dx[0]-s*dy[0],c*dx[1]-s*dy[1],c*dx[2]-s*dy[2]],u:[s*dx[0]+c*dy[0],s*dx[1]+c*dy[1],s*dx[2]+c*dy[2]]}}
 function updateCam(){const t=st.sensors&&sens.got?camSensor():camManual();
  if(st.sensors&&sens.got){const k=0.2,mix=(a,b)=>a.map((v,i)=>v+(b[i]-v)*k);let f=nrm(mix(cam.f,t.f)),r=mix(cam.r,t.r);r=nrm(r.map((v,i)=>v-dot(r,f)*f[i]));cam={f,r,u:cross(r,f)}}else cam=t;
- F=(Math.max(W,Hh)/2)/Math.tan(st.fov*D/2)}
-function proj(v){const z=dot(v,cam.f),x=dot(v,cam.r),y=dot(v,cam.u);return z>0.02?{ok:true,sx:W/2+F*x/z,sy:Hh/2-F*y/z,x,y,z}:{ok:false,x,y,z}}
+ F=(Math.max(W,Hh)/2)/Math.tan(st.fov*D/2);PY=Hh/2+Hh*(Hh>W?0.27:0.16)}
+function proj(v){const z=dot(v,cam.f),x=dot(v,cam.r),y=dot(v,cam.u);return z>0.02?{ok:true,sx:W/2+F*x/z,sy:PY-F*y/z,x,y,z}:{ok:false,x,y,z}}
 const onScreen=p=>p.ok&&p.sx>-40&&p.sx<W+40&&p.sy>-40&&p.sy<Hh+40;
 // ---------- Cálculo dos objetos ----------
 function riseSet(o){const d0=new Date(st.t);d0.setHours(0,0,0,0);let rise=null,set=null,prev=altOf(o.lat,o.lon,sun(+d0));
@@ -258,7 +260,7 @@ function compute(){const o=st.obs,sp=sun(st.t),mo=moon(st.t),g=gmst(jdOf(st.t));
 const lerp=(a,b,t)=>a.map((v,i)=>Math.round(v+(b[i]-v)*t));
 const rgb=c=>`rgb(${c[0]},${c[1]},${c[2]})`;
 function skyCols(a){const t1=clamp((a+18)/12,0,1),t2=clamp((a+6)/10,0,1);
- const zen=t2>0?lerp([20,37,74],[47,111,174],t2):lerp([11,17,31],[22,38,74],t1),hor=t2>0?lerp([196,112,70],[169,203,230],t2):lerp([26,36,56],[196,112,70],t1),gnd=lerp([6,10,10],[34,48,38],t2);return{zen,hor,gnd,dark:1-t2}}
+ const zen=t2>0?lerp([24,40,92],[44,110,182],t2):lerp([12,19,42],[24,40,92],t1),hor=t2>0?lerp([214,124,82],[176,212,236],t2):lerp([40,50,86],[214,124,82],t1),gnd=lerp([6,10,10],[34,48,38],t2);return{zen,hor,gnd,dark:1-t2}}
 // ---------- Desenho ----------
 function polyAltAz(alts,azs,style,w,dash){ctx.beginPath();let pen=false;for(let i=0;i<alts.length;i++){const p=proj(enu(alts[i],azs[i]));if(!p.ok||Math.abs(p.sx)>8*W||Math.abs(p.sy)>8*Hh){pen=false;continue}pen?ctx.lineTo(p.sx,p.sy):ctx.moveTo(p.sx,p.sy);pen=true}ctx.strokeStyle=style;ctx.lineWidth=w;ctx.setLineDash(dash||[]);ctx.stroke();ctx.setLineDash([])}
 function glow(x,y,r,c0){const g=ctx.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,c0);g.addColorStop(1,"rgba(0,0,0,0)");ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fill()}
@@ -277,7 +279,7 @@ function artImg(c){let im=ART.img[c.file];if(!im){im=new Image();im.decoding="as
 function drawArt(C,upE,night){if(!ART.list.length)return;const fade=0.24*clamp((night-0.15)/0.6,0,1);if(fade<0.01)return;const hf=Math.atan((Math.max(W,Hh)/2)/F),cf=Math.cos(Math.min(1.45,hf*1.3));
  ctx.save();ctx.globalCompositeOperation="screen";
  for(const c of ART.list){if(dot(c.cv,C.f)<cf-0.35||dot(c.cv,upE)<-0.2)continue;const im=artImg(c);if(!im)continue;const P=[];let ok=true;
-  for(const a of c.an){const z=dot(a.v,C.f);if(z<0.12){ok=false;break}P.push([W/2+F*dot(a.v,C.r)/z,Hh/2-F*dot(a.v,C.u)/z])}if(!ok)continue;
+  for(const a of c.an){const z=dot(a.v,C.f);if(z<0.12){ok=false;break}P.push([W/2+F*dot(a.v,C.r)/z,PY-F*dot(a.v,C.u)/z])}if(!ok)continue;
   const[A0,A1,A2]=c.an,det=(A1.x-A0.x)*(A2.y-A0.y)-(A2.x-A0.x)*(A1.y-A0.y);if(Math.abs(det)<1)continue;
   const dX1=P[1][0]-P[0][0],dX2=P[2][0]-P[0][0],dY1=P[1][1]-P[0][1],dY2=P[2][1]-P[0][1];
   const a=(dX1*(A2.y-A0.y)-dX2*(A1.y-A0.y))/det,cc=(dX2*(A1.x-A0.x)-dX1*(A2.x-A0.x))/det,b=(dY1*(A2.y-A0.y)-dY2*(A1.y-A0.y))/det,d=(dY2*(A1.x-A0.x)-dY1*(A2.x-A0.x))/det;
@@ -316,19 +318,19 @@ function draw(o){
  ctx.setTransform(dpr,0,0,dpr,0,0);ctx.globalCompositeOperation="source-over";ctx.globalAlpha=1;const sc=skyCols(o.sun.alt),gr=Math.hypot(cam.r[2],cam.u[2])/F,tnow=performance.now();
  // céu
  ctx.fillStyle=rgb(sc.zen);ctx.fillRect(0,0,W,Hh);let hz=null;
- if(gr>1e-6){const nx=cam.r[2]/F/gr,ny=-cam.u[2]/F/gr,s0=-cam.f[2]/gr,hx=W/2+nx*s0,hy=Hh/2+ny*s0;hz={nx,ny,hx,hy};
+ if(gr>1e-6){const nx=cam.r[2]/F/gr,ny=-cam.u[2]/F/gr,s0=-cam.f[2]/gr,hx=W/2+nx*s0,hy=PY+ny*s0;hz={nx,ny,hx,hy};
   const g=ctx.createLinearGradient(hx,hy,hx+nx*Hh*0.7,hy+ny*Hh*0.7);g.addColorStop(0,rgb(sc.hor));g.addColorStop(1,rgb(sc.zen));ctx.fillStyle=g;ctx.fillRect(0,0,W,Hh)}
  if(o.sun.alt>-16&&o.sun.alt<14){const hp=proj(enu(0,o.sun.az));if(hp.ok)glow(hp.sx,hp.sy,Math.min(W,Hh)*0.95,`rgba(255,150,90,${0.3*(1-Math.abs(o.sun.alt+1)/15)})`)}
  if(o.sun.alt>-12){const p=proj(o.sun.v);if(p.ok)glow(p.sx,p.sy,Math.min(W,Hh)*0.6,`rgba(255,214,150,${0.35*clamp((o.sun.alt+12)/14,0,1)})`)}
  // céu profundo
  const LB=[],lim=limMag(o.sun.alt)+clamp((90-st.fov)/50,0,0.6),Mq=o.Mq,toEq=w=>[w[0]*Mq[0][0]+w[1]*Mq[1][0]+w[2]*Mq[2][0],w[0]*Mq[0][1]+w[1]*Mq[1][1]+w[2]*Mq[2][1],w[0]*Mq[0][2]+w[1]*Mq[1][2]+w[2]*Mq[2][2]];
  const C={r:toEq(cam.r),u:toEq(cam.u),f:toEq(cam.f)},upE=Mq[2],night=clamp((-o.sun.alt-8)/10,0,1);
- const pq=q=>{const z=dot(q,C.f);if(z<=0.02)return null;const x=W/2+F*dot(q,C.r)/z,y=Hh/2-F*dot(q,C.u)/z;return x>-60&&x<W+60&&y>-60&&y<Hh+60?[x,y]:null};
+ const pq=q=>{const z=dot(q,C.f);if(z<=0.02)return null;const x=W/2+F*dot(q,C.r)/z,y=PY-F*dot(q,C.u)/z;return x>-60&&x<W+60&&y>-60&&y<Hh+60?[x,y]:null};
  if(st.L.obs&&CAT.ready){
-  if(night>0.02){for(const m of CAT.mw){const pts=clipProj(m.a,C);if(pts.length<3)continue;ctx.fillStyle=`rgba(190,205,255,${0.04*night})`;ctx.beginPath();pts.forEach(([x,y],k)=>k?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fill()}}
+  if(night>0.02){for(const m of CAT.mw){const pts=clipProj(m.a,C);if(pts.length<3)continue;ctx.fillStyle=`rgba(205,190,255,${0.05*night})`;ctx.beginPath();pts.forEach(([x,y],k)=>k?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fill()}}
   if(st.L.art)drawArt(C,upE,night);
   if(st.L.lines&&lim>1.5){const la=clamp((lim-1.5)/2,0,1);ctx.strokeStyle=`rgba(108,195,182,${0.38*la})`;ctx.lineWidth=0.8;ctx.beginPath();
-   for(const c of CAT.cons)for(const seg of c.segs){let prev=null;for(const q of seg){const z=dot(q,C.f);const p=z>0.05?[W/2+F*dot(q,C.r)/z,Hh/2-F*dot(q,C.u)/z]:null;if(p&&prev){ctx.moveTo(prev[0],prev[1]);ctx.lineTo(p[0],p[1])}prev=p}}ctx.stroke();
+   for(const c of CAT.cons)for(const seg of c.segs){let prev=null;for(const q of seg){const z=dot(q,C.f);const p=z>0.05?[W/2+F*dot(q,C.r)/z,PY-F*dot(q,C.u)/z]:null;if(p&&prev){ctx.moveTo(prev[0],prev[1]);ctx.lineTo(p[0],p[1])}prev=p}}ctx.stroke();
    for(const c of CAT.cons){if(dot(c.lab,upE)<0.05)continue;const p=pq(c.lab);if(p)LB.push({t:c.up||(c.up=c.name.toUpperCase().split("").join("\u2009")),x:p[0],y:p[1],c:`rgba(143,216,204,${0.6*la})`,s:10,w:400,pr:2,ctr:1})}}
   const zs=Math.pow(90/st.fov,0.35),lab=0.9+(90-st.fov)/25;
   for(let i=0;i<CAT.n;i++){const m=CAT.mag[i];if(m>lim)continue;const q=[CAT.v[i*3],CAT.v[i*3+1],CAT.v[i*3+2]],al=dot(q,upE);if(al<0)continue;const p=pq(q);if(!p)continue;
@@ -346,9 +348,9 @@ function draw(o){
  if(st.L.obs){const pm=proj(o.moon.v);if(o.moon.alt>-2&&onScreen(pm)){const r=Math.max(7,F*Math.tan(0.26*D));drawMoon(pm.sx,pm.sy,r,o.ph,pS,south);text("Lua",pm.sx+r+6,pm.sy+4,"#e7ecee",11,500);st.hits.push({x:pm.sx,y:pm.sy,kind:"moon"})}
   if(o.sun.alt>-2&&onScreen(pS)){const r=Math.max(8,F*Math.tan(0.27*D));drawSun(pS.sx,pS.sy,r,o.sun.alt);text("Sol",pS.sx+r+8,pS.sy+4,"#ffcf73",11,500);st.hits.push({x:pS.sx,y:pS.sy,kind:"sun"})}}
  // chão e paisagem
- const corners=[[0,0],[W,0],[W,Hh],[0,Hh]],gfun=([x,y])=>cam.f[2]+(x-W/2)/F*cam.r[2]-(y-Hh/2)/F*cam.u[2],poly=[];
+ const corners=[[0,0],[W,0],[W,Hh],[0,Hh]],gfun=([x,y])=>cam.f[2]+(x-W/2)/F*cam.r[2]-(y-PY)/F*cam.u[2],poly=[];
  for(let i=0;i<4;i++){const a=corners[i],b=corners[(i+1)%4],ga=gfun(a),gb=gfun(b);if(ga<0)poly.push(a);if((ga<0)!==(gb<0)){const t=ga/(ga-gb);poly.push([a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t])}}
- const dT=clamp((o.sun.alt+6)/10,0,1),G=lerp([14,17,13],[58,72,44],dT),TC=rgb(lerp([5,7,6],[26,38,24],dT)),FC=rgb(lerp(sc.hor,G,0.55));
+ const dT=clamp((o.sun.alt+6)/10,0,1),G=lerp([16,26,18],[66,104,52],dT),TC=rgb(lerp([7,14,10],[30,58,34],dT)),FC=rgb(lerp(sc.hor,lerp([22,36,44],[96,126,140],dT),0.5));
  if(poly.length>2){ctx.fillStyle=st.L.land?rgb(G):rgb(sc.gnd);ctx.beginPath();poly.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fill();
   if(st.L.land&&hz){const g=ctx.createLinearGradient(hz.hx,hz.hy,hz.hx-hz.nx*Hh*0.4,hz.hy-hz.ny*Hh*0.4),c=sc.hor;g.addColorStop(0,`rgba(${c[0]},${c[1]},${c[2]},.16)`);g.addColorStop(1,`rgba(${c[0]},${c[1]},${c[2]},0)`);ctx.fillStyle=g;ctx.beginPath();poly.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fill()}}
  const azs=[...Array(181).keys()].map(i=>i*2);
@@ -500,22 +502,21 @@ function hud(){const d=new Date(st.t),live=st.speed===1&&st.play&&Math.abs(st.t-
  $("tNow").textContent=fmtH.format(d);$("tState").textContent=live?"ao vivo":!st.play?"pausado":st.speed===1?"simulado":SPN[st.speed];
  const az=(Math.atan2(cam.f[0],cam.f[1])*R2D+360)%360,al=Math.asin(clamp(cam.f[2],-1,1))*R2D;$("aim").textContent=`${Math.round(az)}° ${dirT(az)} · ${nf(al,0)}°`;
  $("bPlay").textContent=st.play?"Pausar":"Rodar";document.querySelectorAll("[data-sp]").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.sp===st.speed&&st.play));
- const on=!!(st.sensors&&sens.got);$("bSens").setAttribute("aria-pressed",on);$("bComp").classList.toggle("on",on);$("hVal").textContent=st.H.toLocaleString("pt-BR")+" km";
+ const on=!!(st.sensors&&sens.got);$("bSens").setAttribute("aria-pressed",on);$("bRecal").hidden=!on;$("sensTag").hidden=!on;$("bComp").classList.toggle("on",on);$("hVal").textContent=st.H.toLocaleString("pt-BR")+" km";
  if(document.activeElement!==$("dt"))$("dt").value=toLocalInput(d)}
 let toastT;function toast(m){const t=$("toast");t.textContent=m;t.classList.add("on");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("on"),4200)}
 // ---------- Sensores e GPS ----------
 // O giroscópio (orientação relativa) é suave; a bússola é ruidosa e salta quando o celular fica em pé.
 // Por isso o movimento vem só do giroscópio, e a bússola apenas corrige o norte, devagar e ignorando saltos.
-function feedNorth(d){if(sens.off==null){sens.samp.push(d);if(sens.samp.length>=15){let x=0,y=0;for(const v of sens.samp){x+=Math.cos(v*D);y+=Math.sin(v*D)}sens.off=Math.atan2(y,x)*R2D;sens.samp=[]}return}
- const err=norm(d-sens.off);if(Math.abs(err)<12){sens.off=norm(sens.off+err*0.004);sens.cand=null;sens.cn=0;return}
- if(sens.cand!=null&&Math.abs(norm(d-sens.cand))<8){if(++sens.cn>120){sens.off=sens.cand;sens.cand=null;sens.cn=0}}else{sens.cand=d;sens.cn=0}}
+function feedNorth(d){if(sens.off!=null)return;sens.samp.push(d);if(sens.samp.length>=40){let x=0,y=0;for(const v of sens.samp){x+=Math.cos(v*D);y+=Math.sin(v*D)}sens.off=Math.atan2(y,x)*R2D;sens.samp=[]}}
+function recalNorth(){sens.off=null;sens.samp=[];sens.cal=0;toast("Calibrando o norte. Segure o celular parado por um segundo.")}
 function onOri(e){if(e.alpha==null)return;
  if(e.type==="deviceorientationabsolute"||(e.absolute&&e.webkitCompassHeading==null)){if(sens.rel&&sens.raw!=null)feedNorth(norm(e.alpha-sens.raw));else{sens.off=0;sens.alpha=e.alpha;sens.beta=e.beta;sens.gamma=e.gamma;sens.got=true}return}
  if(e.webkitCompassHeading!=null&&e.webkitCompassHeading>=0&&(e.webkitCompassAccuracy==null||(e.webkitCompassAccuracy>=0&&e.webkitCompassAccuracy<40)))feedNorth(norm(360-e.webkitCompassHeading-e.alpha));
- sens.rel=true;sens.raw=e.alpha;sens.alpha=e.alpha+(sens.off||0);sens.beta=e.beta;sens.gamma=e.gamma;sens.got=true}
+ sens.rel=true;sens.raw=e.alpha;sens.alpha=e.alpha+(sens.off??(sens.samp.length?sens.samp[sens.samp.length-1]:0));sens.beta=e.beta;sens.gamma=e.gamma;sens.got=true}
 async function enableSensors(){try{if(typeof DeviceOrientationEvent!=="undefined"&&typeof DeviceOrientationEvent.requestPermission==="function"){const r=await DeviceOrientationEvent.requestPermission();if(r!=="granted"){toast("Permissão dos sensores negada. Arraste para olhar em volta.");return}}}catch(e){toast("Os sensores não puderam ser ativados aqui. Arraste para olhar em volta.");return}
  addEventListener("deviceorientationabsolute",onOri,true);addEventListener("deviceorientation",onOri,true);st.sensors=true;
- setTimeout(()=>{if(!sens.got){st.sensors=false;toast("Sensores indisponíveis nesta página. Arraste para olhar em volta; no app instalado o celular guia a tela.")}else toast(sens.off!=null||sens.samp.length?"Sensores ativos. Se o norte estiver deslocado, arraste para o lado para calibrar.":"Sensores ativos sem bússola. Arraste para o lado para alinhar o norte.")},1500)}
+ setTimeout(()=>{if(!sens.got){st.sensors=false;toast("Sensores indisponíveis nesta página. Arraste para olhar em volta; no app instalado o celular guia a tela.")}else toast(sens.off!=null||sens.samp.length?"Sensores ligados: a tela segue o celular. O norte foi calibrado pela bússola.":"Sensores ligados, mas sem bússola: o norte pode ficar deslocado.")},1500)}
 function gps(silent){const msg=$("gpsMsg");if(!navigator.geolocation){msg.textContent="Este navegador não oferece localização.";return}msg.textContent="Buscando sua posição…";
  navigator.geolocation.getCurrentPosition(async p=>{const la=p.coords.latitude,lo=p.coords.longitude;st.obs={name:"Minha localização",lat:la,lon:lo,gps:true};syncLoc();save();
    msg.textContent=`Posição obtida com precisão de ${Math.round(p.coords.accuracy)} m.`;const n=await placeName(la,lo);if(st.obs.gps){st.obs.name=n;save()}if(!silent)toast(`Localização real: ${n}`)},
@@ -558,7 +559,8 @@ document.querySelectorAll("[data-sp]").forEach(b=>b.onclick=()=>{st.speed=+b.dat
 $("bBack").onclick=()=>{st.t-=36e5};$("bFwd").onclick=()=>{st.t+=36e5};$("bNow").onclick=()=>{st.t=Date.now();st.speed=1;st.play=true};
 $("bPlay").onclick=()=>{st.play=!st.play};
 const tog=(id,k)=>{$(id).onclick=()=>{st.L[k]=!st.L[k];$(id).setAttribute("aria-pressed",st.L[k])}};tog("lObs","obs");tog("lModel","model");tog("lLines","lines");tog("lGrid","grid");tog("lArt","art");tog("lLand","land");
-$("bSens").onclick=()=>{if(st.sensors){st.sensors=false;sens.got=false;const a=Math.atan2(cam.f[0],cam.f[1]);st.yaw=a;st.pitch=Math.asin(clamp(cam.f[2],-1,1))}else enableSensors()};
+$("bSens").onclick=()=>{if(st.sensors){st.sensors=false;sens.got=false;const a=Math.atan2(cam.f[0],cam.f[1]);st.yaw=a;st.pitch=Math.asin(clamp(cam.f[2],-1,1));toast("Sensores desligados: arraste para navegar livremente.")}else{sens.off=null;sens.samp=[];enableSensors()}};
+$("bRecal").onclick=()=>{recalNorth();panel(null)};
 $("infoX").onclick=()=>{st.sel=null};
 function setMode(m){st.mode=m;$("mSky").setAttribute("aria-pressed",m==="sky");$("mDisc").setAttribute("aria-pressed",m==="disc");
  document.querySelectorAll(".tile.s").forEach(b=>b.hidden=m!=="sky");document.querySelectorAll(".tile.d").forEach(b=>b.hidden=m!=="disc");$("bComp").style.visibility=m==="sky"?"visible":"hidden";
@@ -567,7 +569,7 @@ $("mSky").onclick=()=>setMode("sky");$("mDisc").onclick=()=>setMode("disc");$("m
 $("dTop").onclick=()=>{dv.tiltT=1};$("dIncl").onclick=()=>{dv.tiltT=0.45};$("dReset").onclick=()=>{dv.tiltT=0.5;dv.rot=0;dv.zoom=1;dv.px=0;dv.py=0};
 const dtog=(id,k)=>{$(id).onclick=()=>{dv[k]=!dv[k];$(id).setAttribute("aria-pressed",dv[k])}};dtog("dStars","stars");dtog("dCons","cons");
 dtog("dLight","light");
-const begin=()=>{$("welcome").hidden=true;const o=compute();if(o.sun.alt>0){st.yaw=o.sun.az*D;st.pitch=clamp(o.sun.alt,5,60)*D}else{st.yaw=(st.obs.lat<0?180:0)*D;st.pitch=30*D}};
+const begin=()=>{$("welcome").hidden=true;const o=compute();if(o.sun.alt>0){st.yaw=o.sun.az*D;st.pitch=clamp(o.sun.alt-20,0,50)*D}else{st.yaw=(st.obs.lat<0?180:0)*D;st.pitch=12*D}};
 $("start").onclick=()=>{begin();enableSensors();gps()};$("startManual").onclick=()=>{begin();gps(true);toast("Arraste para olhar em volta. Use dois dedos para aproximar.")};
 // arrastar, aproximar e tocar
 const pts=new Map();let gest=null;const app=$("app");
@@ -580,7 +582,8 @@ app.addEventListener("pointermove",e=>{if(!gest||!pts.has(e.pointerId))return;pt
  if(pts.size===2&&st.mode==="sky"){if(!gest.d0)gest.d0=dist2();st.fov=clamp(gest.fov*gest.d0/dist2(),15,130);gest.moved=true;return}
  const dx=e.clientX-gest.x,dy=e.clientY-gest.y;if(Math.hypot(dx,dy)>6)gest.moved=true;if(!gest.moved)return;const k=1/F;
  if(st.mode==="disc"){dv.tiltT=null;if(gest.btn===2||gest.shift){dv.px=gest.px+dx;dv.py=gest.py+dy}else{dv.rot=gest.rot+dx*0.008;dv.tilt=clamp(gest.tilt+dy*0.004,0.12,1)}return}
- if(st.sensors&&sens.got)sens.cal=gest.cal+dx*k*R2D;else{st.yaw=gest.yaw-dx*k;st.pitch=clamp(gest.pitch+dy*k,-80*D,89*D)}});
+ if(st.sensors&&sens.got){if(Math.abs(dx)>40&&!gest.warned){gest.warned=true;toast("Sensores ligados: a tela segue o celular. Toque na bússola para desligar e navegar com o dedo.")}return}
+ st.yaw=gest.yaw-dx*k;st.pitch=clamp(gest.pitch+dy*k,-80*D,89*D)});
 const end=e=>{if(gest&&!gest.moved&&pts.size===1&&st.mode==="disc"){discTap(e.clientX,e.clientY)}else if(gest&&!gest.moved&&pts.size===1){let best=null,bd=34;for(const h of st.hits){const d=Math.hypot(h.x-e.clientX,h.y-e.clientY);if(d<bd){bd=d;best=h}}st.sel=best?{kind:best.kind,i:best.i,id:best.id}:null}
  pts.delete(e.pointerId);if(!pts.size)gest=null;else gest={...gest,d0:0,fov:st.fov}};
 app.addEventListener("pointerup",end);app.addEventListener("pointercancel",end);
@@ -588,8 +591,9 @@ app.addEventListener("wheel",e=>{e.preventDefault();if(st.mode==="disc")dv.zoom=
 app.addEventListener("contextmenu",e=>{if(st.mode==="disc")e.preventDefault()});
 addEventListener("keydown",e=>{const k=3*D;if(e.key==="ArrowLeft")st.yaw-=k;if(e.key==="ArrowRight")st.yaw+=k;if(e.key==="ArrowUp")st.pitch=Math.min(st.pitch+k,89*D);if(e.key==="ArrowDown")st.pitch=Math.max(st.pitch-k,-80*D)});
 // ---------- Laço ----------
+const ROSE_T=[...document.querySelectorAll("#rose text")];
 let last=performance.now(),lastI=0;
-function loop(now){const dt=Math.min(now-last,100);last=now;if(st.play)st.t+=dt*st.speed;updateCam();const o=compute();st.hits=[];if(st.mode==="disc")drawDisc(o);else{draw(o);drawMini(o);const az=Math.atan2(cam.f[0],cam.f[1])*R2D;$("rose").setAttribute("transform",`rotate(${(-az).toFixed(1)} 32 32)`)}if(now-lastI>200){hud();info(o);lastI=now}requestAnimationFrame(loop)}
+function loop(now){const dt=Math.min(now-last,100);last=now;if(st.play)st.t+=dt*st.speed;updateCam();const o=compute();st.hits=[];if(st.mode==="disc")drawDisc(o);else{draw(o);drawMini(o);const az=Math.atan2(cam.f[0],cam.f[1])*R2D;$("ret").style.top=PY+"px";$("rose").setAttribute("transform",`rotate(${(-az).toFixed(1)} 32 32)`);for(const t of ROSE_T)t.setAttribute("transform",`rotate(${az.toFixed(1)} ${t.getAttribute("x")} ${+t.getAttribute("y")-3})`)}if(now-lastI>200){hud();info(o);lastI=now}requestAnimationFrame(loop)}
 syncLoc();requestAnimationFrame(loop);
 if("serviceWorker"in navigator&&location.protocol==="https:"&&!/claude/.test(location.hostname)){try{navigator.serviceWorker.register("sw.js").catch(()=>{})}catch(e){}}
 }
