@@ -17,9 +17,14 @@ Toque no relógio para abrir a barra de simulação: tocar/pausar, régua das 24
 - **Estrela Polar:** marcada no centro do domo do Disco 3D e no céu do Imersivo; abaixo do horizonte, o app mostra quantos graus.
 - **Anel de horas (inspirado no mapa de Gleason, 1892):** horas solares em algarismos romanos em volta do disco, girando com o Sol (XII dourado = meio-dia); graus de latitude e longitude na grade e escala de distância ao longo dos meridianos. Estilo de mapa “Gleason 1892” gerado por `tools/gleason.py`.
 
+## Menu e tela
+
+- O menu de camadas abre como uma lista na lateral esquerda, com uma chave liga/desliga em cada item; no Disco 3D o disco se desloca para a direita enquanto o menu está aberto.
+- **Tela deitada:** gire o celular (ou use o item do menu) para ver em paisagem. No Android o app trava a tela deitada em tela cheia; no iPhone basta girar com o bloqueio de rotação desligado.
+
 ## Satélites e aviões
 
-- **Satélites:** órbitas do CelesTrak (estações espaciais, os mais brilhantes e, opcionalmente, Starlink), calculadas no próprio aparelho com SGP4. O app busca os dados direto no CelesTrak (ou em `dados/tle-<grupo>.txt`, se existir no site).
+- **Satélites:** começam desligados; os dados só são baixados quando você liga a camada. Órbitas do CelesTrak (estações espaciais, os mais brilhantes e, opcionalmente, Starlink), calculadas no próprio aparelho com SGP4. O app busca os dados direto no CelesTrak (ou em `dados/tle-<grupo>.txt`, se existir no site).
 - **Aviões:** posições ao vivo de radar ADS-B num raio de cerca de 460 km do observador, tentando adsb.fi, adsb.lol, airplanes.live e OpenSky, nesta ordem. Se todos bloquearem o acesso pelo navegador, publique `tools/proxy-avioes.js` como Cloudflare Worker (gratuito) e cole o endereço no app em Local e modelo > Radar de aviões.
 
 ## Local

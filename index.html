@@ -74,6 +74,24 @@ dt{color:var(--mute)}dd{margin:0;text-align:right;font-variant-numeric:tabular-n
 .tile{min-height:74px;border-radius:14px;border:1px solid var(--line);background:#0f1d25;color:var(--mute);display:grid;place-items:center;align-content:center;gap:6px;font:500 12.5px Inter,sans-serif;cursor:pointer;padding:8px 4px;text-align:center}
 .tile[aria-pressed=true]{color:var(--ink);border-color:rgba(108,195,182,.6);background:#12303a}
 .tile.m[aria-pressed=true]{border-color:rgba(255,143,107,.7);background:#3a1f17}
+#pMenu{inset:0 auto 0 0;width:min(300px,84vw);height:100%;max-height:none;border:0;border-right:1px solid var(--line);border-radius:0 18px 18px 0;background:rgba(6,14,20,.78);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);transform:translateX(-105%);padding:calc(env(safe-area-inset-top) + 10px) 10px calc(env(safe-area-inset-bottom) + 14px) calc(env(safe-area-inset-left) + 10px);align-content:start;gap:10px}
+#pMenu.open{transform:none}
+.mhead{display:flex;align-items:center;justify-content:space-between;padding:0 2px 0 10px}.mhead h2{font-size:18px}
+.mx{width:40px;height:40px;border:0;background:none;color:var(--mute);font-size:24px;cursor:pointer}
+#pMenu .tiles{display:flex;flex-direction:column;gap:0}
+.mh{font:600 10.5px Inter,sans-serif;letter-spacing:.13em;text-transform:uppercase;color:var(--teal);padding:12px 10px 4px}
+#pMenu .tile{min-height:44px;display:flex;align-items:center;justify-content:flex-start;gap:12px;padding:5px 8px 5px 10px;border:0;border-radius:10px;background:transparent;color:var(--mute);font:500 14px Inter,sans-serif;text-align:left}
+#pMenu .tile:active{background:rgba(255,255,255,.07)}
+#pMenu .tile[aria-pressed=true]{background:transparent;color:var(--ink)}
+#pMenu .tile svg{width:20px;height:20px;flex:none}
+#pMenu .tile span{flex:1}
+#pMenu .tile em{font-style:normal;font-size:12.5px;color:var(--sun)}
+#pMenu .tile[aria-pressed]::after{content:"";flex:none;width:38px;height:22px;border-radius:11px;background:rgba(255,255,255,.18) radial-gradient(circle at 11px 11px,#d4dad9 7.5px,transparent 8px)}
+#pMenu .tile[aria-pressed=true]::after{background:var(--teal) radial-gradient(circle at 27px 11px,#fff 7.5px,transparent 8px)}
+#pMenu .tile.m[aria-pressed=true]::after{background-color:var(--model)}
+#pMenu .tile:not([aria-pressed])::after{content:"›";flex:none;width:38px;text-align:center;font-size:22px;line-height:1;color:var(--mute)}
+#pMenu .two{grid-template-columns:1fr}#pMenu .btn{min-height:44px;font-size:14px;background:rgba(18,35,44,.7)}
+.scrim.clear{background:transparent}
 .btn.ic{display:flex;gap:8px;align-items:center;justify-content:center}
 .btn.ic[aria-pressed=true]{border-color:var(--teal);color:#bff0e8}
 input[type=datetime-local]{font:16px Inter,sans-serif;width:100%;min-height:46px;background:#0f1d25;color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:0 12px;color-scheme:dark}
@@ -124,26 +142,33 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
     </div>
   </div>
   <div class="sheet" id="pMenu" role="dialog" aria-label="Camadas e ações">
+    <div class="mhead"><h2>Camadas</h2><button class="mx" id="mX" aria-label="Fechar menu">×</button></div>
     <div class="tiles">
+      <div class="mh s">Céu</div>
       <button class="tile s" id="lObs" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.5 6.7 19.4l1.2-6L3.4 9.3l6-.7Z"/></svg><span>Céu observado</span></button>
       <button class="tile s m" id="lModel" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="15" rx="9" ry="4"/><circle cx="12" cy="6" r="2.2"/><path d="M12 8.5v5"/></svg><span>Modelo do disco</span></button>
       <button class="tile s" id="lLines" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="17" r="1.6"/><circle cx="10" cy="8" r="1.6"/><circle cx="17" cy="11" r="1.6"/><circle cx="19" cy="4" r="1.6"/><path d="m6 15.6 3.2-6M11.6 8.6l3.8 1.8M17.6 9.4l.9-3.6"/></svg><span>Constelações</span></button>
       <button class="tile s" id="lArt" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19c3-1 4-4 7-5s5 1 9-3"/><path d="M14 5c2 0 4 2 3 4"/><circle cx="8" cy="8" r="2"/></svg><span>Desenhos</span></button>
       <button class="tile s" id="lLand" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 19h20"/><path d="m3 19 5-7 4 5 3-3 6 5"/><circle cx="17" cy="7" r="2.5"/></svg><span>Paisagem</span></button>
       <button class="tile s" id="lGrid" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18c5-6 13-6 18 0"/><path d="M6 20c2-9 10-9 12 0"/><path d="M12 6v14M3 13h18"/></svg><span>Grade</span></button>
-      <button class="tile d" id="dReal" aria-pressed="true" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M5 9c3 1 4-2 7-1s3 4 6 3M7 17c2-2 5-1 6-3"/></svg><span id="dRealL">Estilo: mapa</span></button>
+      <div class="mh d" hidden>Disco 3D</div>
+      <button class="tile d" id="dReal" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M5 9c3 1 4-2 7-1s3 4 6 3M7 17c2-2 5-1 6-3"/></svg><span>Estilo do mapa</span><em id="dRealL">mapa</em></button>
       <button class="tile d" id="dLight" aria-pressed="true" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span>Luz do Sol</span></button>
       <button class="tile d" id="dStars" aria-pressed="true" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 15a9 9 0 0 1 18 0"/><path d="M2 15h20"/><path d="m8 8 .6 1.3 1.4.2-1 1 .2 1.4L8 11.2l-1.2.7.2-1.4-1-1 1.4-.2Z"/><circle cx="15" cy="8" r=".8"/><circle cx="12" cy="11" r=".8"/></svg><span>Estrelas no domo</span></button>
       <button class="tile d" id="dCons" aria-pressed="true" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 15a9 9 0 0 1 18 0"/><path d="M2 15h20"/><path d="m7 11 4-3 3 2 3-1"/><circle cx="7" cy="11" r="1"/><circle cx="11" cy="8" r="1"/><circle cx="14" cy="10" r="1"/><circle cx="17" cy="9" r="1"/></svg><span>Constelações no domo</span></button>
+      <button class="tile d" id="dRing" aria-pressed="true" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="6.5"/><path d="M12 3v2.5M21 12h-2.5M12 21v-2.5M3 12h2.5"/></svg><span>Anel de horas</span></button>
       <button class="tile d" id="dTop" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="1.5"/><path d="M12 4v3M12 17v3M4 12h3M17 12h3"/></svg><span>Vista de cima</span></button>
       <button class="tile d" id="dIncl" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="15" rx="9" ry="3.5"/><path d="M4 13a8 6 0 0 1 16 0"/></svg><span>Vista inclinada</span></button>
-      <button class="tile d" id="dRing" aria-pressed="true" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="6.5"/><path d="M12 3v2.5M21 12h-2.5M12 21v-2.5M3 12h2.5"/></svg><span>Anel de horas</span></button>
       <button class="tile d" id="dReset" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4h4"/></svg><span>Centralizar</span></button>
+      <div class="mh">Nos dois modos</div>
       <button class="tile" id="lPolar" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 1.6 4.4 4.6.2-3.6 2.9 1.3 4.5L12 12.4 8.1 15l1.3-4.5L5.8 7.6l4.6-.2Z"/><path d="M12 15v6"/></svg><span>Estrela Polar</span></button>
       <button class="tile" id="bEclT"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="12" r="6"/><path d="M14 6.6a6 6 0 1 1 0 10.8"/></svg><span>Eclipses</span></button>
-      <button class="tile" id="lSat" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="6" height="6" rx="1"/><path d="M3 6l4 4M17 14l4 4M7 10l2 1M15 13l2 1"/><path d="M2 5l3-3 4 4-3 3ZM15 18l3-3 4 4-3 3Z"/></svg><span>Satélites</span></button>
+      <div class="mh">Ao vivo</div>
+      <button class="tile" id="lSat" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="6" height="6" rx="1"/><path d="M3 6l4 4M17 14l4 4M7 10l2 1M15 13l2 1"/><path d="M2 5l3-3 4 4-3 3ZM15 18l3-3 4 4-3 3Z"/></svg><span>Satélites</span></button>
       <button class="tile" id="lStarlink" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17 21 7"/><circle cx="6" cy="15.3" r="1"/><circle cx="10" cy="13.1" r="1"/><circle cx="14" cy="10.9" r="1"/><circle cx="18" cy="8.7" r="1"/></svg><span>Starlink</span></button>
       <button class="tile" id="lAir" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15.5v-1.8l-7.5-4.6V4a1.5 1.5 0 0 0-3 0v5.1L3 13.7v1.8l7.5-2.2v4.4l-2 1.5V20l3.5-1 3.5 1v-.8l-2-1.5v-4.4Z"/></svg><span>Aviões</span></button>
+      <div class="mh">Tela</div>
+      <button class="tile" id="bRot" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="8" width="18" height="10" rx="2"/><path d="M7 4.5a8 8 0 0 1 9.5-.5"/><path d="m16.5 1.5 0 2.5-2.5.3"/></svg><span>Tela deitada</span></button>
     </div>
     <button class="btn" id="bHome" hidden>Voltar para minha localização</button>
     <button class="btn" id="bRecal" hidden>Recalibrar o norte</button>
@@ -184,7 +209,7 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
       <p class="small" id="airMsg"></p>
     </details>
     <button class="btn" id="sheetClose">Fechar</button>
-    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-5</p>
+    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-6</p>
   </div>
   <div class="welcome" id="welcome">
     <div>
@@ -195,7 +220,6 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
     </div>
   </div>
 </div>
-<script src="lib/satellite.min.js"></script>
 <script>
 {
 const D=Math.PI/180,R2D=180/Math.PI,RKM=20015;
@@ -263,7 +287,7 @@ function clipProj(pts,C){const P=pts.map(q=>[dot(q,C.r),dot(q,C.u),dot(q,C.f)]),
 
 // ---------- Estado ----------
 const st={t:Date.now(),play:true,speed:1,obs:{name:"São Paulo",lat:-23.55,lon:-46.63},H:5000,yaw:180*D,pitch:25*D,fov:90,
- L:{polar:true,trail:false,obs:true,model:true,lines:true,grid:false,art:true,land:true,sat:true,starlink:false,air:false},sensors:false,mode:"sky",dg:null,sel:null,hits:[]};
+ L:{polar:true,trail:false,obs:true,model:true,lines:true,grid:false,art:true,land:true,sat:false,starlink:false,air:false},sensors:false,mode:"sky",dg:null,sel:null,hits:[]};
 const sens={alpha:0,beta:90,gamma:0,cal:0,off:null,samp:[],got:false,rel:false,raw:null};
 let cam={f:[0,1,0],r:[1,0,0],u:[0,0,1]};
 st.home={...st.obs};st.pend=null;
@@ -286,7 +310,7 @@ function camSensor(){const a=(sens.alpha+sens.cal)*D,b=sens.beta*D,g=sens.gamma*
 function updateCam(){const t=st.sensors&&sens.got?camSensor():camManual();
  if(st.sensors&&sens.got){const k=0.2,mix=(a,b)=>a.map((v,i)=>v+(b[i]-v)*k);let f=nrm(mix(cam.f,t.f)),r=mix(cam.r,t.r);r=nrm(r.map((v,i)=>v-dot(r,f)*f[i]));let u=cross(r,f);
   if(f[2]<0&&u[2]>0.05){const a=Math.atan2(-f[2],u[2]),c=Math.cos(a),sn=Math.sin(a),f2=f.map((v,i)=>v*c+u[i]*sn);u=u.map((v,i)=>v*c-f[i]*sn);f=f2}cam={f,r,u}}else cam=t;
- F=(Math.max(W,Hh)/2)/Math.tan(st.fov*D/2);PY=Hh-Math.max(Hh>W?150:118,Hh*(Hh>W?0.17:0.13))-SIMH;RY=Math.round(Math.min(Hh*0.46,PY*0.62))}
+ F=(Math.max(W,Hh)/2)/Math.tan(st.fov*D/2);PY=Hh-(W>Hh&&Hh<560?84:Math.max(Hh>W?150:118,Hh*(Hh>W?0.17:0.13)))-SIMH;RY=Math.round(Math.min(Hh*0.46,PY*0.62))}
 function proj(v){const z=dot(v,cam.f),x=dot(v,cam.r),y=dot(v,cam.u);return z>0.02?{ok:true,sx:W/2+F*x/z,sy:PY-F*y/z,x,y,z}:{ok:false,x,y,z}}
 const onScreen=p=>p.ok&&p.sx>-40&&p.sx<W+40&&p.sy>-40&&p.sy<Hh+40;
 // ---------- Cálculo dos objetos ----------
@@ -526,9 +550,9 @@ function domeInit(){if(dv.dome||!CAT.ready)return;const S=[];for(let i=0;i<CAT.n
  const uv=d=>[d.r*Math.sin(d.ra*D),d.r*Math.cos(d.ra*D)],slerp=(a,b,t)=>nrm([a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t]);
  const sub=(a,b,out,dep)=>{const A=toDome(a),B=toDome(b),pa=uv(A),pb=uv(B);if(dep<10&&Math.hypot(pa[0]-pb[0],pa[1]-pb[1])>0.02){const m=slerp(a,b,0.5);sub(a,m,out,dep+1);sub(m,b,out,dep+1)}else out.push(B)};
  dv.dome={S,L:CAT.cons.map(c=>({name:c.name,lab:toDome(c.lab),segs:c.segs.map(sg=>{const out=[toDome(sg[0])];for(let k=1;k<sg.length;k++)sub(sg[k-1],sg[k],out,0);return out})}))}}
-let DMG={top:100,bot:110};
+let DMG={top:100,bot:110},MOFF=0;
 function dgeom(){const top=DMG.top,bot=DMG.bot,avail=Math.max(200,Hh-top-bot),lf=Math.sqrt(Math.max(0,1-dv.tilt*dv.tilt)),R0=Math.min(W*0.46,avail/(2*dv.tilt+dv.HD*lf)),R=R0*dv.zoom,
- cx=W/2+dv.px,cy=top+avail/2+R0*dv.HD*lf*0.5+dv.py,c=Math.cos(dv.rot),s=Math.sin(dv.rot);return{R,cx,cy,c,s,lf,a:R*c,b:R*dv.tilt*s,cc:-R*s,d:R*dv.tilt*c}}
+ cx=W/2+dv.px+(st.split?0:MOFF),cy=top+avail/2+R0*dv.HD*lf*0.5+dv.py,c=Math.cos(dv.rot),s=Math.sin(dv.rot);return{R,cx,cy,c,s,lf,a:R*c,b:R*dv.tilt*s,cc:-R*s,d:R*dv.tilt*c}}
 const DS=(g,u,v)=>[g.cx+g.a*u+g.cc*v,g.cy+g.b*u+g.d*v];
 const dM=g=>ctx.setTransform(dpr*g.a,dpr*g.b,dpr*g.cc,dpr*g.d,dpr*g.cx,dpr*g.cy),dS=()=>ctx.setTransform(dpr,0,0,dpr,0,0);
 function dCircle(g,lat,px,col,dash){dM(g);ctx.beginPath();ctx.arc(0,0,(90-lat)/180,0,7);dS();ctx.lineWidth=px;ctx.strokeStyle=col;ctx.setLineDash(dash||[]);ctx.stroke();ctx.setLineDash([])}
@@ -609,7 +633,8 @@ function lookFrom(la,lo,hkm){const f=st.obs.lat*D,l=st.obs.lon*D,ec=(a,b,r)=>[r*
  return{v:[e/dist,n/dist,u/dist],alt:Math.asin(clamp(u/dist,-1,1))*R2D,az:(Math.atan2(e,n)*R2D+360)%360,dist}}
 const SAT={list:[],loaded:{},ts:0,tt:0,cache:[],path:null,pathFor:null};
 const SAT_NAMES={25544:"ISS (Estação Espacial Internacional)",48274:"Tiangong (estação chinesa)",20580:"Telescópio Hubble"};
-async function loadTLE(g){if(SAT.loaded[g])return;SAT.loaded[g]="loading";let txt=null;
+function libSat(){return typeof satellite!=="undefined"?Promise.resolve():new Promise(r=>{const e=document.createElement("script");e.src="lib/satellite.min.js";e.onload=r;e.onerror=r;document.head.appendChild(e)})}
+async function loadTLE(g){if(SAT.loaded[g])return;SAT.loaded[g]="loading";await libSat();let txt=null;
  for(const u of[`dados/tle-${g}.txt`,`https://celestrak.org/NORAD/elements/gp.php?GROUP=${g}&FORMAT=tle`]){try{const r=await fetch(u,{cache:"no-cache"});if(r.ok){const t=await r.text();if(/^1 \d/m.test(t)){txt=t;break}}}catch(e){}}
  if(!txt||typeof satellite==="undefined"){SAT.loaded[g]=null;toast("Não foi possível baixar os dados dos satélites agora. Tente de novo mais tarde.");return}
  const L=txt.split(/\r?\n/).map(x=>x.trimEnd()).filter(Boolean),have=new Set(SAT.list.map(s=>s.id));
@@ -736,7 +761,7 @@ function hud(){const d=new Date(st.t),live=st.speed===1&&st.play&&Math.abs(st.t-
  if(!st.simDrag)$("sDay").value=Math.round((st.t-dayStart(st.t))/6e4);
  const tv=(PY-RY)/F,av=nrm(cam.f.map((v,i)=>v+cam.u[i]*tv)),az=(Math.atan2(av[0],av[1])*R2D+360)%360,al=Math.asin(clamp(av[2],-1,1))*R2D;$("aim").textContent=`${Math.round(az)}° ${dirT(az)} · ${nf(al,0)}°`;
  $("bPlay").textContent=st.play?"Pausar":"Rodar";document.querySelectorAll("[data-sp]").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.sp===st.speed&&st.play&&!st.year));
- $("bHome").hidden=!away();$("bHome").textContent=`Voltar para ${st.home.name}`;const on=!!(st.sensors&&sens.got);$("bSens").setAttribute("aria-pressed",on);$("bRecal").hidden=!on||st.mode!=="sky";$("sensTag").hidden=!on;$("bComp").classList.toggle("on",on);$("hVal").textContent=st.H.toLocaleString("pt-BR")+" km";
+ $("bRot").setAttribute("aria-pressed",innerWidth>innerHeight);$("bHome").hidden=!away();$("bHome").textContent=`Voltar para ${st.home.name}`;const on=!!(st.sensors&&sens.got);$("bSens").setAttribute("aria-pressed",on);$("bRecal").hidden=!on||st.mode!=="sky";$("sensTag").hidden=!on;$("bComp").classList.toggle("on",on);$("hVal").textContent=st.H.toLocaleString("pt-BR")+" km";
  if(document.activeElement!==$("dt"))$("dt").value=toLocalInput(d)}
 let toastT;function toast(m){const t=$("toast");t.textContent=m;t.classList.add("on");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("on"),4200)}
 // ---------- Sensores e GPS ----------
@@ -785,7 +810,7 @@ $("q").oninput=e=>{clearTimeout(qT);qT=setTimeout(()=>search(e.target.value),280
 const manualLoc=()=>{const la=parseFloat($("lat").value),lo=parseFloat($("lon").value);if(isFinite(la)&&isFinite(lo)&&Math.abs(la)<=90&&Math.abs(lo)<=180){st.obs={name:"Ponto escolhido",lat:la,lon:lo};setHome();placeName(la,lo,"Ponto escolhido").then(n=>{if(st.obs.lat===la&&st.obs.lon===lo){st.obs.name=n;setHome()}})}};
 $("lat").onchange=manualLoc;$("lon").onchange=manualLoc;
 $("height").oninput=e=>{st.H=+e.target.value;save()};$("gps").onclick=gps;
-function panel(id){["pMenu","pTime","sheet","pEcl"].forEach(k=>$(k).classList.toggle("open",k===id));$("scrim").hidden=!id}
+function panel(id){["pMenu","pTime","sheet","pEcl"].forEach(k=>$(k).classList.toggle("open",k===id));$("scrim").hidden=!id;$("scrim").classList.toggle("clear",id==="pMenu")}
 $("scrim").onclick=()=>panel(null);$("bMenu").onclick=()=>panel($("pMenu").classList.contains("open")?null:"pMenu");$("bTime").onclick=()=>{$("sim").hidden=!$("sim").hidden};$("sCal").onclick=()=>panel("pTime");
 $("sPlay").onclick=()=>{st.play=!st.play};
 new ResizeObserver(()=>{const e=$("sim");SIMH=e.hidden?0:e.offsetHeight+10}).observe($("sim"));
@@ -820,9 +845,11 @@ function openEcl(){const L=eclList().filter(e=>e.t>st.t-3*36e5).slice(0,6);$("ec
   const v=eclVis(e),t0=(v.ok?v.t:e.t);st.year=false;trClear();st.t=t0-(e.lunar?2.5:1.5)*36e5;st.speed=600;st.play=true;const b2=e.lunar?moon(t0):sun(t0),al=altOf(st.obs.lat,st.obs.lon,b2),az=azOf(st.obs.lat,st.obs.lon,b2);
   if(!st.sensors){st.yaw=az*D;st.pitch=clamp(al-12,0,60)*D;st.fov=Math.min(st.fov,60)}panel(null);$("sim").hidden=false;toast(`${TYP(e.type)}: simulando a 10 minutos por segundo. Olhe para ${e.lunar?"a Lua":"o Sol"}.`)})}
 $("sEcl").onclick=()=>{openEcl();panel("pEcl")};$("bEclT").onclick=()=>{openEcl();panel("pEcl")};$("eclClose").onclick=()=>panel(null);tog("lStarlink","starlink");tog("lAir","air");
-$("lSat").addEventListener("click",()=>{SAT.ts=0;if(st.L.sat){loadTLE("stations").then(()=>loadTLE("visual"))}else if(st.sel&&st.sel.kind==="sat")st.sel=null});$("lStarlink").addEventListener("click",()=>{SAT.ts=0;if(st.L.starlink){toast("Carregando os satélites Starlink…");loadTLE("starlink")}});
+$("lSat").addEventListener("click",()=>{SAT.ts=0;if(st.L.sat){if(!SAT.loaded.stations)toast("Carregando os satélites…");loadTLE("stations").then(()=>loadTLE("visual"))}else if(st.sel&&st.sel.kind==="sat")st.sel=null});$("lStarlink").addEventListener("click",()=>{SAT.ts=0;if(st.L.starlink){toast("Carregando os satélites Starlink…");loadTLE("starlink")}});
 $("lAir").addEventListener("click",()=>{if(st.L.air){AIR.err=0;AIR.first=false;airFetch(true)}else AIR.list=[]});
-setTimeout(()=>{if(st.L.sat)loadTLE("stations").then(()=>loadTLE("visual"))},1500);
+$("mX").onclick=()=>panel(null);
+const scrLand=()=>innerWidth>innerHeight;
+$("bRot").onclick=async()=>{const so=screen.orientation;try{if(!scrLand()){if(!document.fullscreenElement&&document.documentElement.requestFullscreen)await document.documentElement.requestFullscreen({navigationUI:"hide"}).catch(()=>{});if(!so||!so.lock)throw 0;await so.lock("landscape")}else{if(so&&so.lock&&document.fullscreenElement){await so.lock("portrait").catch(()=>{});so.unlock&&so.unlock()}else throw 1}}catch(e){toast(scrLand()?"Gire o celular de volta para deixar a tela em pé.":"Gire o celular de lado. Se a tela não girar, desative o bloqueio de rotação do aparelho.")}};
 $("bSens").onclick=()=>{if(st.sensors){st.sensors=false;sens.got=false;const a=Math.atan2(cam.f[0],cam.f[1]);st.yaw=a;st.pitch=Math.asin(clamp(cam.f[2],-1,1));toast("Sensores desligados: arraste para navegar livremente.")}else{sens.off=null;sens.samp=[];enableSensors()}};
 $("bRecal").onclick=()=>{recalNorth();panel(null)};
 $("infoX").onclick=()=>{st.sel=null;st.pend=null};
@@ -832,13 +859,13 @@ $("infoBody").addEventListener("click",e=>{const b=e.target.closest("[data-act]"
  else if(k==="home")goHome();else{st.pend=null;st.sel=null}});
 $("bHome").onclick=()=>{goHome();panel(null)};
 function setMode(m){st.mode=m;$("bSens").hidden=m!=="sky";$("bSens").parentElement.style.gridTemplateColumns=m==="sky"?"":"1fr";$("mini").setAttribute("aria-label",m==="sky"?"Abrir o Disco 3D":"Voltar ao modo Imersivo");
- document.querySelectorAll(".tile.s").forEach(b=>b.hidden=m!=="sky");document.querySelectorAll(".tile.d").forEach(b=>b.hidden=m!=="disc");$("bComp").style.visibility=m==="sky"?"visible":"hidden";
+ document.querySelectorAll(".tile.s,.mh.s").forEach(b=>b.hidden=m!=="sky");document.querySelectorAll(".tile.d,.mh.d").forEach(b=>b.hidden=m!=="disc");$("bComp").style.visibility=m==="sky"?"visible":"hidden";
  document.querySelector(".reticle").hidden=m!=="sky";applyLayout();if(m==="disc"){discInit();if(!dv.seen){dv.seen=true;toast("Arraste para girar e inclinar; pinça para aproximar. Toque num astro para ver detalhes. Segure o dedo num ponto para mudar o observador.")}}}
 $("mini").onclick=()=>setMode(st.mode==="sky"?"disc":"sky");
 $("dTop").onclick=()=>{dv.tiltT=1};$("dIncl").onclick=()=>{dv.tiltT=0.45};$("dReset").onclick=()=>{dv.tiltT=0.5;dv.rot=0;dv.zoom=1;dv.px=0;dv.py=0};
 const dtog=(id,k)=>{$(id).onclick=()=>{dv[k]=!dv[k];$(id).setAttribute("aria-pressed",dv[k])}};dtog("dStars","stars");dtog("dCons","cons");
-dtog("dLight","light");const STY=[["mapa","Estilo: mapa"],["gleason","Estilo: Gleason 1892"],["foto","Estilo: foto"],["pontos","Estilo: pontos"]];
-$("dReal").onclick=()=>{const k=(STY.findIndex(x=>x[0]===dv.style)+1)%STY.length;dv.style=STY[k][0];$("dRealL").textContent=STY[k][1];$("dReal").setAttribute("aria-pressed",dv.style!=="pontos");try{localStorage.setItem("planetarium-estilo",dv.style)}catch(e){}};
+dtog("dLight","light");const STY=[["mapa","mapa"],["gleason","Gleason 1892"],["foto","foto"],["pontos","pontos"]];
+$("dReal").onclick=()=>{const k=(STY.findIndex(x=>x[0]===dv.style)+1)%STY.length;dv.style=STY[k][0];$("dRealL").textContent=STY[k][1];try{localStorage.setItem("planetarium-estilo",dv.style)}catch(e){}};
 try{const v=localStorage.getItem("planetarium-estilo");if(v&&STY.some(x=>x[0]===v)){dv.style=v;$("dRealL").textContent=STY.find(x=>x[0]===v)[1]}}catch(e){}
 const begin=()=>{$("welcome").hidden=true;const o=compute();if(o.sun.alt>0){st.yaw=o.sun.az*D;st.pitch=clamp(o.sun.alt-20,0,50)*D}else{st.yaw=(st.obs.lat<0?180:0)*D;st.pitch=2*D}};
 $("start").onclick=()=>{begin();enableSensors();gps()};$("startManual").onclick=()=>{begin();gps(true);toast("Arraste para olhar em volta. Use dois dedos para aproximar.")};
@@ -866,7 +893,7 @@ addEventListener("keydown",e=>{const k=3*D;if(e.key==="ArrowLeft")st.yaw-=k;if(e
 const ROSE_T=[...document.querySelectorAll("#rose text")];
 let last=performance.now(),lastI=0;
 function splitRects(){if(!st.split)return null;const Wf=innerWidth,Hf=innerHeight;if(Hf>=Wf){const h=Math.round(Hf*0.4);return{D:{x:0,y:0,w:Wf,h},S:{x:0,y:h,w:Wf,h:Hf-h},port:true}}const w=Math.round(Wf/2);return{D:{x:0,y:0,w,h:Hf},S:{x:w,y:0,w:Wf-w,h:Hf},port:false}}
-function applyLayout(){const sp=!!st.split;$("mini").style.visibility=sp?"hidden":"visible";document.querySelectorAll(".tile.s").forEach(b=>b.hidden=!sp&&st.mode!=="sky");document.querySelectorAll(".tile.d").forEach(b=>b.hidden=!sp&&st.mode!=="disc");
+function applyLayout(){const sp=!!st.split;$("mini").style.visibility=sp?"hidden":"visible";document.querySelectorAll(".tile.s,.mh.s").forEach(b=>b.hidden=!sp&&st.mode!=="sky");document.querySelectorAll(".tile.d,.mh.d").forEach(b=>b.hidden=!sp&&st.mode!=="disc");
  $("bComp").style.visibility=sp||st.mode==="sky"?"visible":"hidden";document.querySelector(".reticle").hidden=!(sp||st.mode==="sky");$("bSens").hidden=!(sp||st.mode==="sky");$("ret").style.left="50%"}
 function regionAt(x,y){const R=splitRects();if(!R)return{area:st.mode,ox:0,oy:0};const S=R.S;if(x>=S.x&&y>=S.y)return{area:"sky",ox:S.x,oy:S.y};return{area:"disc",ox:R.D.x,oy:R.D.y}}
 function sizeOff(c,w,h){const a=Math.round(w*dpr),b=Math.round(h*dpr);if(c.width!==a||c.height!==b){c.width=a;c.height=b}}
@@ -880,6 +907,7 @@ function loop(now){const dt=Math.min(now-last,100);last=now;
   ctx.fillStyle="rgba(238,240,234,.35)";if(R.port)ctx.fillRect(0,Math.round(R.S.y*dpr)-1,cv.width,2);else ctx.fillRect(Math.round(R.S.x*dpr)-1,0,2,cv.height);
   $("ret").style.top=(R.S.y+RY)+"px";$("ret").style.left=(R.S.x+R.S.w/2)+"px";const az=Math.atan2(cam.f[0],cam.f[1])*R2D;$("rose").setAttribute("transform",`rotate(${(-az).toFixed(1)} 32 32)`);for(const t of ROSE_T)t.setAttribute("transform",`rotate(${az.toFixed(1)} ${t.getAttribute("x")} ${+t.getAttribute("y")-3})`);
   if(now-lastI>200){hud();info(o);simLbl(o);moonIcon(o);lastI=now}requestAnimationFrame(loop);return}
+ {const tg=st.mode==="disc"&&$("pMenu").classList.contains("open")?Math.min(300,W*0.84)/2:0;MOFF+=(tg-MOFF)*Math.min(1,dt/70);if(Math.abs(tg-MOFF)<0.5)MOFF=tg;DMG=Hh<W&&Hh<560?{top:58,bot:66}:{top:100,bot:110}}
  updateCam();const o=compute();satUpdate(o);trPush(o);st.hits=[];if(st.mode==="disc"){drawDisc(o);drawMiniSky(o)}else{draw(o);drawMini(o);const az=Math.atan2(cam.f[0],cam.f[1])*R2D;$("ret").style.top=RY+"px";$("rose").setAttribute("transform",`rotate(${(-az).toFixed(1)} 32 32)`);for(const t of ROSE_T)t.setAttribute("transform",`rotate(${az.toFixed(1)} ${t.getAttribute("x")} ${+t.getAttribute("y")-3})`)}if(now-lastI>200){hud();info(o);simLbl(o);moonIcon(o);lastI=now}requestAnimationFrame(loop)}
 syncLoc();requestAnimationFrame(loop);
 if("serviceWorker"in navigator&&location.protocol==="https:"&&!/claude/.test(location.hostname)){try{const had=!!navigator.serviceWorker.controller;let reloaded=false;
