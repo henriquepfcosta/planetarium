@@ -270,7 +270,7 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
       <p class="small" id="airMsg"></p>
     </details>
     <button class="btn" id="sheetClose">Fechar</button>
-    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-16</p>
+    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-17</p>
   </div>
   <div class="welcome" id="welcome">
     <div>
@@ -977,7 +977,7 @@ function discFollow(){if(!dv.follow){discKeep();return}const o=st.obs,od=toDisc(
  const tr=Math.atan2(-du,-dvv);let d=tr-dv.rot;d=Math.atan2(Math.sin(d),Math.cos(d));dv.rot+=d*(Math.abs(d)>1.5?0.25:0.18);
  if(dv.zoomT!=null){dv.zoom+=(dv.zoomT-dv.zoom)*0.12;if(Math.abs(dv.zoomT-dv.zoom)<0.01){dv.zoom=dv.zoomT;dv.zoomT=null}}
  const g=dgeom(),[x,y]=DS(g,od[0],od[1]),tx=W/2+(st.split?0:MOFF),ty=st.split?Hh*0.62:DMG.top+(Hh-DMG.top-DMG.bot)*0.64,w=clamp((dv.zoom-1.1)/0.9,0,1),wx=dv.px+(tx-x),wy=dv.py+(ty-y);dv.px+=(w*wx-dv.px)*0.2;dv.py+=(w*wy-dv.py)*0.2}
-function setFollow(v,quiet){dv.follow=v;$("dFollow").setAttribute("aria-pressed",v);try{localStorage.setItem("planetarium-follow",v?"1":"0")}catch(e){}if(v){dv.zoomT=Math.max(dv.zoom,2.2);if(!quiet)toast(st.sensors&&sens.got?"Seguindo você: o disco gira junto com o celular, com a frente para onde você aponta.":"Seguindo você: o disco gira junto com a direção para onde você olha no Imersivo.")}else if(!quiet)toast("Disco livre: arraste para girar e inclinar. Ligue Seguir minha posição e direção no menu para voltar.")}
+function setFollow(v,quiet){dv.follow=v;$("dFollow").setAttribute("aria-pressed",v);try{localStorage.setItem("planetarium-follow",v?"1":"0")}catch(e){}if(v){if(!quiet)toast(st.sensors&&sens.got?"Seguindo você: o disco gira junto com o celular, com a frente para onde você aponta.":"Seguindo você: o disco gira junto com a direção para onde você olha no Imersivo.")}else if(!quiet)toast("Disco livre: arraste para girar e inclinar. Ligue Seguir minha posição e direção no menu para voltar.")}
 function drawView(g){if(!dv.follow)return;const o=st.obs,az=heading(),h=Math.min(60,hfovDeg()/2),L=22,pts=[toDisc(o.lat,o.lon)];for(let a=-h;a<=h+0.01;a+=h/8){const q=dest(o.lat,o.lon,L,az+a);pts.push(toDisc(q[0],q[1]))}
  const P=pts.map(p=>DS(g,p[0],p[1]));const gr=ctx.createRadialGradient(P[0][0],P[0][1],2,P[0][0],P[0][1],Math.hypot(P[9][0]-P[0][0],P[9][1]-P[0][1])||1);gr.addColorStop(0,"rgba(255,207,115,.6)");gr.addColorStop(1,"rgba(255,207,115,.08)");
  ctx.fillStyle=gr;ctx.beginPath();P.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fill();ctx.strokeStyle="rgba(255,207,115,.55)";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(P[0][0],P[0][1]);ctx.lineTo(P[1][0],P[1][1]);ctx.moveTo(P[0][0],P[0][1]);ctx.lineTo(P[P.length-1][0],P[P.length-1][1]);ctx.stroke();
@@ -1235,16 +1235,16 @@ $("infoBody").addEventListener("click",e=>{const b=e.target.closest("[data-act]"
  else if(k==="sky"){if(st.pend){const P=st.pend;st.obs={name:"Ponto no disco",lat:P.lat,lon:P.lon};st.pend=null;save();placeName(P.lat,P.lon,"Ponto no disco").then(n=>{if(st.obs.lat===P.lat){st.obs.name=n;save()}})}st.sel=null;setMode("sky")}
  else if(k==="home")goHome();else{st.pend=null;st.sel=null}});
 $("bHome").onclick=()=>{goHome();panel(null)};
-function setMode(m){if(m!==st.mode)xfSnap();st.mode=m;if(m==="disc"&&dv.follow&&dv.zoom<2)dv.zoomT=2.4;$("bSens").hidden=m==="disc";$("bSens").parentElement.style.gridTemplateColumns=m!=="disc"?"":"1fr";$("mini").setAttribute("aria-label",m==="sky"?"Abrir o Disco 3D":"Voltar ao modo Imersivo");
+function setMode(m){if(m!==st.mode)xfSnap();st.mode=m;$("bSens").hidden=m==="disc";$("bSens").parentElement.style.gridTemplateColumns=m!=="disc"?"":"1fr";$("mini").setAttribute("aria-label",m==="sky"?"Abrir o Disco 3D":"Voltar ao modo Imersivo");
  document.querySelectorAll(".tile.s,.mh.s").forEach(b=>b.hidden=m==="disc");document.querySelectorAll(".tile.d,.mh.d").forEach(b=>b.hidden=m!=="disc");$("bComp").style.visibility=m!=="disc"?"visible":"hidden";$("flyBar").hidden=m!=="fly";
  document.querySelector(".reticle").hidden=m!=="sky";applyLayout();if(m==="disc"){discInit();if(!dv.seen){dv.seen=true;toast("Arraste para girar e inclinar; pinça para aproximar. Toque num astro para ver detalhes. Segure o dedo num ponto para mudar o observador.")}}}
 function modeTrip(){const R=3.4;if(st.split||!g3Init()){setMode(st.mode==="sky"?"disc":"sky");return}
- if(st.mode==="sky"){dv.follow=true;$("dFollow").setAttribute("aria-pressed",true);try{localStorage.setItem("planetarium-follow","1")}catch(e){}if(dv.zoom<2.4){dv.zoom=2.4;dv.zoomT=null}flyEnter(0.004,FLTOP,R)}
+ if(st.mode==="sky"){dv.follow=true;$("dFollow").setAttribute("aria-pressed",true);try{localStorage.setItem("planetarium-follow","1")}catch(e){}dv.zoom=1;dv.zoomT=null;dv.px=0;dv.py=0;dv.tilt=Math.max(dv.tilt,0.5);dv.tiltT=null;flyEnter(0.004,FLTOP,R)}
  else if(st.mode==="disc"){st.yaw=heading()*D;flyEnter(FLTOP,0.0017,R)}
  else{FL.rate=R;FL.v=0;FL.anim=FL.anim!=null?(FL.anim>=FLTOP?0.0017:FLTOP):(FL.h>100?0.0017:FLTOP)}}
 $("mini").onclick=modeTrip;
 $("dFollow").onclick=()=>setFollow(!dv.follow);
-tog("lGmap","gmap");tog("dCity","city");$("dDive").onclick=()=>{panel(null);st.yaw=heading()*D;if(flyEnter(FLTOP,0.0017))toast("Descendo até "+st.obs.name+"…")};$("bRise").onclick=()=>{panel(null);dv.follow=true;$("dFollow").setAttribute("aria-pressed",true);if(dv.zoom<2.4){dv.zoom=2.4;dv.zoomT=null}if(flyEnter(0.004,FLTOP))toast("Subindo até o disco…")};
+tog("lGmap","gmap");tog("dCity","city");$("dDive").onclick=()=>{panel(null);st.yaw=heading()*D;if(flyEnter(FLTOP,0.0017))toast("Descendo até "+st.obs.name+"…")};$("bRise").onclick=()=>{panel(null);dv.follow=true;$("dFollow").setAttribute("aria-pressed",true);dv.zoom=1;dv.zoomT=null;dv.px=0;dv.py=0;if(flyEnter(0.004,FLTOP))toast("Subindo até o disco…")};
 for(const[id,v]of[["flyUp",1],["flyDn",-1]]){const b=$(id);b.addEventListener("pointerdown",e=>{e.preventDefault();FL.anim=null;FL.v=v});for(const ev of["pointerup","pointerleave","pointercancel"])b.addEventListener(ev,()=>{FL.v=0})}
 $("flyLand").onclick=()=>{FL.v=0;FL.anim=0.0017};$("flyDisc").onclick=()=>{FL.v=0;FL.anim=FLTOP};$("dFollow").setAttribute("aria-pressed",dv.follow);
 $("dTop").onclick=()=>{dv.tiltT=1};$("dIncl").onclick=()=>{dv.tiltT=0.45};$("dReset").onclick=()=>{setFollow(false,true);dv.zoomT=null;dv.tiltT=0.5;dv.rot=0;dv.zoom=1;dv.px=0;dv.py=0};
