@@ -17,6 +17,13 @@ Toque no relógio para abrir a barra de simulação: tocar/pausar, régua das 24
 - **Estrela Polar:** marcada no centro do domo do Disco 3D e no céu do Imersivo; abaixo do horizonte, o app mostra quantos graus.
 - **Anel de horas (inspirado no mapa de Gleason, 1892):** horas solares em algarismos romanos em volta do disco, girando com o Sol (XII dourado = meio-dia); graus de latitude e longitude na grade e escala de distância ao longo dos meridianos. Estilo de mapa “Gleason 1892” gerado por `tools/gleason.py`.
 
+## Dois modelos: Disco e Globo
+
+- **Modelo** (menu): escolha entre **Disco** e **Globo**. O céu observado é o mesmo nos dois (as mesmas efemérides); o que muda é a estrutura que explica esse céu.
+- **Globo:** a vista do Disco 3D vira o **Sistema Solar** — Sol no centro, planetas nas órbitas (elementos orbitais do JPL/NASA), Terra com o eixo inclinado 23,4°, girando e com dia e noite reais no mapa, e a Lua na sua órbita. Arraste para girar, pinça para aproximar até a Terra e o seu local; o ícone de troca faz a viagem até o chão e de volta. Escala didática (padrão) ou real.
+- **Tela dividida** (ficha de simulação): Céu + Disco, Disco + Globo ou Globo + Céu, no mesmo relógio.
+- **Comparar Disco × Globo:** Um dia, Estações, Fases da Lua e Eclipse — prepara a tela Disco + Globo, a velocidade e a vista para comparar os dois modelos.
+
 ## Mergulho: do disco ao chão
 
 - **Ícone do canto superior direito:** troca entre o Imersivo e o Disco 3D com a viagem animada (subida ou descida, cerca de 5 s). Tocando de novo durante a viagem, ela inverte o sentido.
