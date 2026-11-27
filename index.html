@@ -270,7 +270,7 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
       <p class="small" id="airMsg"></p>
     </details>
     <button class="btn" id="sheetClose">Fechar</button>
-    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-15</p>
+    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-16</p>
   </div>
   <div class="welcome" id="welcome">
     <div>
@@ -1054,14 +1054,14 @@ function drawRose(){const eh=0.0017,R1=0.010,pt=(az,d)=>proj(nrm([Math.sin(az*D)
 // ---------- Mergulho: do disco ao chão, passando pelo domo ----------
 const FL={h:24000,v:0,anim:null,pAuto:true,hint:0};
 function domeHAt(){const r=(90-st.obs.lat)/180;return dv.HD*RKM*Math.sqrt(Math.max(0,1-r*r))}
-function flyEnter(h,anim){if(!g3Init()){toast("Este aparelho não oferece gráficos 3D (WebGL) para o mergulho.");return false}FL.h=h;FL.anim=anim||null;FL.pAuto=true;FL.v=0;if(st.mode!=="fly"){if(st.split){st.split=false;$("sSplit").setAttribute("aria-pressed",false)}setMode("fly")}
- if(!FL.hint){FL.hint=1;toast("Mergulho: pinça para descer e subir, arraste para olhar em volta. Abaixo de 1 km você pousa no Imersivo; acima do domo volta ao disco.")}return true}
+function flyEnter(h,anim,rate){FL.rate=rate||1.5;if(!g3Init()){toast("Este aparelho não oferece gráficos 3D (WebGL) para o mergulho.");return false}FL.h=h;FL.anim=anim||null;FL.pAuto=true;FL.v=0;if(st.mode!=="fly"){if(st.split){st.split=false;$("sSplit").setAttribute("aria-pressed",false)}setMode("fly")}
+ if(!FL.hint&&!anim){FL.hint=1;toast("Mergulho: pinça para descer e subir, arraste para olhar em volta. Abaixo de 1 km você pousa no Imersivo; acima do domo volta ao disco.")}return true}
 const XF={c:null,t0:-1e9,dur:420};
 function xfSnap(){try{if(!XF.c)XF.c=document.createElement("canvas");XF.c.width=cv.width;XF.c.height=cv.height;XF.c.getContext("2d").drawImage(cv,0,0);XF.t0=performance.now()}catch(e){}}
 function xfDraw(){const t=(performance.now()-XF.t0)/XF.dur;if(t>=1||!XF.c)return;const a=1-t*t*(3-2*t);ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.globalAlpha=a;ctx.drawImage(XF.c,0,0,cv.width,cv.height);ctx.restore()}
 const FLTOP=24000;
 function flyToDisc(){FL.anim=null;FL.v=0;setMode("disc");return false}
-function flyStep(dt){if(FL.anim){const t=Math.min(FL.anim,FLTOP),k=Math.exp(dt/1000*1.5*(t>FL.h?1:-1));FL.h*=k;if((t>FL.h)!==(t>FL.h/k)||Math.abs(Math.log(FL.h/t))<0.02){FL.h=t;if(t>=FLTOP)return flyToDisc();FL.anim=null}}
+function flyStep(dt){if(FL.anim){const t=Math.min(FL.anim,FLTOP),k=Math.exp(dt/1000*(FL.rate||1.5)*(t>FL.h?1:-1));FL.h*=k;if((t>FL.h)!==(t>FL.h/k)||Math.abs(Math.log(FL.h/t))<0.02){FL.h=t;if(t>=FLTOP)return flyToDisc();FL.anim=null}}
  if(FL.v){FL.h*=Math.exp(FL.v*dt/1000*1.3);if(FL.v>0&&FL.h>=FLTOP){FL.h=FLTOP;return flyToDisc()}}FL.h=clamp(FL.h,0.0017,FLTOP);if(FL.v||FL.anim)FL.pAuto=true;
  if(FL.h<=0.0019&&!FL.v){if(FL.anim==null||FL.anim<=0.0019){FL.anim=null;st.pitch=Math.max(st.pitch,2*D);setMode("sky");return false}}return true}
 // Vista do disco 2D reproduzida em 3D (limite ortográfico: câmera muito distante e lente fechada)
@@ -1102,7 +1102,7 @@ function drawFly0(o,dt){if(!flyStep(dt))return;if(!g3Init())return;domeInit();co
  if(!below(sunP)&&onScreen(pS)){const rS=clamp(F*Math.tan(0.27*D)*(mm>0.5?1.4:1),7,40);glow(pS.sx,pS.sy,rS*7,`rgba(255,214,150,${0.22+0.2*mm})`);drawSun(pS.sx,pS.sy,rS,40);text(mm>0.5?"Sol (modelo)":"Sol",pS.sx+rS+6,pS.sy+4,"#ffcf73",11,600);st.hits.push({x:pS.sx,y:pS.sy,kind:"sun"})}
  if(!below(moonP)&&onScreen(pM)){const rM=clamp(F*Math.tan(0.26*D)*(mm>0.5?1.4:1),6,36);drawMoon(pM.sx,pM.sy,rM,o.ph,pS,st.obs.lat<0,o.lun,false);text(mm>0.5?"Lua (modelo)":"Lua",pM.sx+rM+6,pM.sy+4,"#e7ecee",11,600);st.hits.push({x:pM.sx,y:pM.sy,kind:"moon"})}
  // você
- const pO=vproj(V,[0,0,0]);if(onScreen(pO)&&h>0.02){ctx.strokeStyle="#ff8f6b";ctx.lineWidth=1.8;ctx.beginPath();ctx.arc(pO.sx,pO.sy,6,0,7);ctx.stroke();ctx.beginPath();ctx.moveTo(pO.sx-10,pO.sy);ctx.lineTo(pO.sx+10,pO.sy);ctx.moveTo(pO.sx,pO.sy-10);ctx.lineTo(pO.sx,pO.sy+10);ctx.stroke();text(`Você · ${st.obs.name}`,pO.sx+12,pO.sy-8,"#ffb39b",11,600)}
+ const pO=vproj(V,[0,0,0]);if(onScreen(pO)&&h>0.02){ctx.strokeStyle="#ff8f6b";ctx.lineWidth=1.8;ctx.beginPath();ctx.arc(pO.sx,pO.sy,6,0,7);ctx.stroke();ctx.beginPath();ctx.moveTo(pO.sx-10,pO.sy);ctx.lineTo(pO.sx+10,pO.sy);ctx.moveTo(pO.sx,pO.sy-10);ctx.lineTo(pO.sx,pO.sy+10);ctx.stroke();if(pO.sx>W*0.45){ctx.textAlign="right";text(`Você · ${st.obs.name}`,pO.sx-12,pO.sy-8,"#ffb39b",11,600,0);ctx.textAlign="left"}else text(`Você · ${st.obs.name}`,pO.sx+12,pO.sy-8,"#ffb39b",11,600,0)}
  if(st.L.polar&&polIdx()!=null&&mm>0.3){const p=vproj(V,discToLocal(0,0,dv.HD*RKM,ow));if(onScreen(p))text("Polaris",p.sx+6,p.sy-4,"#bfe6ff",10.5,600)}
  if(cov>0.05){const fz=cov*Math.max(0,1-Math.abs(Math.log(h/2.2))/0.55);if(fz>0.01){ctx.fillStyle=`rgba(${Math.round(60+180*dayF)},${Math.round(66+176*dayF)},${Math.round(78+170*dayF)},${Math.min(0.92,fz)})`;ctx.fillRect(0,0,W,Hh)}}
  if(h<2.5&&!st.split){const a=clamp(1-(Math.log10(h)-Math.log10(0.0017))/(Math.log10(2.5)-Math.log10(0.0017)),0,1);if(a>0.01){const Q=LBQ;LBQ=null;flushLBto(Q);sizeOff(cS,W,Hh);const c0=ctx,h0=st.hits;ctx=xS;st.hits=[];try{draw(o)}finally{ctx=c0}st.hits=a>0.5?st.hits:h0;ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.globalAlpha=a;ctx.drawImage(cS,0,0);ctx.restore();LBQ=[]}}
@@ -1237,8 +1237,12 @@ $("infoBody").addEventListener("click",e=>{const b=e.target.closest("[data-act]"
 $("bHome").onclick=()=>{goHome();panel(null)};
 function setMode(m){if(m!==st.mode)xfSnap();st.mode=m;if(m==="disc"&&dv.follow&&dv.zoom<2)dv.zoomT=2.4;$("bSens").hidden=m==="disc";$("bSens").parentElement.style.gridTemplateColumns=m!=="disc"?"":"1fr";$("mini").setAttribute("aria-label",m==="sky"?"Abrir o Disco 3D":"Voltar ao modo Imersivo");
  document.querySelectorAll(".tile.s,.mh.s").forEach(b=>b.hidden=m==="disc");document.querySelectorAll(".tile.d,.mh.d").forEach(b=>b.hidden=m!=="disc");$("bComp").style.visibility=m!=="disc"?"visible":"hidden";$("flyBar").hidden=m!=="fly";
- document.querySelector(".reticle").hidden=m!=="sky";applyLayout();if(m==="fly")$("mini").style.visibility="hidden";if(m==="disc"){discInit();if(!dv.seen){dv.seen=true;toast("Arraste para girar e inclinar; pinça para aproximar. Toque num astro para ver detalhes. Segure o dedo num ponto para mudar o observador.")}}}
-$("mini").onclick=()=>setMode(st.mode==="sky"?"disc":"sky");/*fly: mini oculto*/
+ document.querySelector(".reticle").hidden=m!=="sky";applyLayout();if(m==="disc"){discInit();if(!dv.seen){dv.seen=true;toast("Arraste para girar e inclinar; pinça para aproximar. Toque num astro para ver detalhes. Segure o dedo num ponto para mudar o observador.")}}}
+function modeTrip(){const R=3.4;if(st.split||!g3Init()){setMode(st.mode==="sky"?"disc":"sky");return}
+ if(st.mode==="sky"){dv.follow=true;$("dFollow").setAttribute("aria-pressed",true);try{localStorage.setItem("planetarium-follow","1")}catch(e){}if(dv.zoom<2.4){dv.zoom=2.4;dv.zoomT=null}flyEnter(0.004,FLTOP,R)}
+ else if(st.mode==="disc"){st.yaw=heading()*D;flyEnter(FLTOP,0.0017,R)}
+ else{FL.rate=R;FL.v=0;FL.anim=FL.anim!=null?(FL.anim>=FLTOP?0.0017:FLTOP):(FL.h>100?0.0017:FLTOP)}}
+$("mini").onclick=modeTrip;
 $("dFollow").onclick=()=>setFollow(!dv.follow);
 tog("lGmap","gmap");tog("dCity","city");$("dDive").onclick=()=>{panel(null);st.yaw=heading()*D;if(flyEnter(FLTOP,0.0017))toast("Descendo até "+st.obs.name+"…")};$("bRise").onclick=()=>{panel(null);dv.follow=true;$("dFollow").setAttribute("aria-pressed",true);if(dv.zoom<2.4){dv.zoom=2.4;dv.zoomT=null}if(flyEnter(0.004,FLTOP))toast("Subindo até o disco…")};
 for(const[id,v]of[["flyUp",1],["flyDn",-1]]){const b=$(id);b.addEventListener("pointerdown",e=>{e.preventDefault();FL.anim=null;FL.v=v});for(const ev of["pointerup","pointerleave","pointercancel"])b.addEventListener(ev,()=>{FL.v=0})}
@@ -1290,7 +1294,7 @@ function loop(now){const dt=Math.min(now-last,100);last=now;
   $("ret").style.top=(R.S.y+RY)+"px";$("ret").style.left=(R.S.x+R.S.w/2)+"px";const az=Math.atan2(cam.f[0],cam.f[1])*R2D;$("rose").setAttribute("transform",`rotate(${(-az).toFixed(1)} 32 32)`);for(const t of ROSE_T)t.setAttribute("transform",`rotate(${az.toFixed(1)} ${t.getAttribute("x")} ${+t.getAttribute("y")-3})`);
   recFrame();if(now-lastI>200){hud();info(o);simLbl(o);moonIcon(o);lastI=now}requestAnimationFrame(loop);return}
  {let tg=0;if(st.mode==="disc"){if($("pMenu").classList.contains("open"))tg=Math.min(300,W*0.84)/2;else if(LSC()){if(["pTime","sheet","pEcl","pTide","pWx"].some(k=>$(k).classList.contains("open")))tg=-Math.min(420,W*0.56)/2;else if(!$("sim").hidden)tg=-160}}MOFF+=(tg-MOFF)*Math.min(1,dt/70);if(Math.abs(tg-MOFF)<0.5)MOFF=tg;DMG=Hh<W&&Hh<560?{top:58,bot:66}:{top:Math.max(100,HDRB),bot:110+(!$("sim").hidden?SIMH:0)}}
- updateCam();const o=compute();satUpdate(o);trPush(o);st.hits=[];if(st.mode==="disc"){drawDisc(o);drawMiniSky(o)}else if(st.mode==="fly"){drawFly(o,dt)}else{draw(o);drawMini(o);const az=Math.atan2(cam.f[0],cam.f[1])*R2D;$("ret").style.top=RY+"px";$("rose").setAttribute("transform",`rotate(${(-az).toFixed(1)} 32 32)`);for(const t of ROSE_T)t.setAttribute("transform",`rotate(${az.toFixed(1)} ${t.getAttribute("x")} ${+t.getAttribute("y")-3})`)}xfDraw();recFrame();if(now-lastI>200){hud();info(o);simLbl(o);moonIcon(o);lastI=now}requestAnimationFrame(loop)}
+ updateCam();const o=compute();satUpdate(o);trPush(o);st.hits=[];if(st.mode==="disc"){drawDisc(o);drawMiniSky(o)}else if(st.mode==="fly"){drawFly(o,dt);if(st.mode==="fly"){const up=FL.anim!=null?FL.anim>=FLTOP:FL.h<=100;if(up)drawMiniSky(o);else drawMini(o)}}else{draw(o);drawMini(o);const az=Math.atan2(cam.f[0],cam.f[1])*R2D;$("ret").style.top=RY+"px";$("rose").setAttribute("transform",`rotate(${(-az).toFixed(1)} 32 32)`);for(const t of ROSE_T)t.setAttribute("transform",`rotate(${az.toFixed(1)} ${t.getAttribute("x")} ${+t.getAttribute("y")-3})`)}xfDraw();recFrame();if(now-lastI>200){hud();info(o);simLbl(o);moonIcon(o);lastI=now}requestAnimationFrame(loop)}
 syncLoc();requestAnimationFrame(loop);
 if("serviceWorker"in navigator&&location.protocol==="https:"&&!/claude/.test(location.hostname)){try{const had=!!navigator.serviceWorker.controller;let reloaded=false;
  navigator.serviceWorker.addEventListener("controllerchange",()=>{if(had&&!reloaded){reloaded=true;location.reload()}});

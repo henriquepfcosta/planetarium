@@ -19,6 +19,7 @@ Toque no relógio para abrir a barra de simulação: tocar/pausar, régua das 24
 
 ## Mergulho: do disco ao chão
 
+- **Ícone do canto superior direito:** troca entre o Imersivo e o Disco 3D com a viagem animada (subida ou descida, cerca de 5 s). Tocando de novo durante a viagem, ela inverte o sentido.
 - **Pinça no disco** além do zoom máximo (ou **Descer até meu local**, no menu do disco): a câmera desce pelo domo até o seu local, em 3D (WebGL). Acima do domo você vê o disco e as constelações; sob o domo, o mapa em perspectiva embaixo, o domo com as estrelas em cima e o Sol e a Lua do modelo a 5.000 km.
 - Perto do chão, as estrelas, o Sol e a Lua deslizam das posições do domo (modelo) para as posições observadas; o painel lateral mostra a altitude e qual céu está sendo mostrado.
 - A descida é um movimento único: a câmera 3D começa exatamente na vista do disco e, perto do chão, a imagem já se torna a do Imersivo, sem corte.
