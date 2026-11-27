@@ -21,8 +21,14 @@ Toque no relógio para abrir a barra de simulação: tocar/pausar, régua das 24
 
 - **Pinça no disco** além do zoom máximo (ou **Descer até meu local**, no menu do disco): a câmera desce pelo domo até o seu local, em 3D (WebGL). Acima do domo você vê o disco e as constelações; sob o domo, o mapa em perspectiva embaixo, o domo com as estrelas em cima e o Sol e a Lua do modelo a 5.000 km.
 - Perto do chão, as estrelas, o Sol e a Lua deslizam das posições do domo (modelo) para as posições observadas; o painel lateral mostra a altitude e qual céu está sendo mostrado.
+- A descida é um movimento único: a câmera 3D começa exatamente na vista do disco e, perto do chão, a imagem já se torna a do Imersivo, sem corte.
 - Abaixo de 2 m você pousa no Imersivo; pinça para fora no Imersivo (ou **Subir até o disco**) faz o caminho inverso. Botões ▲ ▼, **Pousar** e **Disco** no painel lateral.
 - Com as nuvens ligadas, a camada de nuvens prevista aparece vista de cima e você atravessa a neblina por volta de 2 km.
+
+## Cidades no mapa
+
+- **Cidades no mapa** (menu, Disco 3D): como num mapa on-line, os nomes aparecem conforme o zoom; primeiro as grandes cidades e capitais do mundo, depois as regionais, com a distância até você quando perto. Funciona no disco e no mergulho, sem nomes sobrepostos.
+- Dados: Natural Earth (domínio público), gerados por `tools/cidades-mundo.py`.
 
 ## Chão do Imersivo
 
