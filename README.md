@@ -27,6 +27,8 @@ Toque no relógio para abrir a barra de simulação: tocar/pausar, régua das 24
 
 - O Sol e a Lua do modelo aparecem como marcas coral discretas no imersivo; toque no Sol ou na Lua para ver a linha até a marca e a diferença em graus.
 - O menu de camadas abre como uma lista na lateral esquerda, com uma chave liga/desliga em cada item; no Disco 3D o disco se desloca para a direita enquanto o menu está aberto.
+- **Tela deitada:** a barra de simulação e as fichas (eclipses, marés, data, local) passam para uma coluna à direita e o disco se desloca para o lado, sem cobrir o mapa.
+- **Lua no topo:** ícone maior com a fase escrita ao lado (por exemplo, "Lua cheia · 100%"); toque para ver as próximas fases.
 - **Tela deitada:** gire o celular (ou use o item do menu) para ver em paisagem. No Android o app trava a tela deitada em tela cheia; no iPhone basta girar com o bloqueio de rotação desligado.
 
 ## Satélites e aviões

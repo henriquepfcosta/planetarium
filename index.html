@@ -23,7 +23,7 @@ html,body{margin:0;height:100%;background:#03070f;color:var(--ink);font:15px/1.4
 #app{position:fixed;inset:0;touch-action:none;user-select:none;-webkit-user-select:none}
 #sky{position:absolute;inset:0;width:100%;height:100%}
 .top{position:absolute;left:0;right:0;top:0;padding:calc(env(safe-area-inset-top) + 10px) 14px 22px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;pointer-events:none;background:linear-gradient(rgba(3,7,15,.55),rgba(3,7,15,0))}
-.brand{display:flex;gap:10px;align-items:center}#mIcon{width:34px;height:34px;flex:none;pointer-events:auto;cursor:pointer;border-radius:50%}
+.brand{display:flex;gap:10px;align-items:center}#mIcon{width:54px;height:54px;flex:none;pointer-events:auto;cursor:pointer;border-radius:50%;filter:drop-shadow(0 0 10px rgba(225,233,250,.35))}.brand .ph{color:#e6ebf5;font-size:12px;font-weight:500;letter-spacing:.01em;margin-top:1px;pointer-events:auto;cursor:pointer}
 .brand span{display:block;font-size:13px;line-height:1.35;color:var(--ink);text-shadow:0 1px 3px #000;font-weight:500}
 .brand .t{color:var(--mute);font-weight:400;font-size:12px;font-variant-numeric:tabular-nums}
 #mini{width:72px;height:72px;flex:none;border-radius:50%;background:rgba(4,10,16,.5);border:1px solid var(--line);pointer-events:auto;cursor:pointer}
@@ -113,6 +113,14 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
 .welcome p{margin:0;color:var(--mute);font-size:16px}
 .toast{position:absolute;left:50%;top:calc(env(safe-area-inset-top) + 96px);transform:translateX(-50%);background:var(--glass);border:1px solid var(--line);border-radius:12px;padding:10px 14px;font-size:14px;max-width:min(92vw,460px);text-align:center;opacity:0;transition:opacity .3s;pointer-events:none}
 .toast.on{opacity:1}
+@media (orientation:landscape) and (max-height:560px){
+ .sim{position:fixed;right:calc(env(safe-area-inset-right) + 10px);top:calc(env(safe-area-inset-top) + 92px);width:300px;max-width:none;max-height:calc(100vh - 176px);overflow-y:auto;align-content:start;justify-self:auto;scrollbar-width:none}
+ .sim .chips button{min-height:32px;padding:0 10px;font-size:12.5px}
+ .sheet:not(#pMenu){inset:0 0 0 auto;width:min(420px,56vw);height:100%;max-height:none;border-top:0;border-left:1px solid var(--line);border-radius:18px 0 0 18px;background:rgba(8,18,26,.9);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);transform:translateX(105%);padding:calc(env(safe-area-inset-top) + 14px) calc(env(safe-area-inset-right) + 14px) 14px 14px;align-content:start}
+ .sheet:not(#pMenu).open{transform:none}
+ .card{justify-self:start;max-width:380px;max-height:calc(100vh - 160px)}
+ #mIcon{width:46px;height:46px}
+}
 [hidden]{display:none!important}
 </style>
 </head>
@@ -120,7 +128,7 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
 <div id="app">
   <canvas id="sky" aria-label="Céu em tela cheia"></canvas>
   <div class="top">
-    <div class="brand"><canvas id="mIcon" width="72" height="72" role="button" aria-label="Fase da Lua"></canvas><div><span id="place">—</span><span class="t" id="clock">—</span></div></div>
+    <div class="brand"><canvas id="mIcon" width="132" height="132" role="button" aria-label="Fase da Lua"></canvas><div><span id="place">—</span><span class="t" id="clock">—</span><span class="ph" id="mPh"></span></div></div>
     <canvas id="mini" width="160" height="160" role="button" aria-label="Abrir o Disco 3D"></canvas>
   </div>
   <div class="reticle" id="ret"><i></i><span id="aim">—</span></div>
@@ -224,7 +232,7 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
       <p class="small" id="airMsg"></p>
     </details>
     <button class="btn" id="sheetClose">Fechar</button>
-    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-7</p>
+    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-8</p>
   </div>
   <div class="welcome" id="welcome">
     <div>
@@ -312,7 +320,7 @@ const setHome=()=>{st.home={name:st.obs.name,lat:st.obs.lat,lon:st.obs.lon};save
 const away=()=>Math.abs(st.obs.lat-st.home.lat)>0.01||Math.abs(st.obs.lon-st.home.lon)>0.01;
 function goHome(){st.obs={...st.home};st.pend=null;save();syncLoc();toast(`De volta a ${st.home.name}`);st.sel=null}
 // ---------- Canvas ----------
-let ctx;const cv=$("sky"),ctx0=cv.getContext("2d"),mini=$("mini"),mctx=mini.getContext("2d");let W=0,Hh=0,dpr=1,F=1,PY=0,RY=0,SIMH=0;
+let ctx;const cv=$("sky"),ctx0=cv.getContext("2d"),mini=$("mini"),mctx=mini.getContext("2d");let W=0,Hh=0,dpr=1,F=1,PY=0,RY=0,SIMH=0;const LSC=()=>innerWidth>innerHeight&&innerHeight<560;
 ctx=ctx0;const cD=document.createElement("canvas"),xD=cD.getContext("2d"),cS=document.createElement("canvas"),xS=cS.getContext("2d");
 function resize(){dpr=Math.min(devicePixelRatio||1,2);W=innerWidth;Hh=innerHeight;cv.width=W*dpr;cv.height=Hh*dpr}
 addEventListener("resize",resize);resize();
@@ -325,7 +333,7 @@ function camSensor(){const a=(sens.alpha+sens.cal)*D,b=sens.beta*D,g=sens.gamma*
 function updateCam(){const t=st.sensors&&sens.got?camSensor():camManual();
  if(st.sensors&&sens.got){const k=0.2,mix=(a,b)=>a.map((v,i)=>v+(b[i]-v)*k);let f=nrm(mix(cam.f,t.f)),r=mix(cam.r,t.r);r=nrm(r.map((v,i)=>v-dot(r,f)*f[i]));let u=cross(r,f);
   if(f[2]<0&&u[2]>0.05){const a=Math.atan2(-f[2],u[2]),c=Math.cos(a),sn=Math.sin(a),f2=f.map((v,i)=>v*c+u[i]*sn);u=u.map((v,i)=>v*c-f[i]*sn);f=f2}cam={f,r,u}}else cam=t;
- F=(Math.max(W,Hh)/2)/Math.tan(st.fov*D/2);PY=Hh-(W>Hh&&Hh<560?84:Math.max(Hh>W?150:118,Hh*(Hh>W?0.17:0.13)))-SIMH;RY=Math.round(Math.min(Hh*0.46,PY*0.62))}
+ F=(Math.max(W,Hh)/2)/Math.tan(st.fov*D/2);PY=Hh-(W>Hh&&Hh<560?84:Math.max(Hh>W?150:118,Hh*(Hh>W?0.17:0.13)))-(LSC()&&!st.split?0:SIMH);RY=Math.round(Math.min(Hh*0.46,PY*0.62))}
 function proj(v){const z=dot(v,cam.f),x=dot(v,cam.r),y=dot(v,cam.u);return z>0.02?{ok:true,sx:W/2+F*x/z,sy:PY-F*y/z,x,y,z}:{ok:false,x,y,z}}
 const onScreen=p=>p.ok&&p.sx>-40&&p.sx<W+40&&p.sy>-40&&p.sy<Hh+40;
 // ---------- Cálculo dos objetos ----------
@@ -421,7 +429,7 @@ function drawMoon(x,y,r,ph,sunP,south,red=0,noGlow=false){if(!noGlow)glow(x,y,r*
  else{const g=ctx.createRadialGradient(-r*.3,-r*.3,r*.1,0,0,r);g.addColorStop(0,"#f6f4ec");g.addColorStop(1,"#cdc8be");ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,0,r,0,7);ctx.fill();
  ctx.save();ctx.beginPath();ctx.arc(0,0,r,0,7);ctx.clip();if(south)ctx.rotate(Math.PI);ctx.fillStyle="rgba(118,116,110,.42)";for(const[mx,my,mr]of MARIA){ctx.beginPath();ctx.ellipse(mx*r,my*r,mr*r,mr*r*0.85,mx,0,7);ctx.fill()}ctx.restore()}
  let ang=0;if(sunP)ang=sunP.ok?Math.atan2(-(sunP.sy-y),sunP.sx-x):Math.atan2(sunP.y,sunP.x);ctx.rotate(-ang+Math.PI);
- const k=1-ph.k,R1=r*1.02,ex=R1*Math.abs(1-2*k);ctx.fillStyle="rgba(12,16,22,.9)";ctx.beginPath();ctx.arc(0,0,R1,-Math.PI/2,Math.PI/2);ctx.ellipse(0,0,ex,R1,0,Math.PI/2,-Math.PI/2,k<0.5);ctx.fill();ctx.restore();
+ const k=1-ph.k,R1=r*1.02,ex=R1*Math.abs(1-2*k);ctx.fillStyle=noGlow?"rgba(16,22,34,.8)":"rgba(12,16,22,.9)";ctx.beginPath();ctx.arc(0,0,R1,-Math.PI/2,Math.PI/2);ctx.ellipse(0,0,ex,R1,0,Math.PI/2,-Math.PI/2,k<0.5);ctx.fill();ctx.restore();
  if(red>0){ctx.save();ctx.globalCompositeOperation="multiply";ctx.fillStyle=`rgba(${Math.round(255-60*red)},${Math.round(255-190*red)},${Math.round(255-215*red)},1)`;ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fill();ctx.restore()}}
 function draw(o){
  ctx.setTransform(dpr,0,0,dpr,0,0);ctx.globalCompositeOperation="source-over";ctx.globalAlpha=1;const SA=o.sun.alt-22*(o.ecl||0)**3,sc=skyCols(SA),gr=Math.hypot(cam.r[2],cam.u[2])/F,tnow=performance.now();
@@ -861,7 +869,7 @@ $("q").oninput=e=>{clearTimeout(qT);qT=setTimeout(()=>search(e.target.value),280
 const manualLoc=()=>{const la=parseFloat($("lat").value),lo=parseFloat($("lon").value);if(isFinite(la)&&isFinite(lo)&&Math.abs(la)<=90&&Math.abs(lo)<=180){st.obs={name:"Ponto escolhido",lat:la,lon:lo};setHome();placeName(la,lo,"Ponto escolhido").then(n=>{if(st.obs.lat===la&&st.obs.lon===lo){st.obs.name=n;setHome()}})}};
 $("lat").onchange=manualLoc;$("lon").onchange=manualLoc;
 $("height").oninput=e=>{st.H=+e.target.value;save()};$("gps").onclick=gps;
-function panel(id){["pMenu","pTime","sheet","pEcl","pTide"].forEach(k=>$(k).classList.toggle("open",k===id));$("scrim").hidden=!id;$("scrim").classList.toggle("clear",id==="pMenu")}
+function panel(id){["pMenu","pTime","sheet","pEcl","pTide"].forEach(k=>$(k).classList.toggle("open",k===id));$("scrim").hidden=!id;$("scrim").classList.toggle("clear",id==="pMenu"||LSC())}
 $("scrim").onclick=()=>panel(null);$("bMenu").onclick=()=>panel($("pMenu").classList.contains("open")?null:"pMenu");$("bTime").onclick=()=>{$("sim").hidden=!$("sim").hidden};$("sCal").onclick=()=>panel("pTime");
 $("sPlay").onclick=()=>{st.play=!st.play};
 new ResizeObserver(()=>{const e=$("sim");SIMH=e.hidden?0:e.offsetHeight+10}).observe($("sim"));
@@ -884,8 +892,9 @@ document.querySelectorAll("[data-sp]").forEach(b=>b.onclick=()=>{st.speed=+b.dat
 $("bBack").onclick=()=>{st.t-=36e5;trClear()};$("bFwd").onclick=()=>{st.t+=36e5;trClear()};$("bNow").onclick=()=>{st.t=Date.now();st.speed=1;st.year=false;st.play=true;trClear()};
 $("bPlay").onclick=()=>{st.play=!st.play};
 const tog=(id,k)=>{$(id).onclick=()=>{st.L[k]=!st.L[k];$(id).setAttribute("aria-pressed",st.L[k])}};tog("lObs","obs");tog("lModel","model");tog("lLines","lines");tog("lGrid","grid");tog("lArt","art");tog("lLand","land");tog("lSat","sat");tog("lPolar","polar");$("dRing").onclick=()=>{dv.ring=!dv.ring;$("dRing").setAttribute("aria-pressed",dv.ring)};
-function moonIcon(o){const c=$("mIcon").getContext("2d"),c0=ctx,south=st.obs.lat<0;ctx=c;c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,72,72);drawMoon(36,36,30,o.ph,{ok:true,sx:36+(o.ph.wax?1:-1)*(south?-1:1)*200,sy:36},south,o.lun,true);ctx=c0}
-$("mIcon").onclick=()=>{st.sel={kind:"moon"}};
+function moonIcon(o){const c=$("mIcon").getContext("2d"),c0=ctx,south=st.obs.lat<0;ctx=c;c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,132,132);c.fillStyle="#1a2434";c.beginPath();c.arc(66,66,60,0,7);c.fill();drawMoon(66,66,60,o.ph,{ok:true,sx:66+(o.ph.wax?1:-1)*(south?-1:1)*400,sy:66},south,o.lun,true);c.strokeStyle="rgba(225,233,248,.5)";c.lineWidth=2.5;c.beginPath();c.arc(66,66,62,0,7);c.stroke();ctx=c0;
+ const ph=o.ph.n==="Nova"?"Lua nova":o.ph.n==="Cheia"?"Lua cheia":o.ph.n.startsWith("Quarto")?o.ph.n:"Lua "+o.ph.n.toLowerCase(),tx=`${ph} · ${Math.round(o.ph.k*100)}%`;if($("mPh").textContent!==tx)$("mPh").textContent=tx}
+$("mIcon").onclick=$("mPh").onclick=()=>{st.sel={kind:"moon"}};
 const TYP=t=>"Eclipse "+t;
 function eclVis(e){const k=e.t+(e.lunar?1:0)+st.obs.lat.toFixed(2)+st.obs.lon.toFixed(2);ECL.vis=ECL.vis||{};if(ECL.vis[k])return ECL.vis[k];let r;
  if(e.lunar){const m=moon(e.t),a=altOf(st.obs.lat,st.obs.lon,m);r={ok:a>0,txt:a>0?`Visível de ${st.obs.name}: Lua a ${nf(a,0)}° de altura`:`Não visível de ${st.obs.name}: a Lua está abaixo do horizonte`,t:e.t}}
@@ -925,7 +934,7 @@ const begin=()=>{$("welcome").hidden=true;const o=compute();if(o.sun.alt>0){st.y
 $("start").onclick=()=>{begin();enableSensors();gps()};$("startManual").onclick=()=>{begin();gps(true);toast("Arraste para olhar em volta. Use dois dedos para aproximar.")};
 // arrastar, aproximar e tocar
 const pts=new Map();let gest=null,holdT=null;const app=$("app");
-app.addEventListener("pointerdown",e=>{if(e.target.closest("button,.card,.sheet,select,input,#mini,#scrim,.dock"))return;pts.set(e.pointerId,{x:e.clientX,y:e.clientY});app.setPointerCapture(e.pointerId);
+app.addEventListener("pointerdown",e=>{if(e.target.closest("button,.card,.sheet,select,input,#mini,#scrim,.dock,.sim,#mIcon,#mPh"))return;pts.set(e.pointerId,{x:e.clientX,y:e.clientY});app.setPointerCapture(e.pointerId);
  const RG=pts.size===1||!gest?regionAt(e.clientX,e.clientY):{area:gest.area,ox:gest.ox,oy:gest.oy};clearTimeout(holdT);if(RG.area==="disc"&&pts.size===1){const hx=e.clientX-RG.ox,hy=e.clientY-RG.oy;holdT=setTimeout(()=>{if(gest&&!gest.moved&&pts.size===1){gest.held=true;discHold(hx,hy)}},550)}
  gest={area:RG.area,ox:RG.ox,oy:RG.oy,rot:dv.rot,tilt:dv.tilt,zoom:dv.zoom,px:dv.px,py:dv.py,btn:e.button,shift:e.shiftKey,mid:null,x:e.clientX,y:e.clientY,yaw:st.yaw,pitch:st.pitch,cal:sens.cal,moved:false,fov:st.fov,d0:pts.size===2?dist2():0}});
 const dist2=()=>{const[a,b]=[...pts.values()];return Math.hypot(a.x-b.x,a.y-b.y)};
@@ -961,7 +970,7 @@ function loop(now){const dt=Math.min(now-last,100);last=now;
   ctx.fillStyle="rgba(238,240,234,.35)";if(R.port)ctx.fillRect(0,Math.round(R.S.y*dpr)-1,cv.width,2);else ctx.fillRect(Math.round(R.S.x*dpr)-1,0,2,cv.height);
   $("ret").style.top=(R.S.y+RY)+"px";$("ret").style.left=(R.S.x+R.S.w/2)+"px";const az=Math.atan2(cam.f[0],cam.f[1])*R2D;$("rose").setAttribute("transform",`rotate(${(-az).toFixed(1)} 32 32)`);for(const t of ROSE_T)t.setAttribute("transform",`rotate(${az.toFixed(1)} ${t.getAttribute("x")} ${+t.getAttribute("y")-3})`);
   if(now-lastI>200){hud();info(o);simLbl(o);moonIcon(o);lastI=now}requestAnimationFrame(loop);return}
- {const tg=st.mode==="disc"&&$("pMenu").classList.contains("open")?Math.min(300,W*0.84)/2:0;MOFF+=(tg-MOFF)*Math.min(1,dt/70);if(Math.abs(tg-MOFF)<0.5)MOFF=tg;DMG=Hh<W&&Hh<560?{top:58,bot:66}:{top:100,bot:110}}
+ {let tg=0;if(st.mode==="disc"){if($("pMenu").classList.contains("open"))tg=Math.min(300,W*0.84)/2;else if(LSC()){if(["pTime","sheet","pEcl","pTide"].some(k=>$(k).classList.contains("open")))tg=-Math.min(420,W*0.56)/2;else if(!$("sim").hidden)tg=-160}}MOFF+=(tg-MOFF)*Math.min(1,dt/70);if(Math.abs(tg-MOFF)<0.5)MOFF=tg;DMG=Hh<W&&Hh<560?{top:58,bot:66}:{top:100,bot:110}}
  updateCam();const o=compute();satUpdate(o);trPush(o);st.hits=[];if(st.mode==="disc"){drawDisc(o);drawMiniSky(o)}else{draw(o);drawMini(o);const az=Math.atan2(cam.f[0],cam.f[1])*R2D;$("ret").style.top=RY+"px";$("rose").setAttribute("transform",`rotate(${(-az).toFixed(1)} 32 32)`);for(const t of ROSE_T)t.setAttribute("transform",`rotate(${az.toFixed(1)} ${t.getAttribute("x")} ${+t.getAttribute("y")-3})`)}if(now-lastI>200){hud();info(o);simLbl(o);moonIcon(o);lastI=now}requestAnimationFrame(loop)}
 syncLoc();requestAnimationFrame(loop);
 if("serviceWorker"in navigator&&location.protocol==="https:"&&!/claude/.test(location.hostname)){try{const had=!!navigator.serviceWorker.controller;let reloaded=false;
