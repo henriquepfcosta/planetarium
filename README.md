@@ -17,6 +17,11 @@ Toque no relógio para abrir a barra de simulação: tocar/pausar, régua das 24
 - **Estrela Polar:** marcada no centro do domo do Disco 3D e no céu do Imersivo; abaixo do horizonte, o app mostra quantos graus.
 - **Anel de horas (inspirado no mapa de Gleason, 1892):** horas solares em algarismos romanos em volta do disco, girando com o Sol (XII dourado = meio-dia); graus de latitude e longitude na grade e escala de distância ao longo dos meridianos. Estilo de mapa “Gleason 1892” gerado por `tools/gleason.py`.
 
+## Disco seguindo você
+
+- **Seguir minha posição e direção** (menu, Disco 3D, ligado por padrão): ao abrir o disco, ele se aproxima do seu local e gira para que a frente seja para onde você olha no Imersivo; com os sensores ligados, gira junto com o celular. Um leque dourado mostra o seu campo de visão sobre o mapa.
+- Arrastar para os lados libera o disco (modo livre); inclinar e aproximar continuam seguindo. Centralizar também desliga o seguir.
+
 ## Alinhamento com o céu real
 
 - **Norte verdadeiro:** a bússola do celular aponta para o norte magnético. O app corrige a declinação magnética do seu local com o modelo WMM2025 da NOAA (em Muriaé, cerca de 23° para oeste).
