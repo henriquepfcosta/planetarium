@@ -24,6 +24,18 @@ Toque no relógio para abrir a barra de simulação: tocar/pausar, régua das 24
 - **Calibrar pelo céu** (menu, modo Imersivo): abre a câmera com o céu desenhado por cima. Ponha o Sol, a Lua, Vênus ou uma estrela brilhante no centro e toque em Alinhar; com o Sol e a Lua, o app tenta encontrá-los sozinho na imagem. A correção fica salva e pode ser desfeita.
 - **Câmera ao fundo:** mostra a imagem da câmera atrás do céu desenhado.
 
+## Observação com a câmera, zodíaco e gravação
+
+- **Câmera ao fundo:** a imagem real da câmera fica atrás do céu desenhado, e as constelações, os desenhos, as estrelas e os nomes aparecem mesmo de dia, como um "raio X" do céu.
+- **Zodíaco e eclíptica:** o caminho do Sol entre as estrelas, com os 12 signos (setores de 30° a partir do equinócio). As fichas do Sol, da Lua e dos planetas mostram o signo em que estão.
+- **Caminho do Sol e da Lua:** a trajetória do dia no céu, com as horas marcadas.
+- **Gravar vídeo** (menu, seção Tela): grava a câmera, o céu e a simulação sem os menus, com local, data e hora no canto; no fim, salve ou compartilhe (MP4 no iPhone).
+
+## Tempo e nuvens
+
+- **Nuvens do tempo real:** no Imersivo, nuvens desenhadas conforme a cobertura prevista para o local e a hora simulada, andando com o vento (dados Open-Meteo, CC BY 4.0). O formato das nuvens é ilustrativo; a quantidade, a altura (baixas, médias, altas) e o vento vêm da previsão.
+- **Previsão do tempo:** condições na hora simulada, nuvens das próximas 48 horas e as próximas noites boas para observar.
+
 ## Marés
 
 - **Marés** (menu, nos dois modos): calcula a maré astronômica de equilíbrio pelas posições reais da Lua e do Sol. No Disco 3D, o oceano fica azul onde a água se acumula (maré alta) e cor de areia onde baixa, com as duas regiões de maré alta marcadas: sob a Lua e do lado oposto.
