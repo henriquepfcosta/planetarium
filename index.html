@@ -152,7 +152,7 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
     <label class="f"><span>Altura do Sol e da Lua no modelo: <b id="hVal" style="color:var(--ink)">5.000 km</b></span><input type="range" id="height" min="500" max="20000" step="100" value="5000"></label>
     <p class="small">Os marcadores coral mostram onde um Sol e uma Lua locais, nessa altura acima do disco, apareceriam do seu ponto. Os dourados e brancos são o céu observado.</p>
     <details class="adv"><summary>Radar de aviões (avançado)</summary>
-      <p class="small">O app tenta adsb.fi, adsb.lol, airplanes.live e OpenSky. Se todos bloquearem o navegador, cole aqui o endereço de um proxy próprio (veja tools/proxy-avioes.js no repositório).</p>
+      <p class="small">O app tenta adsb.fi, adsb.lol, airplanes.live e OpenSky, e depois intermediários públicos (allorigins, codetabs). Se nada responder, cole aqui o endereço de um proxy próprio (veja tools/proxy-avioes.js no repositório).</p>
       <input type="url" id="proxy" placeholder="https://seu-proxy.workers.dev" autocomplete="off" inputmode="url">
       <p class="small" id="airMsg"></p>
     </details>
@@ -256,7 +256,7 @@ function camSensor(){const a=(sens.alpha+sens.cal)*D,b=sens.beta*D,g=sens.gamma*
  return{f:[-dz[0],-dz[1],-dz[2]],r:[c*dx[0]-s*dy[0],c*dx[1]-s*dy[1],c*dx[2]-s*dy[2]],u:[s*dx[0]+c*dy[0],s*dx[1]+c*dy[1],s*dx[2]+c*dy[2]]}}
 function updateCam(){const t=st.sensors&&sens.got?camSensor():camManual();
  if(st.sensors&&sens.got){const k=0.2,mix=(a,b)=>a.map((v,i)=>v+(b[i]-v)*k);let f=nrm(mix(cam.f,t.f)),r=mix(cam.r,t.r);r=nrm(r.map((v,i)=>v-dot(r,f)*f[i]));cam={f,r,u:cross(r,f)}}else cam=t;
- F=(Math.max(W,Hh)/2)/Math.tan(st.fov*D/2);PY=Hh>W?Hh-Math.max(150,Hh*0.17):Hh*0.8}
+ F=(Math.max(W,Hh)/2)/Math.tan(st.fov*D/2);PY=Hh-Math.max(Hh>W?150:118,Hh*(Hh>W?0.17:0.13))}
 function proj(v){const z=dot(v,cam.f),x=dot(v,cam.r),y=dot(v,cam.u);return z>0.02?{ok:true,sx:W/2+F*x/z,sy:PY-F*y/z,x,y,z}:{ok:false,x,y,z}}
 const onScreen=p=>p.ok&&p.sx>-40&&p.sx<W+40&&p.sy>-40&&p.sy<Hh+40;
 // ---------- Cálculo dos objetos ----------
@@ -343,19 +343,19 @@ function draw(o){
  const C={r:toEq(cam.r),u:toEq(cam.u),f:toEq(cam.f)},upE=Mq[2],night=clamp((-o.sun.alt-8)/10,0,1);
  const pq=q=>{const z=dot(q,C.f);if(z<=0.02)return null;const x=W/2+F*dot(q,C.r)/z,y=PY-F*dot(q,C.u)/z;return x>-60&&x<W+60&&y>-60&&y<Hh+60?[x,y]:null};
  if(st.L.obs&&CAT.ready){
-  if(night>0.02){for(const m of CAT.mw){const pts=clipProj(m.a,C);if(pts.length<3)continue;ctx.fillStyle=`rgba(205,190,255,${0.05*night})`;ctx.beginPath();pts.forEach(([x,y],k)=>k?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fill()}}
+  if(night>0.02){for(const m of CAT.mw){const pts=clipProj(m.a,C);if(pts.length<3)continue;ctx.fillStyle=`rgba(205,190,255,${0.022*night})`;ctx.beginPath();pts.forEach(([x,y],k)=>k?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fill()}}
   if(st.L.art)drawArt(C,upE,night);
   if(st.L.lines&&lim>1.5){const la=clamp((lim-1.5)/2,0,1);ctx.strokeStyle=`rgba(108,195,182,${0.38*la})`;ctx.lineWidth=0.8;ctx.beginPath();
    for(const c of CAT.cons)for(const seg of c.segs){let prev=null;for(const q of seg){const z=dot(q,C.f);const p=z>0.05?[W/2+F*dot(q,C.r)/z,PY-F*dot(q,C.u)/z]:null;if(p&&prev){ctx.moveTo(prev[0],prev[1]);ctx.lineTo(p[0],p[1])}prev=p}}ctx.stroke();
    for(const c of CAT.cons){if(dot(c.lab,upE)<0.05)continue;const p=pq(c.lab);if(p)LB.push({t:c.up||(c.up=c.name.toUpperCase().split("").join("\u2009")),x:p[0],y:p[1],c:`rgba(143,216,204,${0.6*la})`,s:10,w:400,pr:2,ctr:1})}}
   const zs=Math.pow(90/st.fov,0.35),lab=0.9+(90-st.fov)/25;
-  for(let i=0;i<CAT.n;i++){const m=CAT.mag[i];if(m>lim)continue;const q=[CAT.v[i*3],CAT.v[i*3+1],CAT.v[i*3+2]],al=dot(q,upE);if(al<0)continue;const p=pq(q);if(!p)continue;
+  for(let i=0;i<CAT.n;i++){const m=CAT.mag[i];if(m>lim)continue;const q=[CAT.v[i*3],CAT.v[i*3+1],CAT.v[i*3+2]],al=dot(q,upE);if(al<0&&(st.L.land||al<-0.5))continue;const p=pq(q);if(!p)continue;
    let a=clamp((lim-m)/1.6,0.3,1);if(m<3.8){const k=0.08+0.32*clamp(1-al/0.5,0,1);a*=1-k*(0.5+0.5*Math.sin(tnow*0.006*(1+(i%5)*0.37)+i*1.7))}
    const r=Math.max(0.65,(2.5-0.45*m)*zs);ctx.fillStyle=CAT.col[i];
    if(m<1.6){glow(p[0],p[1],r*4.5,`rgba(220,230,255,${0.24*a})`);if(m<0.3){ctx.strokeStyle=CAT.col[i];ctx.globalAlpha=a*0.25;ctx.lineWidth=0.6;const L=r*5;ctx.beginPath();ctx.moveTo(p[0]-L,p[1]);ctx.lineTo(p[0]+L,p[1]);ctx.moveTo(p[0],p[1]-L);ctx.lineTo(p[0],p[1]+L);ctx.stroke()}}
    ctx.globalAlpha=a;if(r<1.2)ctx.fillRect(p[0]-r,p[1]-r,r*2,r*2);else{ctx.beginPath();ctx.arc(p[0],p[1],r,0,7);ctx.fill()}
    ctx.globalAlpha=1;const nm=CAT.names[i];if(nm&&m<lab)LB.push({t:nm,x:p[0]+r+4,y:p[1]+4,c:`rgba(215,222,235,${0.8*a})`,s:10.5,w:400,pr:1+m/10});st.hits.push({x:p[0],y:p[1],kind:"star",i,m})}
-  for(const P of o.pl){if(P.alt<0)continue;const vis=P.mag<lim+0.6||(o.sun.alt<-8&&P.mag<8.5);if(!vis)continue;const p=proj(P.v);if(!onScreen(p))continue;const r=Math.max(1.6,(2.8-0.35*P.mag)*zs);
+  for(const P of o.pl){if(P.alt<0&&st.L.land)continue;const vis=P.mag<lim+0.6||(o.sun.alt<-8&&P.mag<8.5);if(!vis)continue;const p=proj(P.v);if(!onScreen(p))continue;const r=Math.max(1.6,(2.8-0.35*P.mag)*zs);
    glow(p.sx,p.sy,r*3,"rgba(255,240,210,.14)");ctx.fillStyle=P.col;ctx.beginPath();ctx.arc(p.sx,p.sy,r,0,7);ctx.fill();LB.push({t:P.name,x:p.sx+r+5,y:p.sy+4,c:P.col,s:11,w:500,pr:0});st.hits.push({x:p.sx,y:p.sy,kind:"planet",id:P.id})}
   LB.sort((a,b)=>a.pr-b.pr);const used=[];for(const L of LB){ctx.font=`${L.w} ${L.s}px Inter,sans-serif`;const w=ctx.measureText(L.t).width,x=L.ctr?L.x-w/2:L.x,y=L.y-L.s;
    if(used.some(b=>x<b[2]+4&&x+w+4>b[0]&&y<b[3]&&y+L.s+4>b[1]))continue;used.push([x,y,x+w,y+L.s+2]);text(L.t,x,L.y,L.c,L.s,L.w)}}
@@ -368,7 +368,7 @@ function draw(o){
  const corners=[[0,0],[W,0],[W,Hh],[0,Hh]],gfun=([x,y])=>cam.f[2]+(x-W/2)/F*cam.r[2]-(y-PY)/F*cam.u[2],poly=[];
  for(let i=0;i<4;i++){const a=corners[i],b=corners[(i+1)%4],ga=gfun(a),gb=gfun(b);if(ga<0)poly.push(a);if((ga<0)!==(gb<0)){const t=ga/(ga-gb);poly.push([a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t])}}
  const dT=clamp((o.sun.alt+6)/10,0,1),G=lerp([16,26,18],[66,104,52],dT),TC=rgb(lerp([7,14,10],[30,58,34],dT)),FC=rgb(lerp(sc.hor,lerp([22,36,44],[96,126,140],dT),0.5));
- if(poly.length>2){ctx.fillStyle=st.L.land?rgb(G):rgb(sc.gnd);ctx.beginPath();poly.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fill();
+ if(poly.length>2){ctx.fillStyle=st.L.land?rgb(G):`rgba(${sc.gnd[0]},${sc.gnd[1]},${sc.gnd[2]},.42)`;ctx.beginPath();poly.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fill();
   if(st.L.land&&hz){const g=ctx.createLinearGradient(hz.hx,hz.hy,hz.hx-hz.nx*Hh*0.4,hz.hy-hz.ny*Hh*0.4),c=sc.hor;g.addColorStop(0,`rgba(${c[0]},${c[1]},${c[2]},.16)`);g.addColorStop(1,`rgba(${c[0]},${c[1]},${c[2]},0)`);ctx.fillStyle=g;ctx.beginPath();poly.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fill()}}
  const azs=[...Array(181).keys()].map(i=>i*2);
  if(st.L.land){drawLandscape(FARV,FC);drawLandscape(LANDV,TC)}
@@ -565,14 +565,16 @@ function airSources(){const la=st.obs.lat.toFixed(3),lo=st.obs.lon.toFixed(3),dl
  if(AIR.proxy)L.push([`${AIR.proxy}${AIR.proxy.includes("?")?"&":"?"}lat=${la}&lon=${lo}&dist=250`,"seu proxy",readsb]);
  L.push([`https://opendata.adsb.fi/api/v3/lat/${la}/lon/${lo}/dist/250`,"adsb.fi",readsb],[`https://api.adsb.lol/v2/point/${la}/${lo}/250`,"adsb.lol",readsb],[`https://api.airplanes.live/v2/point/${la}/${lo}/250`,"airplanes.live",readsb],
   [`https://opensky-network.org/api/states/all?lamin=${(+la-dl).toFixed(2)}&lamax=${(+la+dl).toFixed(2)}&lomin=${(+lo-dg).toFixed(2)}&lomax=${(+lo+dg).toFixed(2)}`,"OpenSky",opensky]);
+ const via=[["allorigins",u=>`https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`],["codetabs",u=>`https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(u)}`]];
+ for(const[pn,wrap]of via)for(const[u,src,parse]of L.filter(x=>x[1]==="adsb.fi"||x[1]==="adsb.lol"))L.push([wrap(u),`${src} via ${pn}`,parse]);
  if(AIR.good){const k=L.findIndex(x=>x[1]===AIR.good);if(k>0)L.unshift(L.splice(k,1)[0])}return L}
 try{AIR.proxy=localStorage.getItem("planetarium-proxy")||""}catch(e){AIR.proxy=""}
 async function airFetch(force){if(AIR.busy||!st.L.air)return;if(!force&&AIR.src==="OpenSky"&&Date.now()-AIR.ts<55000)return;AIR.busy=true;let ok=false;const fails=[];
  for(const[u,src,parse]of airSources()){try{const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),7000);const r=await fetch(u,{signal:ctl.signal});clearTimeout(tm);if(!r.ok){fails.push(`${src} (${r.status})`);continue}
   const list=parse(await r.json(),src);if(!list){fails.push(`${src} (formato)`);continue}AIR.list=list;AIR.src=src;AIR.good=src;ok=true;break}catch(e){fails.push(`${src} (${e.name==="AbortError"?"tempo esgotado":"bloqueado"})`)}}
  AIR.busy=false;AIR.ts=Date.now();
- if(!ok){console.warn("Radar de aviões indisponível:",fails.join(", "));if(++AIR.err===1)toast("Nenhum radar de aviões respondeu ao navegador (bloqueio de acesso). Em Local e modelo dá para configurar um proxy próprio.")}
- else{AIR.err=0;for(const a of AIR.list){const tr=AIR.trail[a.hex]||(AIR.trail[a.hex]=[]);tr.push([a.lat,a.lon]);if(tr.length>60)tr.shift()}if(AIR.first!==true){AIR.first=true;toast(`${AIR.list.length} aviões perto de você (fonte: ${AIR.src}).`)}}}
+ if(!ok){console.warn("Radar de aviões indisponível:",fails.join(", "));if(++AIR.err===1)toast("Nenhum radar de aviões respondeu agora, nem pelos intermediários públicos. Tente de novo em alguns minutos ou configure um proxy próprio em Local e modelo.")}
+ else{AIR.err=0;for(const a of AIR.list){const tr=AIR.trail[a.hex]||(AIR.trail[a.hex]=[]);tr.push([a.lat,a.lon]);if(tr.length>60)tr.shift()}if(AIR.first!==true){AIR.first=true;toast(`${AIR.list.length} ${AIR.list.length===1?"avião":"aviões"} perto de você (fonte: ${AIR.src}).`)}}}
 setInterval(()=>{if(st.L.air&&!document.hidden)airFetch()},10000);
 function airNow(a){const dt=(Date.now()-a.t0)/36e5,km=a.gs*1.852*dt;if(km<0.05)return[a.lat,a.lon];return dest(a.lat,a.lon,km/111.2,a.trk)}
 const PLANE=[[10,0],[8.4,-1.1],[2.5,-1.3],[-2,-9],[-4.2,-9],[-1.8,-1.3],[-6.5,-1.2],[-8.5,-4.2],[-9.8,-4.2],[-8.8,0]];
