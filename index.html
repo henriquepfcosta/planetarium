@@ -161,7 +161,7 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
   <button class="cltog" id="clTog" aria-pressed="true" hidden aria-label="Ligar ou desligar as nuvens"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18h10a4 4 0 0 0 .5-8 6 6 0 0 0-11.4 1.6A3.3 3.3 0 0 0 7 18Z"/></svg><span>Nuvens</span></button>
   <div class="svfoc" id="svFoc" hidden><span>Centro</span><button data-f="ter" aria-pressed="true">Terra</button><button data-f="sun" aria-pressed="false">Sol</button><button data-f="moon" aria-pressed="false">Lua</button></div>
   <div id="flyBar" hidden><button id="flyUp" aria-label="Subir">▲</button><div id="flyAlt">—</div><button id="flyDn" aria-label="Descer">▼</button><div id="flyLbl">—</div><button id="flyLand">Pousar</button><button id="flyDisc">Disco</button></div>
-  <div id="recBar" hidden><i></i><span id="recT">00:00</span><button id="recStop">Parar</button></div>
+  <div id="recBar" hidden><i></i><span id="recT">00:00</span><span id="recMic" hidden title="Gravando o áudio do microfone">🎙</span><button id="recStop">Parar</button></div>
   <div class="scrim" id="scrim" hidden></div>
   <div class="bottom">
     <div class="card" id="cvBar" hidden><div class="sgrip" id="cvGrip" aria-label="Arraste para mover o cartão"><i></i></div><button class="x" id="cvBarX" aria-label="Fechar">×</button><h3 style="font-size:14px;margin:0 0 6px">Modelo</h3>
@@ -327,7 +327,7 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
       <p class="small" id="airMsg"></p>
     </details>
     <button class="btn" id="sheetClose">Fechar</button>
-    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-36</p>
+    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-37</p>
   </div>
   <div class="welcome" id="welcome">
     <div>
@@ -1629,14 +1629,17 @@ function drawPaths(o){const d0=dayStart(st.t),key=d0+"|"+st.obs.lat+"|"+st.obs.l
   L.forEach((q,k)=>{if(k%8||q.v[2]<0.01)return;const p=proj(q.v);if(!onScreen(p))return;ctx.fillStyle=lc;ctx.beginPath();ctx.arc(p.sx,p.sy,2,0,7);ctx.fill();text(fmtH.format(new Date(q.t)).slice(0,2)+"h",p.sx+5,p.sy-5,lc,9.5,600)})}}
 // ---------- Gravação de vídeo ----------
 const REC={on:false};
-function recStart(){if(!window.MediaRecorder||!HTMLCanvasElement.prototype.captureStream){toast("Este navegador não grava vídeo aqui. Use a gravação de tela do próprio celular.");return}
+async function recStart(){if(REC.on||REC.busy)return;if(!window.MediaRecorder||!HTMLCanvasElement.prototype.captureStream){toast("Este navegador não grava vídeo aqui. Use a gravação de tela do próprio celular.");return}
+ // áudio: a sua voz pelo microfone (o navegador pede permissão na primeira vez)
+ let mic=null;REC.busy=true;panel(null);if(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia){try{mic=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},video:false})}catch(e){mic=null}}REC.busy=false;
  const k=Math.min(1,1280/Math.max(W,Hh)),c=document.createElement("canvas");c.width=Math.round(W*k/2)*2;c.height=Math.round(Hh*k/2)*2;
- const types=["video/mp4;codecs=avc1.42E01E","video/mp4","video/webm;codecs=vp9","video/webm;codecs=vp8","video/webm"],type=types.find(t=>{try{return MediaRecorder.isTypeSupported(t)}catch(e){return false}})||"";
- let mr;try{mr=new MediaRecorder(c.captureStream(30),type?{mimeType:type,videoBitsPerSecond:6e6}:{})}catch(e){toast("Não foi possível iniciar a gravação neste aparelho.");return}
- Object.assign(REC,{on:true,c,x:c.getContext("2d"),mr,chunks:[],t0:performance.now(),blob:null});mr.ondataavailable=e=>{if(e.data&&e.data.size)REC.chunks.push(e.data)};
- mr.onstop=()=>{REC.blob=new Blob(REC.chunks,{type:mr.mimeType||type||"video/webm"});const sec=Math.round((performance.now()-REC.t0)/1000);$("recInfo").textContent=`${sec} s · ${(REC.blob.size/1048576).toFixed(1)} MB · ${REC.blob.type.includes("mp4")?"MP4":"WebM"}`;$("recDone").hidden=false;$("info").hidden=true};
- mr.start(1000);panel(null);$("recBar").hidden=false;$("recDone").hidden=true;toast("Gravando: céu, câmera e simulação, sem os menus.")}
-function recStop(){if(!REC.on)return;REC.on=false;$("recBar").hidden=true;try{REC.mr.stop()}catch(e){}}
+ const types=mic?["video/mp4;codecs=avc1.42E01E,mp4a.40.2","video/mp4;codecs=avc1,mp4a","video/mp4","video/webm;codecs=vp9,opus","video/webm;codecs=vp8,opus","video/webm"]:["video/mp4;codecs=avc1.42E01E","video/mp4","video/webm;codecs=vp9","video/webm;codecs=vp8","video/webm"],type=types.find(t=>{try{return MediaRecorder.isTypeSupported(t)}catch(e){return false}})||"";
+ const vs=c.captureStream(30),ms=new MediaStream([...vs.getVideoTracks(),...(mic?mic.getAudioTracks():[])]);
+ let mr;try{mr=new MediaRecorder(ms,type?{mimeType:type,videoBitsPerSecond:6e6,audioBitsPerSecond:128000}:{})}catch(e){try{mr=new MediaRecorder(ms)}catch(e2){if(mic)mic.getTracks().forEach(t=>t.stop());toast("Não foi possível iniciar a gravação neste aparelho.");return}}
+ Object.assign(REC,{on:true,c,x:c.getContext("2d"),mr,mic,chunks:[],t0:performance.now(),blob:null});$("recMic").hidden=!mic;mr.ondataavailable=e=>{if(e.data&&e.data.size)REC.chunks.push(e.data)};
+ mr.onstop=()=>{REC.blob=new Blob(REC.chunks,{type:mr.mimeType||type||"video/webm"});const sec=Math.round((performance.now()-REC.t0)/1000);$("recInfo").textContent=`${sec} s · ${(REC.blob.size/1048576).toFixed(1)} MB · ${REC.blob.type.includes("mp4")?"MP4":"WebM"}${mr.stream.getAudioTracks().length?" · com áudio":" · sem áudio"}`;$("recDone").hidden=false;$("info").hidden=true};
+ mr.start(1000);$("recBar").hidden=false;$("recDone").hidden=true;toast(mic?"Gravando com a sua voz: céu, câmera e simulação, sem os menus.":"Gravando sem áudio (microfone não permitido). Para gravar a voz, libere o microfone para este site.")}
+function recStop(){if(!REC.on)return;REC.on=false;$("recBar").hidden=true;try{REC.mr.stop()}catch(e){}if(REC.mic){REC.mic.getTracks().forEach(t=>t.stop());REC.mic=null}}
 function recFrame(){if(!REC.on)return;const x=REC.x,w=REC.c.width,h=REC.c.height,s=w/W;x.setTransform(1,0,0,1,0,0);x.fillStyle="#000";x.fillRect(0,0,w,h);const v=$("camV");
  if(CAMON&&!v.hidden&&v.videoWidth){const sc=Math.max(w/v.videoWidth,h/v.videoHeight),dw=v.videoWidth*sc,dh=v.videoHeight*sc;x.drawImage(v,(w-dw)/2,(h-dh)/2,dw,dh)}
  const camOn=CAMON&&!v.hidden&&v.videoWidth;if(camOn)x.globalCompositeOperation="screen";x.drawImage(cv,0,0,w,h);x.globalCompositeOperation="source-over";const d=new Date(st.t),live=st.speed===1&&st.play&&Math.abs(st.t-Date.now())<9e4,l2=`${st.obs.name} · ${fmtD.format(d)} ${fmtH.format(d)}`+(live?" · ao vivo":st.play?` · simulação ${SPN[st.speed]||""}`:" · simulado");

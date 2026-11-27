@@ -75,7 +75,7 @@ Toque no relógio para abrir a barra de simulação: tocar/pausar, régua das 24
 - **Câmera ao fundo:** a imagem real da câmera fica atrás do céu desenhado, e as constelações, os desenhos, as estrelas e os nomes aparecem mesmo de dia, como um "raio X" do céu.
 - **Zodíaco e eclíptica:** o caminho do Sol entre as estrelas, com os 12 signos (setores de 30° a partir do equinócio). As fichas do Sol, da Lua e dos planetas mostram o signo em que estão.
 - **Caminho do Sol e da Lua:** a trajetória do dia no céu, com as horas marcadas.
-- **Gravar vídeo** (menu, seção Tela): grava a câmera, o céu e a simulação sem os menus, com local, data e hora no canto; no fim, salve ou compartilhe (MP4 no iPhone).
+- **Gravar vídeo** (menu, seção Tela): grava a câmera, o céu e a simulação sem os menus, com local, data e hora no canto; no fim, salve ou compartilhe (MP4 no iPhone). Grava também a sua voz pelo microfone (o navegador pede permissão na primeira vez); sem permissão, grava sem áudio. Um 🎙 na barra vermelha indica que o áudio está sendo gravado.
 
 ## Tempo e nuvens
 
