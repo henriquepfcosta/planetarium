@@ -329,7 +329,7 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
       <p class="small" id="airMsg"></p>
     </details>
     <button class="btn" id="sheetClose">Fechar</button>
-    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-40</p>
+    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-41</p>
   </div>
   <div class="welcome" id="welcome">
     <div>
@@ -1782,9 +1782,9 @@ app.addEventListener("pointermove",e=>{if(!gest||!pts.has(e.pointerId))return;pt
  if(pts.size===2&&gest.area==="sky"){if(!gest.d0)gest.d0=dist2();const raw=gest.fov*gest.d0/dist2();if(raw>150&&gest.fov>=100&&!st.split){if(MODEL()==="globe"&&g3Init()){svRise();gest=null;pts.clear();return}if(flyEnter(Math.max(0.004,(st.eyeH||0)*1.3))){FL.still=-4000;gest.area="fly";gest.d0=dist2();gest.h0=FL.h}return}st.fov=clamp(raw,2,130);gest.moved=true;return}
  const dx=e.clientX-gest.x,dy=e.clientY-gest.y;if(Math.hypot(dx,dy)>6)gest.moved=true;if(!gest.moved)return;const k=1/F;
  if(gest.area==="globe"){SV.anim=null;if(SV.geo){if(!gest.sg){gest.sg={...SV.geo};gest.gx=e.clientX;gest.gy=e.clientY}const ddx=e.clientX-gest.gx,ddy=e.clientY-gest.gy,a=Math.exp(SV.lg)/svRad("ter")-1,k=Math.min(0.006,1.05*a/((Math.min(W,Hh)/2)/Math.tan(26*D)))*R2D;
-   SV.geo.lat=clamp(gest.sg.lat+ddy*k,-89.5,89.5);SV.geo.lon=((gest.sg.lon-ddx*k/Math.max(0.05,Math.cos(SV.geo.lat*D))+540)%360)-180;svGeoApply();return}SV.yaw=gest.sy-dx*0.006;SV.pitch=clamp(gest.sp+dy*0.006,-89*D,89*D);return}
+   SV.geo.lat=clamp(gest.sg.lat+ddy*k,-89.5,89.5);SV.geo.lon=((gest.sg.lon-ddx*k/Math.max(0.05,Math.cos(SV.geo.lat*D))+540)%360)-180;svGeoApply();return}SV.yaw=gest.sy+dx*0.006;SV.pitch=clamp(gest.sp+dy*0.006,-89*D,89*D);return}
  if(gest.area==="disc"&&DZMAX()>5&&dv.zoom>2.5&&gest.btn!==2&&!gest.shift){if(dv.follow){setFollow(false,true);gest.x=e.clientX;gest.y=e.clientY;gest.px=dv.px;gest.py=dv.py;return}if(gest.px==null||gest.dk!==1){gest.dk=1;gest.x=e.clientX;gest.y=e.clientY;gest.px=dv.px;gest.py=dv.py;return}dv.px=gest.px+dx;dv.py=gest.py+dy;return}
- if(gest.area==="disc"){dv.tiltT=null;if(dv.follow){if(Math.abs(dx)>40&&Math.abs(dx)>Math.abs(dy)*1.3){setFollow(false);gest.rot=dv.rot;gest.x=e.clientX;gest.px=dv.px;gest.py=dv.py}else{dv.tilt=clamp(gest.tilt+dy*0.004,0.12,1);return}}if(gest.btn===2||gest.shift){dv.px=gest.px+dx;dv.py=gest.py+dy}else{dv.rot=gest.rot+dx*0.008;dv.tilt=clamp(gest.tilt+dy*0.004,0.12,1)}return}
+ if(gest.area==="disc"){dv.tiltT=null;if(dv.follow){if(Math.abs(dx)>40&&Math.abs(dx)>Math.abs(dy)*1.3){setFollow(false);gest.rot=dv.rot;gest.x=e.clientX;gest.px=dv.px;gest.py=dv.py}else{dv.tilt=clamp(gest.tilt+dy*0.004,0.12,1);return}}if(gest.btn===2||gest.shift){dv.px=gest.px+dx;dv.py=gest.py+dy}else{dv.rot=gest.rot-dx*0.008;dv.tilt=clamp(gest.tilt+dy*0.004,0.12,1)}return}
  if(st.sensors&&sens.got){if(Math.abs(dx)>40&&!gest.warned){gest.warned=true;toast("Sensores ligados: a tela segue o celular. Toque na bússola para desligar e navegar com o dedo.")}return}
  if(st.mode==="fly")FL.pAuto=false;st.yaw=gest.yaw-dx*k;st.pitch=clamp(gest.pitch+dy*k,st.mode==="fly"?-89*D:skyMinP(),89*D)});
 const end=e=>{clearTimeout(holdT);if(gest&&st.split)st.hits=gest.rect==="D"?(st.hitsD||[]):(st.hitsS||[]);if(gest&&gest.held){}else if(gest&&!gest.moved&&pts.size===1&&gest.area==="disc"){discTap(e.clientX-gest.ox,e.clientY-gest.oy)}else if(gest&&!gest.moved&&pts.size===1){const best=pickHit(e.clientX-gest.ox,e.clientY-gest.oy);st.sel=best?{kind:best.kind,i:best.i,id:best.id}:null;if(gest.area==="globe"&&best)svFocus(best.kind==="earth"?"ter":best.kind==="sun"?"sun":best.kind==="moon"?"moon":best.kind==="planet"?best.id:null)}
