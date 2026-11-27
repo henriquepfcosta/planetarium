@@ -159,7 +159,7 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
   <div class="scrim" id="scrim" hidden></div>
   <div class="bottom">
     <div class="card" id="cvBar" hidden><div class="sgrip" id="cvGrip" aria-label="Arraste para mover o cartão"><i></i></div><button class="x" id="cvBarX" aria-label="Fechar">×</button><h3 style="font-size:14px;margin:0 0 6px">Forma da Terra</h3>
-      <div class="seg sm" id="cvMode2"><button data-m="lens">Disco convexo</button><button data-m="globe">Globo</button></div>
+      <div class="seg sm" id="cvMode2"><button data-m="lens">Disco plano</button><button data-m="globe">Globo</button></div>
       <p style="margin:6px 0 0;font-size:13px;color:var(--ink)" id="cvV2"></p><p class="small cvg" id="cvG2" style="margin:2px 0 4px"></p>
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span class="small" id="cvS2"></span><button class="btn" id="cvMore" style="min-height:36px;font-size:13px;padding:0 12px">Detalhes</button></div>
     </div>
@@ -245,15 +245,15 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
     <h2><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 16c4-6 14-6 18 0"/><path d="M12 3v4M10 5l2-2 2 2"/></svg>Forma da Terra</h2>
     <p class="small" style="margin:0">Se o chão se curva, o horizonte de cada lugar se inclina e os polos do céu mudam de altura. Compare o que se observa em várias cidades com o que cada curvatura prevê.</p>
     <canvas id="cvCurve" style="width:100%;height:190px;border-radius:12px;background:#0b1820" aria-label="Perfil do disco em corte, do polo norte à borda sul"></canvas>
-    <div class="seg" id="cvMode"><button data-m="lens">Disco convexo</button><button data-m="globe">Globo</button></div>
+    <div class="seg" id="cvMode"><button data-m="lens">Disco plano</button><button data-m="globe">Globo</button></div>
     <p style="margin:0"><b id="cvVal" style="color:var(--ink)">—</b></p>
     <div class="seg" id="cvDist"><button data-d="far" aria-pressed="true">Estrelas muito distantes</button><button data-d="dome" aria-pressed="false">Estrelas no domo</button></div>
         <button class="btn p" id="cvShow">Ver no mapa</button>
-    <p class="small" style="margin:0">Dois modelos fixos, cada um com a sua fonte: o disco convexo do <i>Zhoubi Suanjing</i> e o globo medido. Não há ajuste: a tabela compara o que cada um prevê com o que se observa.</p>
+    <p class="small" style="margin:0">Dois modelos fixos: o disco plano (Gleason, 1892) e o globo medido. Não há ajuste: a tabela compara o que cada um prevê com o que se observa.</p>
     <p style="margin:0" id="cvSum"></p>
     <div class="res" id="cvList" style="max-height:none"></div>
     <details class="adv"><summary>De onde vêm os dois modelos</summary>
-      <p class="small"><b>Disco convexo — <i>Zhoubi Suanjing</i></b> (China, por volta do séc. I), o único modelo antigo de Terra não esférica descrito com números. O texto diz: "天象蓋笠，地法覆槃" (o céu é como um chapéu cônico; a Terra, como uma bacia emborcada) e "極下者，其地高人所居六萬里，滂沱四隤而下" (sob o polo, o chão fica 60.000 li acima de onde as pessoas vivem e desce para todos os lados). Pelo próprio texto, Zhou fica a 103.000 li do polo; na escala deste mapa isso dá cerca de <span id="cvZH">3.600</span> km de altura no centro. A altura e a distância vêm do texto; o formato exato da encosta entre o polo e as terras habitadas é uma interpretação.</p>
+      <p class="small"><b>Disco plano</b> — a projeção azimutal equidistante do mapa de Gleason (1892): polo norte no centro, gelo na borda, distâncias fiéis a partir do centro.</p>
       <p class="small"><b>Globo — curvatura medida.</b></p>
       <p class="small">A altura do polo celeste muda cerca de 1° a cada 111,2 km andados de norte a sul (é a definição prática de latitude). Isso foi medido por Aristóteles (Canopus visível no Egito e não na Grécia), Eratóstenes (sombras em Siena e Alexandria), al-Biruni (horizonte visto de uma montanha), pelas expedições à Lapônia e ao Peru (anos 1730), por Lacaille no sul da África (anos 1750) e pelo Arco Geodésico de Struve (1816–1855). Hoje o GPS confirma diariamente.</p>
       <p class="small">No globo, o perfil é um círculo de 6.371 km de raio. A Polaris fica a 0,7° do polo norte celeste; a tabela usa os próprios polos celestes.</p>
@@ -314,7 +314,7 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
       <p class="small" id="airMsg"></p>
     </details>
     <button class="btn" id="sheetClose">Fechar</button>
-    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-24</p>
+    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-25</p>
   </div>
   <div class="welcome" id="welcome">
     <div>
@@ -1178,11 +1178,10 @@ function drawCities(projFn){if(!st.L.city)return;loadCW();if(!CW.L)return;let n=
   ctx.fillStyle=c.cap?"#fff":"rgba(255,236,210,.95)";ctx.strokeStyle="rgba(0,0,0,.5)";ctx.lineWidth=1;ctx.beginPath();if(c.cap)ctx.rect(p[0]-2.5,p[1]-2.5,5,5);else ctx.arc(p[0],p[1],2,0,7);ctx.fill();ctx.stroke();
   text(lab,p[0]+5,p[1]-4,c.cap?"#ffffff":"rgba(255,236,210,.95)",c.cap?11:10,c.cap?600:500,4+c.z*0.5);if(++n>180)break}}
 
-// ---------- Teste da curvatura: duas formas (disco convexo e curvatura medida/globo) ----------
+// ---------- Forma da Terra: disco plano 3D ou globo medido ----------
 const CV={mode:"lens",k:1,hc:3000,dist:"far"};try{const c=JSON.parse(localStorage.getItem("planetarium-curva")||"null");if(c){CV.k=+c.k||0;CV.dist=c.dist||"far";if(c.mode)CV.mode=c.mode;if(c.hc!=null)CV.hc=+c.hc}}catch(e){}
 const KMDEG=RKM/180,RE=RKM/Math.PI,HCMAX=6000;
-// Zhoubi Suanjing: 天象蓋笠，地法覆槃 · 極下者，其地高人所居六萬里，滂沱四隤而下 · 周去極十萬三千里 (Zhou fica a 103.000 li do polo)
-const ZB_SZ=(90-34.62)*KMDEG,ZB_H=ZB_SZ*60000/103000;CV.hc=ZB_H;
+const ZB_SZ=(90-34.62)*KMDEG,ZB_H=0;CV.hc=0;
 const CVC=[["Reykjavík",64.15],["Londres",51.51],["Cairo",30.04],["Macapá (equador)",0.03],["Buenos Aires",-34.6],["Cidade do Cabo",-33.92],["Sydney",-33.87],["Ushuaia",-54.8]];
 CV.k=1;const shapeT=()=>CV.mode==="lens"?{k:0,hc:CV.hc}:{k:1,hc:0};
 // perfil do chão: distância horizontal ao eixo (q) e altura (z) em função de s (distância ao polo ao longo do chão)
@@ -1196,12 +1195,12 @@ const dot2=(a,b)=>a[0]*b[0]+a[1]*b[1];
 function cvRows(){const L=CVC.map(([n,lat])=>({n,lat}));const me=st.obs;if(!L.some(c=>Math.abs(c.lat-me.lat)<0.2))L.push({n:me.name,lat:me.lat,me:1});return L.sort((a,b)=>b.lat-a.lat)}
 function cvErr(S,dist){let s=0,n=0;for(const c of cvRows()){const p=cvPred(c.lat,S,dist);s+=Math.abs(p.altN-c.lat);n++;if(p.altS!=null){s+=Math.abs(p.altS+c.lat);n++}}return s/n}
 const errCol=e=>e<=1?"#7dffb0":e<=5?"#ffd27a":"#ff9f80";
-function cvLabel(){if(CV.mode==="lens")return`Disco convexo (Zhoubi Suanjing): centro ${Math.round(ZB_H/10)*10>0?"+":""}${(Math.round(ZB_H/10)*10).toLocaleString("pt-BR")} km`;
+function cvLabel(){if(CV.mode==="lens")return"Disco plano em 3D (mapa de Gleason, 1892)";
  return"Globo: curvatura medida, 1° a cada 111,2 km (raio de 6.371 km)"}
-function cvSliders(){const L=CV.mode==="lens";$("cvG2").hidden=false;$("cvG2").textContent=L?"Forma fixa do texto chinês (séc. I): sob o polo, o chão fica 60.000 li acima de onde as pessoas vivem.":"Forma fixa, medida de Eratóstenes ao GPS.";
+function cvSliders(){const L=CV.mode==="lens";$("cvG2").hidden=false;$("cvG2").textContent=L?"Superfície plana, com muralha de gelo na borda.":"Forma fixa, medida de Eratóstenes ao GPS.";
  document.querySelectorAll("#cvMode button,#cvMode2 button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===CV.mode))}
 function cvBarRender(){if($("cvBar").hidden)return;const e=cvErr(shapeT(),CV.dist);$("cvV2").textContent=cvLabel();$("cvS2").innerHTML=`Diferença média: <b style="color:${errCol(e)}">${nf(e,1)}°</b> (${CV.dist==="far"?"estrelas distantes":"estrelas no domo"})`}
-function cvRender(){const S=shapeT(),dist=CV.dist;cvSliders();if($("cvZH"))$("cvZH").textContent=(Math.round(ZB_H/10)*10).toLocaleString("pt-BR");$("cvVal").textContent=cvLabel();cvBarRender();
+function cvRender(){const S=shapeT(),dist=CV.dist;cvSliders();$("cvVal").textContent=cvLabel();cvBarRender();
  document.querySelectorAll("#cvDist button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.d===dist));
  const rows=cvRows(),fmt=a=>a==null?"—":`${a>=0?"+":"−"}${nf(Math.abs(a),1)}°`;
  $("cvList").innerHTML=rows.map(c=>{const p=cvPred(c.lat,S,dist),oN=c.lat,oS=-c.lat,eN=Math.abs(p.altN-oN),eS=p.altS==null?null:Math.abs(p.altS-oS),ok=e=>e==null?"var(--mute)":errCol(e);
@@ -1289,7 +1288,7 @@ function drawDisc3D(o){const gl=G3.gl;if(dv.tiltT!=null){dv.tilt+=(dv.tiltT-dv.t
   for(let h=0;h<24;h++){const a=(o.sp.lon+(h-12)*15)*D,q=[rr*Math.sin(a),-rr*Math.cos(a),z],p=vproj(V,q);if(!onScreen(p))continue;const ld=toDisc(-89.9,(o.sp.lon+(h-12)*15));if(!front(-89,o.sp.lon+(h-12)*15)&&dot(surfNLL(-89,o.sp.lon+(h-12)*15,S),nf2)<-0.2)continue;
    text(RN[h%12],p.sx,p.sy+4,h===12?"#ffd27a":h===0?"rgba(190,205,220,.75)":gl2?"#fff4ea":"#f6efe2",h===12||h===0?11:9.5,h===12?700:600,1)}ctx.textAlign="left"}
  if(front(st.obs.lat,st.obs.lon)){const p=pp(st.obs.lat,st.obs.lon);if(p){ctx.strokeStyle="#ff8f6b";ctx.lineWidth=1.8;ctx.beginPath();ctx.arc(p[0],p[1],6,0,7);ctx.stroke();ctx.beginPath();ctx.moveTo(p[0]-10,p[1]);ctx.lineTo(p[0]+10,p[1]);ctx.moveTo(p[0],p[1]-10);ctx.lineTo(p[0],p[1]+10);ctx.stroke();st.hits.push({x:p[0],y:p[1],kind:"obs",m:-9})}}
- if($("cvBar").hidden){const lab=Math.abs(S.hc)>=50?"Disco 3D · convexo (Zhoubi Suanjing)":Math.abs(k)>=0.005?`Disco 3D · ${k>0?"convexo":"côncavo"} ${Math.round(Math.abs(k)*100)}% do valor medido`:"Disco 3D · plano";ctx.textAlign="center";text(lab,W/2,Math.max(HDRB+14,DMG.top-8),"rgba(235,245,255,.85)",11,600,0);ctx.textAlign="left"}}
+ if($("cvBar").hidden){const lab=k>0.5?"Globo · curvatura medida":"Disco 3D · plano";ctx.textAlign="center";text(lab,W/2,Math.max(HDRB+14,DMG.top-8),"rgba(235,245,255,.85)",11,600,0);ctx.textAlign="left"}}
 function d3Step(){const act=(CVD.on||CVD.test)&&!CVD.unbend,tk=act&&CV.mode==="globe"?CV.k:0,th=act&&CV.mode==="lens"?CV.hc:0;CVD.kd+=(tk-CVD.kd)*0.08;CVD.hd+=(th-CVD.hd)*0.08;if(Math.abs(tk-CVD.kd)<0.002)CVD.kd=tk;if(Math.abs(th-CVD.hd)<4)CVD.hd=th;
  if(CVD.unbend&&Math.abs(CVD.kd)<0.004&&Math.abs(CVD.hd)<10){CVD.kd=0;CVD.hd=0;CVD.unbend=false;const a=CVD.after;CVD.after=null;if(a)a()}}
 const bent=()=>Math.abs(CVD.kd)>0.004||Math.abs(CVD.hd)>10;

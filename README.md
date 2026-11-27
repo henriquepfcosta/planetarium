@@ -62,7 +62,7 @@ Toque no relógio para abrir a barra de simulação: tocar/pausar, régua das 24
 ## Teste da curvatura e Disco 3D
 
 - **Teste da curvatura** (menu): abre uma barra sobre o mapa e o disco passa para 3D enquanto ela estiver aberta. Mexendo no controle, a forma muda ao vivo:
-  - **Disco convexo (Zhoubi Suanjing, China, séc. I):** forma fixa do texto — "天象蓋笠，地法覆槃" (o céu como um chapéu, a Terra como uma bacia emborcada) e "極下者，其地高人所居六萬里" (sob o polo, o chão fica 60.000 li acima de onde as pessoas vivem). Como Zhou fica a 103.000 li do polo, na escala do mapa o centro sobe cerca de 3.590 km; a forma da encosta entre o polo e as terras habitadas é interpretação.
+  - **Disco plano:** o disco do mapa de Gleason (1892) em 3D, com espessura e muralha de gelo.
   - **Globo:** forma fixa, com a curvatura medida de 1° a cada 111,2 km (Eratóstenes, al-Biruni, expedições do século XVIII, Arco de Struve, GPS) e raio de 6.371 km.
 - Não há ajuste: a tabela compara o que cada modelo prevê com o que se observa.
 - O céu não se mexe ao deformar o chão: no disco, o domo e as estrelas ficam no lugar; no modo globo, o céu fica ao fundo.
