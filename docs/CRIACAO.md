@@ -23,7 +23,7 @@ Experiência separada do Planetarium que desmonta o Disco 3D do app (o mesmo map
 | 1 | 1:2 | Abismo (*tehom*) e a névoa do Espírito pairando sobre as águas (sem figura) |
 | 1 | 1:3 | Luz sem fonte, antes dos luminares |
 | 1 | 1:4–5 | Luz e trevas separadas, girando: tarde e manhã |
-| 2 | 1:6–8 | O firmamento (*raqia*) sobe do meio das águas e leva as águas de cima; ficam as águas de baixo; o firmamento é chamado Céus |
+| 2 | 1:6–8 | O firmamento (*raqia*) sobe do meio das águas e leva as águas de cima; ficam as águas de baixo; o firmamento é chamado Céu |
 | 3 | 1:9–10 | As águas se ajuntam, aparece a porção seca; Terra e Mares; borda de gelo |
 | 3 | 1:11–13 | A terra seca ganha vegetação (do tom seco ao verde) |
 | 4 | 1:14–19 | Os luminares descem do alto do firmamento aos seus caminhos; as estrelas acendem no domo; a luz passa a seguir o luminar maior; aparecem os sinais: anel de horas (dias), trópicos (estações) |
@@ -35,7 +35,7 @@ Experiência separada do Planetarium que desmonta o Disco 3D do app (o mesmo map
 
 Tudo fica em `criacao.json`, sem precisar mexer no código:
 
-- `texto`: o versículo exibido. O texto atual é uma tradução livre a partir do hebraico, feita para esta simulação; pode ser trocado pela tradução de sua preferência (respeitando a licença dela).
+- `texto`: o versículo exibido. O texto atual é uma tradução livre a partir do hebraico, feita para esta simulação; pode ser trocado pela tradução de sua preferência (respeitando a licença dela). Escolha de tradução: "os céus" (plural) em 1:1 e 2:1, para a criação inteira; "Céu" (singular) para o firmamento em 1:8 e nas expressões ligadas a ele (1:9, 1:14, 1:17, 1:20), deixando claro que o firmamento é um céu dentro dos céus criados. No hebraico as duas formas são a mesma palavra, *shamayim*.
 - `ref`: a referência mostrada no cartão.
 - `cena`: o que é montado no passo. Cada chave vai de 0 (ausente) a 1 (completo) e vale dali em diante: `forma`, `escuro`, `abismo`, `espirito`, `luz`, `separa`, `ciclo`, `firmamento`, `acima`, `terra`, `gelo`, `verde`, `luminares`, `estrelas`, `sol`, `sinais`, `peixes`, `aves`, `animais`, `pessoas`, `descanso`.
 - `rotulos`: etiquetas mostradas na cena (por exemplo `firmamento`, `acima`, `debaixo`, `maior`, `menor`).
