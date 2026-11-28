@@ -1,12 +1,12 @@
 # Criação · Gênesis 1
 
-Experiência separada do Planetarium que monta, passo a passo, a narrativa de Gênesis 1:1–2:3 sobre a estrutura do disco: as águas, a luz, o firmamento com as águas acima dele, a terra seca, os luminares, a vida e o descanso. No fim, abre o Disco 3D ao vivo, que é a estrutura completa do app.
+Experiência separada do Planetarium que desmonta o Disco 3D do app (o mesmo mapa, domo, estrelas, luminares e anel de horas) e o monta de novo, passo a passo, conforme Gênesis 1:1–2:3: as águas, a luz, o firmamento com as águas acima dele, a terra seca, os luminares, a vida e o descanso. No fim, abre o Disco 3D ao vivo, que é a estrutura completa do app.
 
 ## Onde fica
 
 - Tela inicial: botão **Criação · Gênesis 1**, abaixo de "Explorar arrastando".
 - Menu: seção **Experiências** → **Criação · Gênesis 1**.
-- Ela abre em tela cheia, por cima do app, e não altera o Imersivo, o Disco nem o Globo. Enquanto está aberta, o resto do app fica pausado.
+- Ela usa o próprio Disco 3D: esconde os painéis do app, guarda as suas configurações e as devolve ao fechar. O estilo de mapa escolhido (mapa, foto, Gleason) é o que aparece montado.
 
 ## Controles
 
