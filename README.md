@@ -42,6 +42,12 @@ Toque no relógio para abrir a barra de simulação: tocar/pausar, régua das 24
 - O Disco 3D passa a ser o padrão; o **Disco 2D** clássico continua disponível (desligue **Disco em 3D** no menu) e na tela dividida. No estilo **Gleason 1892**, o mapa histórico fica na vista do disco inteiro e o satélite entra ao aproximar, no mergulho e no chão do Imersivo.
 - Chaves no menu, em **Nos dois modos**: **Satélite com zoom** e **Nomes, ruas e fronteiras**. O atalho **Nuvens** aparece também no Imersivo.
 
+## Criação · Gênesis 1
+
+- Experiência separada (tela inicial e menu → Experiências) que monta, passo a passo, Gênesis 1:1–2:3 sobre a estrutura do disco: águas e abismo, o Espírito pairando, a luz antes dos luminares, tarde e manhã, o firmamento com as águas acima e abaixo, a terra seca e a vegetação, os luminares e as estrelas, sinais para dias, estações e anos, a vida nas águas, no céu e na terra, e o descanso. No fim, abre o Disco 3D ao vivo.
+- Dias 1 a 7, avançar/voltar, reprodução automática e narração pela voz do celular. Roteiro e textos em `criacao.json`; detalhes em `docs/CRIACAO.md`.
+- Camada **Águas acima do firmamento** no Disco 3D (menu, seção do Disco).
+
 ## Mergulho: do disco ao chão
 
 - **Ícone do canto superior direito:** troca entre o Imersivo e o Disco 3D com a viagem animada (subida ou descida, cerca de 5 s). Tocando de novo durante a viagem, ela inverte o sentido.
