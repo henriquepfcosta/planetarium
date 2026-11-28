@@ -42,6 +42,14 @@ Toque no relógio para abrir a barra de simulação: tocar/pausar, régua das 24
 - O Disco 3D passa a ser o padrão; o **Disco 2D** clássico continua disponível (desligue **Disco em 3D** no menu) e na tela dividida. No estilo **Gleason 1892**, o mapa histórico fica na vista do disco inteiro e o satélite entra ao aproximar, no mergulho e no chão do Imersivo.
 - Chaves no menu, em **Nos dois modos**: **Satélite com zoom** e **Nomes, ruas e fronteiras**. O atalho **Nuvens** aparece também no Imersivo.
 
+## Astrolábio (relógio de Praga)
+
+- Camada opcional no menu (seção Disco): **Astrolábio (relógio de Praga)**. Desenha o mesmo céu calculado pelo app no estilo do mostrador do relógio astronômico de Praga (Orloj, 1410).
+- Mostrador centrado no polo norte celeste, com meio-dia no alto. O fundo mostra dia (azul), aurora e crepúsculo (laranja, até 18° abaixo do horizonte) e noite (escuro), calculados para o seu local.
+- Trópicos e Equador; anel do zodíaco deslocado, girando com as estrelas; ponteiro do Sol com o emblema no signo; Lua com a fase; ponteiro da estrela (tempo sideral).
+- Três horas: as do relógio (anel romano), as horas desiguais (1 a 12, o dia claro dividido em 12) e a hora boêmia antiga (anel externo, 24 no pôr do sol).
+- Chave **Projeção: Relógio | Disco** troca entre a projeção estereográfica do Orloj e a equidistante do nosso disco, para comparar como cada uma desenha o mesmo céu.
+
 ## Mergulho: do disco ao chão
 
 - **Ícone do canto superior direito:** troca entre o Imersivo e o Disco 3D com a viagem animada (subida ou descida, cerca de 5 s). Tocando de novo durante a viagem, ela inverte o sentido.
