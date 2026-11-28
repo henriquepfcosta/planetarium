@@ -45,7 +45,7 @@ Toque no relógio para abrir a barra de simulação: tocar/pausar, régua das 24
 ## Criação · Gênesis 1
 
 - Experiência separada (tela inicial e menu → Experiências) que monta, passo a passo, Gênesis 1:1–2:3 sobre a estrutura do disco: águas e abismo, o Espírito pairando, a luz antes dos luminares, tarde e manhã, o firmamento com as águas acima e abaixo, a terra seca e a vegetação, os luminares e as estrelas, sinais para dias, estações e anos, a vida nas águas, no céu e na terra, e o descanso. No fim, abre o Disco 3D ao vivo.
-- Dias 1 a 7, avançar/voltar, reprodução automática e narração pela voz do celular. Roteiro e textos em `criacao.json`; detalhes em `docs/CRIACAO.md`.
+- Dias 1 a 7, avançar/voltar, reprodução automática. Roteiro e textos em `criacao.json`; detalhes em `docs/CRIACAO.md`.
 - Camada **Águas acima do firmamento** no Disco 3D (menu, seção do Disco).
 
 ## Mergulho: do disco ao chão

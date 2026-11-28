@@ -12,7 +12,6 @@ Experiência separada do Planetarium que desmonta o Disco 3D do app (o mesmo map
 
 - Dias **1 a 7** no topo: pulam para o início de cada dia.
 - **◀ ❚❚ ▶** no cartão: passo anterior, pausar/continuar a reprodução automática, próximo passo.
-- **🔈/🔊**: narração com a voz do celular (português do Brasil). Com a narração ligada, o passo seguinte espera o fim da leitura.
 - Arrastar a cena gira o disco.
 - No sétimo dia, **Ver a terra completa no disco, agora** fecha a experiência e abre o Disco 3D com o Sol, a Lua e as estrelas na posição de hoje.
 
@@ -36,7 +35,7 @@ Experiência separada do Planetarium que desmonta o Disco 3D do app (o mesmo map
 
 Tudo fica em `criacao.json`, sem precisar mexer no código:
 
-- `texto`: o versículo exibido e narrado. O texto atual é uma tradução livre a partir do hebraico, feita para esta simulação; pode ser trocado pela tradução de sua preferência (respeitando a licença dela).
+- `texto`: o versículo exibido. O texto atual é uma tradução livre a partir do hebraico, feita para esta simulação; pode ser trocado pela tradução de sua preferência (respeitando a licença dela).
 - `ref`: a referência mostrada no cartão.
 - `cena`: o que é montado no passo. Cada chave vai de 0 (ausente) a 1 (completo) e vale dali em diante: `forma`, `escuro`, `abismo`, `espirito`, `luz`, `separa`, `ciclo`, `firmamento`, `acima`, `terra`, `gelo`, `verde`, `luminares`, `estrelas`, `sol`, `sinais`, `peixes`, `aves`, `animais`, `pessoas`, `descanso`.
 - `rotulos`: etiquetas mostradas na cena (por exemplo `firmamento`, `acima`, `debaixo`, `maior`, `menor`).

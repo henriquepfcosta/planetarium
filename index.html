@@ -341,10 +341,10 @@ input[type=range]{width:100%;accent-color:var(--model);height:32px}
       <p class="small" id="airMsg"></p>
     </details>
     <button class="btn" id="sheetClose">Fechar</button>
-    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-44</p>
+    <p class="small" style="text-align:center">Planetarium · versão 2026.11.27-45</p>
   </div>
   <div class="gen" id="gen" hidden>
-    <div class="gtop"><div class="gtit"><b>Criação</b><span>Gênesis 1 · no modelo do disco</span></div><button id="gVoice" aria-pressed="false" aria-label="Narração">🔈</button><button id="gClose" aria-label="Fechar">✕</button></div>
+    <div class="gtop"><div class="gtit"><b>Criação</b><span>Gênesis 1 · no modelo do disco</span></div><button id="gClose" aria-label="Fechar">✕</button></div>
     <div class="gdays" id="gDays" aria-label="Dias da criação"></div>
     <div class="gcard"><div class="gref" id="gRef"></div><p id="gTxt"></p>
       <div class="gctl"><button id="gPrev" aria-label="Anterior">◀</button><button id="gPlay" aria-label="Pausar ou continuar">❚❚</button><button id="gNext" aria-label="Próximo">▶</button></div>
@@ -1327,7 +1327,7 @@ function mTogSync(){{const cov=!!document.querySelector(".sheet.open")||!$("welc
 $("eyeDn").onclick=()=>{xfSnap();st.eyeH=0.0017;mTogSync();toast("No chão, à altura dos olhos.")};$("eyeUp").onclick=()=>{if(flyEnter(Math.max(0.004,st.eyeH))){FL.still=-4000;FL.pAuto=false}};
 $("startGen").onclick=()=>{$("startManual").click();setTimeout(genOpen,50)};$("bGen").onclick=genOpen;$("gClose").onclick=genClose;$("gPrev").onclick=()=>genGo(GEN.i-1);$("gNext").onclick=()=>genGo(GEN.i+1);
 $("gPlay").onclick=()=>{GEN.play=!GEN.play;$("gPlay").textContent=GEN.play?"❚❚":"▶";$("gPlay").setAttribute("aria-label",GEN.play?"Pausar":"Continuar")};
-$("gVoice").onclick=()=>{GEN.voice=!GEN.voice;$("gVoice").setAttribute("aria-pressed",GEN.voice);$("gVoice").textContent=GEN.voice?"🔊":"🔈";if(GEN.voice)genSpeak(GEN.data.passos[GEN.i].texto);else genSpeakStop()};
+
 $("gEnd").onclick=()=>{genClose();st.t=Date.now();st.speed=1;st.play=true;st.year=false;if(CV.mode!=="lens")cvSetMode("lens");if(!CVD.on)setDisc3D(true);if(st.mode!=="disc"){xfSnap();setMode("disc")}toast("A terra completa, agora: o disco com o Sol, a Lua e as estrelas na posição de hoje.")};
 addEventListener("resize",()=>{if(GEN.open)requestAnimationFrame(genLayout)});
 $("clTog").onclick=()=>{$("lWx").click();$("clTog").setAttribute("aria-pressed",!!st.L.wx);if(!st.L.wx)toast("Nuvens desligadas.")};
@@ -1839,7 +1839,7 @@ const GEN_DATA={"titulo":"Criação · Gênesis 1","fonte":"Tradução livre de 
 // ---------- Criação · Gênesis 1: o mesmo disco do app, desmontado e montado conforme a narrativa ----------
 // O roteiro (criacao.json) diz o que existe em cada passo; o Disco 3D de produção desenha a cena com esses valores:
 // mapa (águas, terra seca, vegetação, gelo), firmamento e estrelas, luminares e luz, anel de horas e linhas.
-const GEN={open:false,data:null,i:0,play:true,voice:false,s:{},tg:{},since:0,stepT:0,dur:7000,saved:null,L:null,key:"",speaking:false};
+const GEN={open:false,data:null,i:0,play:true,s:{},tg:{},since:0,stepT:0,dur:7000,saved:null,L:null,key:""};
 const GKEYS=["forma","escuro","abismo","espirito","luz","separa","ciclo","firmamento","acima","terra","gelo","verde","luminares","estrelas","sol","sinais","peixes","aves","animais","pessoas","descanso"];
 const GLAB={ceus_terra:"Céus e terra",abismo:"Abismo (tehom) · águas profundas",espirito:"O Espírito pairando sobre as águas",luz:"Luz, antes dos luminares",firmamento:"Firmamento (raqia)",acima:"Águas acima do firmamento",debaixo:"Águas debaixo do firmamento",ceus:"Céus",seca:"A porção seca aparece",terra:"Terra",mares:"Mares",vegetacao:"Vegetação",luminares:"Luminares no firmamento",maior:"Luminar maior",menor:"Luminar menor",estrelas:"Estrelas",sinais:"Sinais: estações (trópicos), dias e anos",peixes:"Seres das águas",aves:"Aves pela face do firmamento",animais:"Animais da terra",pessoas:"Homem e mulher",descanso:"Sétimo dia: descanso"};
 function genStateAt(i){const s={};for(const k of GKEYS)s[k]=0;for(let j=0;j<=i;j++)Object.assign(s,GEN.data.passos[j].cena);return s}
@@ -1851,7 +1851,7 @@ async function genOpen(){if(GEN.open)return;if(!GEN.data){try{const r=await fetc
  const d=$("gDays");if(!d.children.length){GEN.data.dias.forEach((n,k)=>{const b=document.createElement("button");b.textContent=k+1;b.title=n;b.onclick=()=>genGo(GEN.data.passos.findIndex(p=>p.dia===k+1));d.appendChild(b)})}
  for(const k of GKEYS)GEN.s[k]=0;genGo(0);G3.texK="";CVD.mk="";requestAnimationFrame(genLayout)}
 function genLayout(){if(!GEN.open)return;const c=document.querySelector(".gcard").getBoundingClientRect(),t=$("gDays").getBoundingClientRect();GEN.dmg=DMG={top:t.bottom+22,bot:Math.max(130,innerHeight-c.top+30)};dv.zoom=0.86;dv.zoomT=null}
-function genClose(){if(!GEN.open)return;GEN.open=false;GEN.dmg=null;genSpeakStop();$("gen").hidden=true;document.body.classList.remove("genon");const S0=GEN.saved;
+function genClose(){if(!GEN.open)return;GEN.open=false;GEN.dmg=null;$("gen").hidden=true;document.body.classList.remove("genon");const S0=GEN.saved;
  if(S0){CV.mode=S0.cv;CVD.on=S0.d3;Object.assign(dv,{tilt:S0.tilt,rot:S0.rot,zoom:S0.zoom,px:S0.px,py:S0.py,follow:S0.follow,ring:S0.ring,light:S0.light});Object.assign(st.L,S0.L);st.t=S0.t;st.play=S0.play;st.speed=S0.speed;st.year=S0.year;if(S0.mode!==st.mode)setMode(S0.mode)}
  DMG={top:100,bot:110};G3.texK="";CVD.mk="";xfSnap();mTogSync()}
 function genGo(i){const P=GEN.data.passos;GEN.i=clamp(i,0,P.length-1);GEN.tg=genStateAt(GEN.i);GEN.stepT=0;GEN.since=0;const p=P[GEN.i];
@@ -1859,11 +1859,9 @@ function genGo(i){const P=GEN.data.passos;GEN.i=clamp(i,0,P.length-1);GEN.tg=gen
  [...$("gDays").children].forEach((b,k)=>b.setAttribute("aria-current",k+1===p.dia));$("gPrev").disabled=GEN.i===0;$("gNext").disabled=GEN.i===P.length-1;
  // com os luminares, o tempo volta a correr (1 hora por segundo) para mostrar dias e noites
  if(GEN.tg.sol>0.5){st.play=true;st.speed=3600}else{st.play=false;st.t=GEN.saved?GEN.saved.t:st.t}
- if(GEN.voice)genSpeak(p.texto);requestAnimationFrame(genLayout)}
-function genSpeak(t){genSpeakStop();if(!window.speechSynthesis)return;const u=new SpeechSynthesisUtterance(t);u.lang="pt-BR";u.rate=0.95;const v=speechSynthesis.getVoices().find(v=>/^pt(-|_)BR/i.test(v.lang));if(v)u.voice=v;GEN.speaking=true;u.onend=u.onerror=()=>{GEN.speaking=false};speechSynthesis.speak(u)}
-function genSpeakStop(){GEN.speaking=false;try{window.speechSynthesis&&speechSynthesis.cancel()}catch(e){}}
+ requestAnimationFrame(genLayout)}
 function genStep(dt){const k=1-Math.exp(-dt/700);for(const key of GKEYS)GEN.s[key]+=((GEN.tg[key]||0)-GEN.s[key])*k;GEN.since+=dt;
- if(GEN.play){GEN.stepT+=dt;if(GEN.stepT>GEN.dur&&!GEN.speaking&&GEN.i<GEN.data.passos.length-1)genGo(GEN.i+1)}
+ if(GEN.play){GEN.stepT+=dt;if(GEN.stepT>GEN.dur&&GEN.i<GEN.data.passos.length-1)genGo(GEN.i+1)}
  if(!gest)dv.rot+=dt/1000*0.03;dv.light=GEN.s.sol>0.5;if(dv.ring){dv.ring=false;CVD.mk=""}
  const S=GEN.s;GEN.key=[S.luz,S.terra,S.verde,S.gelo].map((v,i)=>Math.round(v*[8,14,8,4][i])).join(",")}
 // máscara dos continentes tirada da foto do disco (o que não é oceano); a terra seca aparece por ela, com o mesmo estilo de mapa escolhido no app
